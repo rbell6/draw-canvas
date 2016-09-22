@@ -1,9 +1,11 @@
 import Model from './Model';
+import Brush from './Brush';
 
 export default class Line extends Model {
 	static defaults() {
 		return {
-			points: []
+			points: [],
+			brush: new Brush()
 		};
 	}
 

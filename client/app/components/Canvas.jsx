@@ -2,6 +2,7 @@ import React from 'react';
 import io from 'socket.io-client';
 import Line from '../models/Line';
 import LineCollection from '../models/LineCollection';
+import Brush from '../models/Brush';
 
 // TODO move
 let socket = io();
@@ -18,6 +19,12 @@ export default class Canvas extends React.Component {
 
 		this.lines = new LineCollection();
 		this._curLine = null;
+	}
+
+	static get defaultProps() {
+		return {
+			brush: new Brush()
+		};
 	}
 
 	componentDidMount() {
@@ -42,7 +49,9 @@ export default class Canvas extends React.Component {
 	}
 
 	startLine(e) {
-		this._curLine = new Line();
+		this._curLine = new Line({
+			brush: this.props.brush
+		});
 		this.lines.add(this._curLine);
 		this.addPointToLine({
 			x: e.offsetX,
@@ -74,18 +83,20 @@ export default class Canvas extends React.Component {
 		this.ctx.clearRect(0, 0, this.ctx.width, this.ctx.height);
 
 		this.lines.getAll().forEach(line => {
-			this._startDrawing(line.startingPoint());
+			this._startDrawing(line);
 			line.get('points').forEach((point, i) => {
-				if (i === 0) { return; }
 				this._drawLineToPoint(point);
 			});
 			this._endDrawing();
 		});
 	}
 
-	_startDrawing(point) {
+	_startDrawing(line) {
+		let point = line.startingPoint();
+		let brush = line.get('brush');
 		this.ctx.beginPath();
-		this.ctx.lineWidth = 30;
+		this.ctx.lineWidth = brush.get('size');
+		this.ctx.strokeStyle = brush.get('color');
 		this.ctx.lineCap = 'round';
 		this.ctx.lineJoin = 'round';
 		this.ctx.moveTo(point.x, point.y);

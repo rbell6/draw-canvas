@@ -1,0 +1,33 @@
+.brushes {
+	position: absolute;
+	left: 5px;
+	top: 5px;
+	display: flex;
+	flex-direction: column;
+	.brush {
+		width: 30px;
+		height: 30px;
+		border-radius: 15px;
+		margin-bottom: 5px;
+		border: solid 3px transparent;
+		box-sizing: border-box;
+		&.active {
+			border-color: lightblue;
+		}
+		&.brush-green {
+			background: green;
+		}
+		&.brush-blue {
+			background: blue;
+		}
+		&.brush-yellow {
+			background: yellow;
+		}
+		&.brush-black {
+			background: black;
+		}
+		&.brush-white {
+			background: white;
+		}
+	}
+}
