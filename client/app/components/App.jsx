@@ -30,7 +30,7 @@ export default class App extends React.Component {
 
 	render() {
 		return (
-			<div>
+			<div className="app">
 				<Canvas brush={this.state.brush} />
 				<div className="brushes">
 					{this.constructor.brushColors().map(color => (

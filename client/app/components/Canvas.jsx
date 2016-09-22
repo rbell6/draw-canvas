@@ -16,6 +16,7 @@ export default class Canvas extends React.Component {
 		this.startLine = this.startLine.bind(this);
 		this.extendLine = this.extendLine.bind(this);
 		this.stopLine = this.stopLine.bind(this);
+		this.paint = this.paint.bind(this);
 
 		this.lines = new LineCollection();
 		this._curLine = null;
@@ -30,16 +31,23 @@ export default class Canvas extends React.Component {
 	componentDidMount() {
 		this.canvas = this.refs.canvas;
 		this.ctx = this.canvas.getContext('2d');
+		window.ctx = this.ctx;
 
 		window.addEventListener('resize', this.resizeCanvas, false);
 		this.resizeCanvas();
 
 		this.canvas.addEventListener('mousedown', this.startLine);
+		this.canvas.addEventListener('mousemove', this.paint);
 	}
 
 	shouldComponentUpdate() {
 		// We don't want to use react to re-render this because we are using a <canvas>
 		return false;
+	}
+
+	componentWillUnmount() {
+		this.canvas.removeEventListener('mousedown', this.startLine);
+		this.canvas.removeEventListener('mousemove', this.paint);
 	}
 
 	resizeCanvas() {
@@ -70,7 +78,6 @@ export default class Canvas extends React.Component {
 
 	addPointToLine(point) {
 		this._curLine.addPoint(point);
-		this.paint();
 	}
 
 	stopLine() {
@@ -78,9 +85,9 @@ export default class Canvas extends React.Component {
 		window.removeEventListener('mouseup', this.stopLine);
 	}
 
-	paint() {
+	paint(e) {
 		// Clear the canvas
-		this.ctx.clearRect(0, 0, this.ctx.width, this.ctx.height);
+		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
 		this.lines.getAll().forEach(line => {
 			this._startDrawing(line);
@@ -89,6 +96,9 @@ export default class Canvas extends React.Component {
 			});
 			this._endDrawing();
 		});
+		if (e) {
+			this._drawBrushCursor({x: e.offsetX, y: e.offsetY});
+		}
 	}
 
 	_startDrawing(line) {
@@ -107,6 +117,16 @@ export default class Canvas extends React.Component {
 	}
 
 	_endDrawing() {
+		this.ctx.stroke();
+	}
+
+	_drawBrushCursor(point) {
+		this.ctx.beginPath();
+		this.ctx.arc(point.x, point.y, this.props.brush.get('size')/2, 0, 2*Math.PI);
+		this.ctx.fillStyle = this.props.brush.get('color');
+		this.ctx.fill();
+		this.ctx.lineWidth = 0.5;
+		this.ctx.strokeStyle = '#555';
 		this.ctx.stroke();
 	}
 
