@@ -1,3 +1,5 @@
+'use strict';
+
 var http      = require('http');
 var express   = require('express');
 var app       = express();
@@ -20,8 +22,14 @@ http.listen(3007, function(){
   console.log('listening on *:3007');
 });
 
+
+let sockets = [];
+
 io.on('connection', socket => {
-	socket.on('draw', data => {
-		console.log('d', data);
+	sockets.push(socket);
+	socket.on('draw', lines => {
+		sockets.forEach(socket => socket.emit('draw', lines));
 	});
+
+	socket.on('disconnect', () => sockets.splice(sockets.indexOf(socket), 1));
 });

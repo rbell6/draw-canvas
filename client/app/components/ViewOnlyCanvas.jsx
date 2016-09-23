@@ -3,16 +3,12 @@ import Line from '../models/Line';
 import LineCollection from '../models/LineCollection';
 import Brush from '../models/Brush';
 
-export default class Canvas extends React.Component {
+export default class ViewOnlyCanvas extends React.Component {
 	constructor(props, context) {
 		super(props, context);
 
 		// Bind methods that we'll need to add/remove event listeners
-		this.onChange = this.onChange.bind(this);
 		this.resizeCanvas = this.resizeCanvas.bind(this);
-		this.startLine = this.startLine.bind(this);
-		this.extendLine = this.extendLine.bind(this);
-		this.stopLine = this.stopLine.bind(this);
 		this.paint = this.paint.bind(this);
 
 		this.lines = new LineCollection();
@@ -22,7 +18,7 @@ export default class Canvas extends React.Component {
 	static get defaultProps() {
 		return {
 			brush: new Brush(),
-			onChange: function(){}
+			socket: null
 		};
 	}
 
@@ -34,10 +30,10 @@ export default class Canvas extends React.Component {
 		window.addEventListener('resize', this.resizeCanvas, false);
 		this.resizeCanvas();
 
-		this.lines.on('change', this.onChange);
-
-		this.canvas.addEventListener('mousedown', this.startLine);
-		this.canvas.addEventListener('mousemove', this.paint);
+		this.props.socket.on('draw', linesJSON => {
+			this.lines = LineCollection.fromJSON(linesJSON);
+			this.paint();
+		});
 	}
 
 	shouldComponentUpdate() {
@@ -45,49 +41,10 @@ export default class Canvas extends React.Component {
 		return false;
 	}
 
-	componentWillUnmount() {
-		this.canvas.removeEventListener('mousedown', this.startLine);
-		this.canvas.removeEventListener('mousemove', this.paint);
-		this.lines.off('change', this.onChange);
-	}
-
-	onChange() {
-		this.props.onChange({value: this.lines});
-	}
-
 	resizeCanvas() {
 		this.canvas.width = window.innerWidth;
 		this.canvas.height = window.innerHeight;
 		this.paint();
-	}
-
-	startLine(e) {
-		this._curLine = new Line({
-			brush: this.props.brush
-		});
-		this.lines.add(this._curLine);
-		this.addPointToLine({
-			x: e.offsetX,
-			y: e.offsetY
-		});
-		window.addEventListener('mousemove', this.extendLine);
-		window.addEventListener('mouseup', this.stopLine);
-	}
-
-	extendLine(e) {
-		this.addPointToLine({
-			x: e.offsetX,
-			y: e.offsetY
-		});
-	}
-
-	addPointToLine(point) {
-		this._curLine.addPoint(point);
-	}
-
-	stopLine() {
-		window.removeEventListener('mousemove', this.extendLine);
-		window.removeEventListener('mouseup', this.stopLine);
 	}
 
 	paint(e) {
@@ -125,19 +82,9 @@ export default class Canvas extends React.Component {
 		this.ctx.stroke();
 	}
 
-	_drawBrushCursor(point) {
-		this.ctx.beginPath();
-		this.ctx.arc(point.x, point.y, this.props.brush.get('size')/2, 0, 2*Math.PI);
-		this.ctx.fillStyle = this.props.brush.get('color');
-		this.ctx.fill();
-		this.ctx.lineWidth = 0.5;
-		this.ctx.strokeStyle = '#555';
-		this.ctx.stroke();
-	}
-
 	render() {
 		return (
-			<canvas ref="canvas"></canvas>
+			<canvas ref="canvas" className="view-only"></canvas>
 		);
 	}
 }

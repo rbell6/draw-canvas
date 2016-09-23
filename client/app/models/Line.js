@@ -11,9 +11,17 @@ export default class Line extends Model {
 
 	addPoint(point) {
 		this.get('points').push(point);
+		this.emit('change');
 	}
 
 	startingPoint() {
 		return this.get('points')[0];
+	}
+
+	static fromJSON(json) {
+		return new this({
+			points: json.points,
+			brush: new Brush(json.brush)
+		});
 	}
 }

@@ -1,10 +1,15 @@
 .app {
 	display: flex;
 }
-.brushes {
+.views {
 	position: absolute;
 	left: 5px;
 	top: 5px;
+}
+.brushes {
+	position: absolute;
+	left: 5px;
+	top: 30px;
 	display: flex;
 	flex-direction: column;
 	.brush {
@@ -31,6 +36,9 @@
 		}
 		&.brush-white {
 			background: white;
+		}
+		&.brush-red {
+			background: red;
 		}
 	}
 }
