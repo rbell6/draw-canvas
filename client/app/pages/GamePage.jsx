@@ -1,6 +1,6 @@
 import React from 'react';
-import Canvas from './Canvas';
-import ViewOnlyCanvas from './ViewOnlyCanvas';
+import Canvas from '../components/Canvas';
+import ViewOnlyCanvas from '../components/ViewOnlyCanvas';
 import Brush from '../models/Brush';
 import classNames from 'classnames';
 import io from 'socket.io-client';
@@ -8,7 +8,7 @@ import io from 'socket.io-client';
 // TODO move
 let socket = io();
 
-export default class App extends React.Component {
+export default class GamePage extends React.Component {
 	constructor(props, context) {
 		super(props, context);
 
