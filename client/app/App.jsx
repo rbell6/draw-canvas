@@ -19,6 +19,7 @@ export default class App extends React.Component {
     			<IndexRedirect to="/create-user" />
     			<Route path="/create-user" component={CreateUserPage} />
     			<Route path="/game" component={GamePage} />
+    			<Route path="/game/:id" component={GamePage} />
     			<Route path="/game-list" component={GameListPage} />
     		</Route>
     	</Router>
