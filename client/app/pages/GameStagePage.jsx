@@ -34,8 +34,8 @@ export default class GameStagePage extends React.Component {
 
 	render() {
 		return (
-			<div className="create-game-page">
-				<div className="create-game-container">
+			<div className="game-stage-page">
+				<div className="game-stage-container">
 					<TextField 
 						placeholder="Game Name"
 						value={this.state.game.get('name')} 
