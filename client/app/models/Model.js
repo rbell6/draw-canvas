@@ -3,9 +3,10 @@ import _ from 'lodash';
 
 export default class Model extends EventEmitter {
 
-	constructor(data) {
+	constructor(data={}) {
+		data.id = data.id || Model.generateId();
 		super(data);
-		this._data = _.invoke(this, 'constructor.defaults') || {};
+		this._data = _.invoke(this, 'constructor.defaults');
 		_.forOwn(data, (val, key) => {
 			this.set(key, val);
 		});
@@ -41,6 +42,17 @@ export default class Model extends EventEmitter {
 			json[key] = val;
 		});
 		return json;
+	}
+
+	static defaults() {
+		return {};
+	}
+
+	static generateId() {
+		var S4 = function() {
+			return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+		};
+		return (S4()+S4());
 	}
 
 }

@@ -11,7 +11,7 @@ import Shell from 'components/Shell';
 import GamePage from 'pages/GamePage';
 import CreateUserPage from 'pages/CreateUserPage';
 import GameListPage from 'pages/GameListPage';
-import CreateGamePage from 'pages/CreateGamePage';
+import GameStagePage from 'pages/GameStagePage';
 
 function AppPages({children, location}) {
 	const transitionTime = 400;
@@ -40,7 +40,7 @@ export default class App extends React.Component {
 						<Route path="/game" component={GamePage} />
 						<Route path="/game-list" component={GameListPage} />
 						<Route path="/game/:id" component={GamePage} />
-						<Route path="/create-game" component={CreateGamePage} />
+						<Route path="/game-stage/:id" component={GameStagePage} />
 					</Route>
 				</Router>
 			</Shell>

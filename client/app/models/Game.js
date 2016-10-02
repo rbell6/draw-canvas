@@ -5,6 +5,8 @@ import util from './util';
 import _ from 'lodash';
 import Model from './Model';
 import Collection from './Collection';
+import User from './User';
+import UserCollection from './UserCollection';
 
 export default class Game extends Model {
 	constructor(data) {
@@ -17,7 +19,6 @@ export default class Game extends Model {
 
 	static defaults() {
 		return {
-			id: util.guid(),
 			host: null,
 			users: new Collection(),
 			rounds: new Collection(),
@@ -37,5 +38,13 @@ export default class Game extends Model {
 
 	numUsers() {
 		return this.get('users').length;
+	}
+
+	static fromJSON(json) {
+		let gameJSON = _.extend(json, {
+			host: new User(json.host),
+			users: UserCollection.fromJSON(json.users)
+		});
+		return new this(gameJSON);
 	}
 }

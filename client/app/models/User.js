@@ -7,7 +7,6 @@ import Model from './Model';
 export default class User extends Model {
 	static defaults() {
 		return {
-			id: util.guid(),
 			connected: true,
 			name: ''
 		};

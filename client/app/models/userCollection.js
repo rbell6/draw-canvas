@@ -1,6 +1,7 @@
 'use strict';
 
 import Collection from './Collection';
+import User from './User';
 
 export default class UserCollection extends Collection {
 	add(user) {
@@ -17,5 +18,11 @@ export default class UserCollection extends Collection {
 
 	notifyAll(event, data) {
 		this.getAll().forEach(user => user.notify(event, data));
+	}
+
+	static fromJSON(json) {
+		let userCollection = new UserCollection();
+		json.forEach(user => userCollection.add(new User(user)));
+		return userCollection;
 	}
 }

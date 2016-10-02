@@ -29,6 +29,10 @@ export default class Collection extends EventEmitter {
 		return this.getAll().map(fn);
 	}
 
+	find(params) {
+		return _.find(this.getAll(), params);
+	}
+
 	remove(item) {
 		this._collection = _.remove(this._collection, collectionItem => collectionItem.id === item.id);
 		this.emit('remove', item);
