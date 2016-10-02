@@ -10,6 +10,7 @@ import Shell from 'components/Shell';
 import GamePage from 'pages/GamePage';
 import CreateUserPage from 'pages/CreateUserPage';
 import GameListPage from 'pages/GameListPage';
+import CreateGamePage from 'pages/CreateGamePage';
 
 export default class App extends React.Component {
 	render() {
@@ -21,6 +22,7 @@ export default class App extends React.Component {
     			<Route path="/game" component={GamePage} />
     			<Route path="/game/:id" component={GamePage} />
     			<Route path="/game-list" component={GameListPage} />
+    			<Route path="/create-game" component={CreateGamePage} />
     		</Route>
     	</Router>
 		);

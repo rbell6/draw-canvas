@@ -1,0 +1,41 @@
+@import 'app.less';
+
+.create-game-page {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	padding: 0 @gutter;
+	box-sizing: border-box;
+	.create-game-container {
+		width: 600px;
+		max-width: 100%;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		margin-top: @gutter;
+	}
+	.game-users-container {
+		flex-grow: 1;
+		overflow-y: scroll;
+	}
+	.game-users {
+		display: flex;
+		margin: 0 -@gutter/2;
+		flex-wrap: wrap;
+	}
+	.start-button {
+		display: flex;
+		justify-content: center;
+		margin-bottom: @gutter;
+		.button {
+			margin-left: 0;
+			margin-right: 0;
+			min-width: 100px;
+		}
+	}
+}

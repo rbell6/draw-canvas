@@ -1,0 +1,28 @@
+@import 'app.less';
+
+@width: 60px;
+@height: 80px;
+
+.user-icon {
+	width: @width;
+	height: @height;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	margin: @gutter/2;
+	.user-avatar {
+		align-items: center;
+		justify-content: center;
+		width: @width;
+		height: @width;
+		display: flex;
+		background: #ccc;
+		border-radius: @width/2;
+		font-size: 30px;
+	}
+	.user-name {
+		text-align: center;
+		font-size: 12px;
+		font-weight: 600;
+	}
+}

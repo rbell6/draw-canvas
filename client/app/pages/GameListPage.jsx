@@ -9,7 +9,7 @@ export default class GameListPage extends React.Component {
 		return (
 			<div className="game-list-page">
 				<div className="game-list-container">
-					<button onClick={() => browserHistory.push('/game')} className="join-game-button new-game-button"><i className="fa fa-plus-circle" /> &nbsp; New game</button>
+					<button onClick={() => browserHistory.push('/create-game')} className="join-game-button new-game-button"><i className="fa fa-plus-circle" /> &nbsp; New game</button>
 					{gameCollection.map(game => (
 						<div key={game.id} className="join-game-button" onClick={() => browserHistory.push(`/game/${game.id}`)}>
 							<h2>{game.get('name')}</h2>
