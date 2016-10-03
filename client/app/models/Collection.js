@@ -9,6 +9,7 @@ export default class Collection extends EventEmitter {
 	}
 
 	add(item) {
+		if (this.find({id: item.id})) { return; }
 		this._collection.push(item);
 		this.emit('add', item);
 	}

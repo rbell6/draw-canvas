@@ -32,6 +32,11 @@ export default class GameStagePage extends React.Component {
 		this.forceUpdate();
 	}
 
+	cancel() {
+		GameService.remove(this.state.game);
+		browserHistory.push('/game-list');
+	}
+
 	render() {
 		return (
 			<div className="game-stage-page">
@@ -43,17 +48,14 @@ export default class GameStagePage extends React.Component {
 					<div className="game-users-container">
 						<H3>Players</H3>
 						<div className="game-users">
-							<UserIcon />
-							<UserIcon />
-							<UserIcon />
-							<UserIcon />
-							<UserIcon />
+							{this.state.game.get('users').map(user => <UserIcon user={user} key={user.id} />) }
 						</div>
 					</div>
 					<TextField 
 						placeholder="Say something ..." />
-					<div className="start-button">
-						<Button>Start game</Button>
+					<div className="buttons">
+						<Button onClick={() => this.cancel()}>Cancel</Button>
+						<Button variant="success">Start game</Button>
 					</div>
 				</div>
 			</div>

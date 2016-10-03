@@ -8,6 +8,10 @@ let GameService = {
 		this.getAll().add(game);
 		this.save();
 	},
+	remove: function(game) {
+		this.getAll().remove(game);
+		this.save();
+	},
 	save: function() {
 		window.localStorage.setItem('gameCollection', JSON.stringify(this.getAll().toJSON()));
 	},
