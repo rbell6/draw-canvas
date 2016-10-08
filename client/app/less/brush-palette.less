@@ -1,8 +1,61 @@
+@import 'variables.less';
+@brush-size: 38px;
+
+.brush-color(@color) {
+	background: @color;
+	&.active {
+		border-color: lighten(@color, 25%);
+	}
+}
+
 .brush-palette {
 	position: absolute;
 	left: 0;
 	top: 0;
-	width: 100px;
-	height: 100px;
-	background: pink;
+	width: 99px;
+	height: 100%;
+	background: @background-color;
+	.brushes {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		margin-top: 10px;
+		.brush {
+			width: @brush-size;
+			height: @brush-size;
+			border-radius: @brush-size/2+3px;
+			margin: 1px;
+			border: solid 3px @background-color;
+			&.active {
+				border-color: lightblue;
+			}
+			&.brush-green {
+				.brush-color(@green);
+			}
+			&.brush-blue {
+				.brush-color(@blue);
+			}
+			&.brush-yellow {
+				.brush-color(@yellow);
+			}
+			&.brush-black {
+				background: @black;
+				&.active {
+					border-color: #555;
+				}
+			}
+			&.brush-white {
+				.brush-color(@white);
+			}
+			&.brush-red {
+				.brush-color(@red);
+			}
+			&.brush-orange {
+				.brush-color(@orange);
+			}
+			&.brush-purple {
+				.brush-color(@purple);
+			}
+		}
+	}
 }

@@ -37,6 +37,10 @@ export default class GameStagePage extends React.Component {
 		browserHistory.push('/game-list');
 	}
 
+	start() {
+		browserHistory.push(`/game/${this.state.game.id}`);
+	}
+
 	render() {
 		return (
 			<div className="game-stage-page">
@@ -55,7 +59,7 @@ export default class GameStagePage extends React.Component {
 						placeholder="Say something ..." />
 					<div className="buttons">
 						<Button onClick={() => this.cancel()}>Cancel</Button>
-						<Button variant="success">Start game</Button>
+						<Button onClick={() => this.start()} variant="success">Start game</Button>
 					</div>
 				</div>
 			</div>

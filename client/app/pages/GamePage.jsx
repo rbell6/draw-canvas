@@ -1,9 +1,12 @@
 import React from 'react';
 import Canvas from '../components/Canvas';
 import ViewOnlyCanvas from '../components/ViewOnlyCanvas';
+import BrushPalette from '../components/BrushPalette';
 import Brush from '../models/Brush';
 import classNames from 'classnames';
 import io from 'socket.io-client';
+import GameService from '../services/GameService';
+import util from '../models/util';
 
 // TODO move
 let socket = io();
@@ -12,10 +15,11 @@ export default class GamePage extends React.Component {
 	constructor(props, context) {
 		super(props, context);
 
-		this.state ={
+		this.state = {
+			game: GameService.getById(props.params.id),
 			brush: new Brush({
 				size: 50,
-				color: 'green'
+				color: util.colors()[0].value
 			}),
 			view: 'draw', // || 'view'
 		};
@@ -25,12 +29,9 @@ export default class GamePage extends React.Component {
 		return ['green', 'blue', 'yellow', 'black', 'white', 'red'];
 	}
 
-	setBrushColor(color) {
+	onBrushChange(brush) {
 		this.setState({
-			brush: new Brush({
-				size: this.state.brush.get('size'),
-				color: color
-			})
+			brush: brush
 		});
 	}
 
@@ -46,25 +47,15 @@ export default class GamePage extends React.Component {
 					:
 					<ViewOnlyCanvas socket={socket} />
 				}
+				{ this.state.view == 'draw' ?
+					<BrushPalette brush={this.state.brush} onBrushChange={brush => this.onBrushChange(brush)} />
+					:
+					null
+				}
 				<div className="views">
 					<button onClick={() => this.setState({view: 'draw'})}>Draw</button>
 					<button onClick={() => this.setState({view: 'view'})}>View</button>
 				</div>
-				{ this.state.view == 'draw' ?
-					<div className="brushes">
-						{this.constructor.brushColors().map(color => (
-							<div 
-								key={color} 
-								className={classNames('brush', 'brush-' + color, {
-									'active': this.state.brush.get('color') == color
-								})} 
-								onClick={e => this.setBrushColor(color)}>
-							</div>
-						))}
-					</div>
-					:
-					null
-				}
 			</div>
 		);
 	}

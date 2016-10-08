@@ -30,7 +30,7 @@ export default class GameListPage extends React.Component {
 						transitionLeaveTimeout={transitionTime}
 					>
 						{GameService.getAll().map(game => (
-							<div key={game.id} className="join-game-button" onClick={() => browserHistory.push(`/game/${game.id}`)}>
+							<div key={game.id} className="join-game-button" onClick={() => browserHistory.push(`/game-stage/${game.id}`)}>
 								<h2>{game.get('name')}</h2>
 								<h3><i className="fa fa-user" /> {game.hostName()} &nbsp; <i className="fa fa-users" /> {game.numUsers()}</h3>
 							</div>
