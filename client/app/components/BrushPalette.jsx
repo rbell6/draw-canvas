@@ -33,6 +33,10 @@ export default class BrushPalette extends React.Component {
 		this.props.onTrash();
 	}
 
+	undo() {
+		this.props.onUndo();
+	}
+
 	render() {
 		return (
 			<div className="brush-palette">
@@ -64,8 +68,9 @@ export default class BrushPalette extends React.Component {
 					))}
 				</div>
 				<div className="brush-utilities">
+					<i className="fa fa-undo undo" onClick={e => this.undo()} />
 					<i className={classNames('fa fa-eraser brush-eraser', {'active': this.props.brush.get('name') == 'eraser'})} onClick={e => this.setEraser()} />
-					<i className={classNames('fa fa-trash trash')} onClick={e => this.trash()} />
+					<i className="fa fa-trash trash" onClick={e => this.trash()} />
 				</div>
 			</div>
 		);

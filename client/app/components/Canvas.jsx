@@ -60,6 +60,11 @@ export default class Canvas extends React.Component {
 		this.paint();
 	}
 
+	undo() {
+		this.lines.remove(this.lines.last());
+		this.paint();
+	}
+
 	resizeCanvas() {
 		this.canvas.width = window.innerWidth;
 		this.canvas.height = window.innerHeight;

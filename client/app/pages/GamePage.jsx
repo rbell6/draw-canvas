@@ -7,6 +7,7 @@ import classNames from 'classnames';
 import io from 'socket.io-client';
 import GameService from '../services/GameService';
 import util from '../models/util';
+import HotkeyService from '../services/HotkeyService';
 
 // TODO move
 let socket = io();
@@ -24,6 +25,8 @@ export default class GamePage extends React.Component {
 			}),
 			view: 'draw', // || 'view'
 		};
+
+		HotkeyService.on('undo', () => this.onUndo());
 	}
 
 	onBrushChange(brush) {
@@ -34,6 +37,10 @@ export default class GamePage extends React.Component {
 
 	onTrash() {
 		this.refs.canvas.clear();
+	}
+
+	onUndo() {
+		this.refs.canvas.undo();
 	}
 
 	onCanvasChange(lines) {
@@ -49,7 +56,11 @@ export default class GamePage extends React.Component {
 					<ViewOnlyCanvas socket={socket} />
 				}
 				{ this.state.view == 'draw' ?
-					<BrushPalette brush={this.state.brush} onBrushChange={brush => this.onBrushChange(brush)} onTrash={() => this.onTrash()} />
+					<BrushPalette 
+						brush={this.state.brush} 
+						onBrushChange={brush => this.onBrushChange(brush)} 
+						onUndo={() => this.onUndo()}
+						onTrash={() => this.onTrash()} />
 					:
 					null
 				}
