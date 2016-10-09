@@ -3,18 +3,13 @@
 
 .brush-color(@color) {
 	background: @color;
+	transition: transform 0.2s;
 	&.active {
 		border-color: lighten(@color, 25%);
 	}
 	&:hover:not(.active) {
 		background: lighten(@color, 5%);
-		animation: hover 0.3s 2 alternate;
-	}
-}
-
-@keyframes hover {
-	100% {
-		transform: translate(0, 2px);
+		transform: scale(1.1);
 	}
 }
 
@@ -32,9 +27,8 @@
 		padding-top: 12px;
 		&:after {
 			content: '';
-			border-bottom: solid 1px #606060;
 			width: 30%;
-			height: 12px;
+			height: 18px;
 		}
 	}
 	.brush {
