@@ -114,14 +114,9 @@ export default class Canvas extends React.Component {
 	_startDrawing(line) {
 		let point = line.startingPoint();
 		let brush = line.get('brush');
+		this._setBrushType(brush);
 		this.ctx.beginPath();
 		this.ctx.lineWidth = brush.get('size');
-		if (brush.get('name') == 'eraser') {
-			this.ctx.globalCompositeOperation = 'destination-out';
-		} else {
-			this.ctx.globalCompositeOperation = 'source-over';
-		}
-
 		this.ctx.strokeStyle = brush.get('color');
 		this.ctx.lineCap = 'round';
 		this.ctx.lineJoin = 'round';
@@ -137,13 +132,26 @@ export default class Canvas extends React.Component {
 	}
 
 	_drawBrushCursor(point) {
+		this._setBrushType(this.props.brush);
 		this.ctx.beginPath();
 		this.ctx.arc(point.x, point.y, this.props.brush.get('size')/2, 0, 2*Math.PI);
 		this.ctx.fillStyle = this.props.brush.get('color');
 		this.ctx.fill();
+		this.ctx.globalCompositeOperation = 'source-over';
 		this.ctx.lineWidth = 0.5;
 		this.ctx.strokeStyle = '#555';
+		if (this.props.brush.get('name') == 'eraser') {
+			this.ctx.strokeStyle = '#222';
+		}
 		this.ctx.stroke();
+	}
+
+	_setBrushType(brush) {
+		if (brush.get('name') == 'eraser') {
+			this.ctx.globalCompositeOperation = 'destination-out';
+		} else {
+			this.ctx.globalCompositeOperation = 'source-over';
+		}
 	}
 
 	render() {
