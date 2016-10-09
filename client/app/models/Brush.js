@@ -4,7 +4,8 @@ export default class Brush extends Model {
 	static defaults() {
 		return {
 			color: 'blue',
-			size: 20
+			size: 20,
+			name: 'blue'
 		};
 	}
 }

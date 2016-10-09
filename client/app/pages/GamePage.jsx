@@ -18,8 +18,9 @@ export default class GamePage extends React.Component {
 		this.state = {
 			game: GameService.getById(props.params.id),
 			brush: new Brush({
-				size: 50,
-				color: util.colors()[0].value
+				size: 20,
+				color: util.colors()[0].value,
+				name: util.colors()[0].name
 			}),
 			view: 'draw', // || 'view'
 		};

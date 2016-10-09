@@ -6,6 +6,16 @@
 	&.active {
 		border-color: lighten(@color, 25%);
 	}
+	&:hover:not(.active) {
+		background: lighten(@color, 5%);
+		animation: hover 0.3s 2 alternate;
+	}
+}
+
+@keyframes hover {
+	100% {
+		transform: translate(0, 2px);
+	}
 }
 
 .brush-palette {
@@ -14,48 +24,66 @@
 	top: 0;
 	width: 99px;
 	height: 100%;
-	background: @background-color;
+	background: rgba(100, 100, 100, 0.4);
 	.brushes {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
-		margin-top: 10px;
-		.brush {
-			width: @brush-size;
-			height: @brush-size;
-			border-radius: @brush-size/2+3px;
-			margin: 1px;
-			border: solid 3px @background-color;
+		padding-top: 12px;
+		&:after {
+			content: '';
+			border-bottom: solid 1px #606060;
+			width: 30%;
+			height: 12px;
+		}
+	}
+	.brush {
+		width: @brush-size;
+		height: @brush-size;
+		border-radius: @brush-size/2+3px;
+		margin: 1px;
+		border: solid 3px #707070;
+		&.brush-green {
+			.brush-color(@green);
+		}
+		&.brush-blue {
+			.brush-color(@blue);
+		}
+		&.brush-yellow {
+			.brush-color(@yellow);
+		}
+		&.brush-black {
+			.brush-color(@black);
 			&.active {
-				border-color: lightblue;
-			}
-			&.brush-green {
-				.brush-color(@green);
-			}
-			&.brush-blue {
-				.brush-color(@blue);
-			}
-			&.brush-yellow {
-				.brush-color(@yellow);
-			}
-			&.brush-black {
-				background: @black;
-				&.active {
-					border-color: #555;
-				}
-			}
-			&.brush-white {
-				.brush-color(@white);
-			}
-			&.brush-red {
-				.brush-color(@red);
-			}
-			&.brush-orange {
-				.brush-color(@orange);
-			}
-			&.brush-purple {
-				.brush-color(@purple);
+				border-color: #555;
 			}
 		}
+		&.brush-white {
+			.brush-color(@white);
+		}
+		&.brush-red {
+			.brush-color(@red);
+		}
+		&.brush-orange {
+			.brush-color(@orange);
+		}
+		&.brush-purple {
+			.brush-color(@purple);
+		}
+	}
+	.brush-size-mixin(@brush-size) {
+		width: @brush-size;
+		height: @brush-size;
+		border-radius: @brush-size/2+3px;
+		margin: 20px-@brush-size/2;
+	}
+	.brush-size-12 {
+		.brush-size-mixin(12px);
+	}
+	.brush-size-20 {
+		.brush-size-mixin(20px);
+	}
+	.brush-size-28 {
+		.brush-size-mixin(28px);
 	}
 }
