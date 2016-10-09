@@ -22,6 +22,17 @@ export default class BrushPalette extends React.Component {
 		}));
 	}
 
+	setEraser() {
+		this.props.onBrushChange(new Brush({
+			size: this.props.brush.get('size'),
+			name: 'eraser'
+		}));
+	}
+
+	trash() {
+		this.props.onTrash();
+	}
+
 	render() {
 		return (
 			<div className="brush-palette">
@@ -36,7 +47,7 @@ export default class BrushPalette extends React.Component {
 						</div>
 					))}
 				</div>
-				<div className="brushes">
+				<div className="brushes brush-sizes">
 					{brushSizes.map(size => (
 						<div
 							key={size}
@@ -51,6 +62,10 @@ export default class BrushPalette extends React.Component {
 							onClick={e => this.setBrushSize(size)}>
 						</div>
 					))}
+				</div>
+				<div className="brush-utilities">
+					<i className={classNames('fa fa-eraser brush-eraser', {'active': this.props.brush.get('name') == 'eraser'})} onClick={e => this.setEraser()} />
+					<i className={classNames('fa fa-trash trash')} onClick={e => this.trash()} />
 				</div>
 			</div>
 		);

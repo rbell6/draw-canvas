@@ -26,14 +26,14 @@ export default class GamePage extends React.Component {
 		};
 	}
 
-	static brushColors() {
-		return ['green', 'blue', 'yellow', 'black', 'white', 'red'];
-	}
-
 	onBrushChange(brush) {
 		this.setState({
 			brush: brush
 		});
+	}
+
+	onTrash() {
+		this.refs.canvas.clear();
 	}
 
 	onCanvasChange(lines) {
@@ -44,12 +44,12 @@ export default class GamePage extends React.Component {
 		return (
 			<div className="app">
 				{ this.state.view == 'draw' ? 
-					<Canvas brush={this.state.brush} onChange={e => this.onCanvasChange(e.value)} />
+					<Canvas brush={this.state.brush} onChange={e => this.onCanvasChange(e.value)} ref="canvas" />
 					:
 					<ViewOnlyCanvas socket={socket} />
 				}
 				{ this.state.view == 'draw' ?
-					<BrushPalette brush={this.state.brush} onBrushChange={brush => this.onBrushChange(brush)} />
+					<BrushPalette brush={this.state.brush} onBrushChange={brush => this.onBrushChange(brush)} onTrash={() => this.onTrash()} />
 					:
 					null
 				}

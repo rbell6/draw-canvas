@@ -55,6 +55,11 @@ export default class Canvas extends React.Component {
 		this.props.onChange({value: this.lines});
 	}
 
+	clear() {
+		this.lines.removeAll();
+		this.paint();
+	}
+
 	resizeCanvas() {
 		this.canvas.width = window.innerWidth;
 		this.canvas.height = window.innerHeight;
@@ -111,6 +116,12 @@ export default class Canvas extends React.Component {
 		let brush = line.get('brush');
 		this.ctx.beginPath();
 		this.ctx.lineWidth = brush.get('size');
+		if (brush.get('name') == 'eraser') {
+			this.ctx.globalCompositeOperation = 'destination-out';
+		} else {
+			this.ctx.globalCompositeOperation = 'source-over';
+		}
+
 		this.ctx.strokeStyle = brush.get('color');
 		this.ctx.lineCap = 'round';
 		this.ctx.lineJoin = 'round';

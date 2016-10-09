@@ -70,6 +70,12 @@
 		&.brush-purple {
 			.brush-color(@purple);
 		}
+		&.brush-eraser {
+			.brush-color(#555);
+		}
+	}
+	.brush-sizes {
+		padding-top: 6px;
 	}
 	.brush-size-mixin(@brush-size) {
 		width: @brush-size;
@@ -85,5 +91,28 @@
 	}
 	.brush-size-28 {
 		.brush-size-mixin(28px);
+	}
+	.brush-utilities {
+		padding-top: 12px;
+		display: flex;
+		justify-content: center;
+		i {
+			color: #494949;
+			padding-bottom: 6px;
+			margin: 0 8px;
+			&:hover:not(.active) {
+				color: #333;
+			}
+			&.active {
+				color: #222;
+				border-bottom: solid 3px #222;
+			}
+		}
+	}
+	.brush-eraser {
+		font-size: 26px;
+	}
+	.trash {
+		font-size: 25px;
 	}
 }
