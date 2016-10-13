@@ -1,5 +1,6 @@
 import React from 'react';
 import util from '../models/util';
+import classNames from 'classnames';
 
 export default class Timer extends React.Component {
 	componentDidMount() {
@@ -90,7 +91,7 @@ export default class Timer extends React.Component {
 
 	render() {
 		return (
-			<canvas ref="canvas" className="timer"></canvas>
+			<canvas ref="canvas" className={classNames(this.props.className, 'timer')}></canvas>
 		);
 	}
 }
