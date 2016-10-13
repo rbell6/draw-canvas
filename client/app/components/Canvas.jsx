@@ -161,7 +161,7 @@ export default class Canvas extends React.Component {
 
 	render() {
 		return (
-			<canvas ref="canvas"></canvas>
+			<canvas ref="canvas" className="canvas"></canvas>
 		);
 	}
 }

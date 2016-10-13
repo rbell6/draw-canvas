@@ -2,6 +2,7 @@ import React from 'react';
 import Canvas from '../components/Canvas';
 import ViewOnlyCanvas from '../components/ViewOnlyCanvas';
 import BrushPalette from '../components/BrushPalette';
+import GamePanel from '../components/GamePanel';
 import Brush from '../models/Brush';
 import classNames from 'classnames';
 import io from 'socket.io-client';
@@ -68,6 +69,7 @@ export default class GamePage extends React.Component {
 					<button onClick={() => this.setState({view: 'draw'})}>Draw</button>
 					<button onClick={() => this.setState({view: 'view'})}>View</button>
 				</div>
+				<GamePanel game={this.state.game} />
 			</div>
 		);
 	}
