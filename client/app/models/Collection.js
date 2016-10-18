@@ -47,6 +47,10 @@ export default class Collection extends EventEmitter {
 		return this._collection.length;
 	}
 
+	reverse() {
+		return this._collection.slice().reverse();
+	}
+
 	toJSON() {
 		return this._collection.map(item => {
 			if (item && _.isFunction(item.toJSON)) {

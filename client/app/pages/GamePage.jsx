@@ -9,7 +9,9 @@ import classNames from 'classnames';
 import io from 'socket.io-client';
 import GameService from '../services/GameService';
 import util from '../models/util';
+import Message from '../models/Message';
 import HotkeyService from '../services/HotkeyService';
+import UserService from '../services/UserService';
 
 // TODO move
 let socket = io();
@@ -50,7 +52,11 @@ export default class GamePage extends React.Component {
 	}
 
 	onTextFieldChange(value) {
-
+		this.state.game.get('messages').add(new Message({
+			user: UserService.get(),
+			text: value
+		}));
+		this.forceUpdate();
 	}
 
 	render() {
@@ -75,7 +81,7 @@ export default class GamePage extends React.Component {
 					<button onClick={() => this.setState({view: 'view'})}>View</button>
 				</div>
 				<GamePanel game={this.state.game} />
-				<GameTextField onChange={e => this.onTextFieldChange(e.value)} />
+				<GameTextField game={this.state.game} onChange={e => this.onTextFieldChange(e.value)} />
 			</div>
 		);
 	}

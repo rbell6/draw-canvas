@@ -3,6 +3,9 @@
 @width: 60px;
 @height: 80px;
 
+@tiny-width: 18px;
+@tiny-height: 24px;
+
 .user-icon {
 	width: @width;
 	height: @height;
@@ -10,6 +13,16 @@
 	flex-direction: column;
 	justify-content: space-between;
 	margin: @gutter/2;
+	&.user-icon-tiny {
+		width: @tiny-width;
+		height: @tiny-height;
+		margin: 0;
+		.user-avatar {
+			width: @tiny-width;
+			height: @tiny-width;
+			font-size: 14px;
+		}
+	}
 	.user-avatar {
 		align-items: center;
 		justify-content: center;
@@ -17,7 +30,7 @@
 		height: @width;
 		display: flex;
 		background: #ccc;
-		border-radius: @width/2;
+		border-radius: 50%;
 		font-size: 30px;
 	}
 	.user-name {

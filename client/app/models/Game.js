@@ -23,7 +23,8 @@ export default class Game extends Model {
 			users: new Collection(),
 			rounds: new Collection(),
 			activeRound: new Round(),
-			name: 'Untitled Game'
+			name: 'Untitled Game',
+			messages: new Collection()
 		};
 	}
 
