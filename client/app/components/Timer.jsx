@@ -41,6 +41,7 @@ export default class Timer extends React.Component {
 		this.canvas.height = this.size;
 		this.canvas.style.width = this.size/2 + 'px';
 		this.canvas.style.height = this.size/2 + 'px';
+		this.drawBackgroundRing();
 	}
 
 	percentToDegrees(percent) { // 0 <= percent <= 1

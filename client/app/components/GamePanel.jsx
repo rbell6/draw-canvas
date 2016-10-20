@@ -17,11 +17,16 @@ export default class GamePanel extends React.Component {
 	}
 
 	render() {
+		let roundNumber = this.props.game.get('activeRoundIndex')+1;
 		return (
 			<div className="game-panel">
 				<div className="game-panel-header">
 					<div className="game-name">{this.props.game.get('name')}</div>
-					<div className="round-label"><span className="number">{this.props.game.get('activeRoundIndex')+1}</span>/<span className="number">{this.props.game.get('numRounds')}</span></div>
+					{roundNumber > 0 ? 
+						<div className="round-label"><span className="number">{roundNumber}</span>/<span className="number">{this.props.game.get('numRounds')}</span></div>
+						:
+						null
+					} 
 				</div>
 				<Timer className="round-timer" time={this.props.game.get('gameTime')} ref="timer" />
 				<div className="game-users">

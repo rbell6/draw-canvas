@@ -28,6 +28,7 @@ const modalTransitionEnterTime = 600;
 const modalTransitionLeaveTime = 1000;
 const brushPaletteTransitionTime = 300;
 const gameTextFieldTransitionTime = 1000;
+const initialDelayTime = 1000;
 
 export default class GamePage extends React.Component {
 	constructor(props, context) {
@@ -50,10 +51,12 @@ export default class GamePage extends React.Component {
 	componentDidMount() {
 		this.onActiveRoundChange = this.onActiveRoundChange.bind(this);
 		this.state.game.on('change:activeRound', this.onActiveRoundChange);
-		if (!this.state.game.activeRound) {
-			this.state.game.createRound();
-		}
-		this.createNextRound();
+		setTimeout(() => {
+			if (!this.state.game.activeRound) {
+				this.state.game.createRound();
+			}
+			this.createNextRound();
+		}, initialDelayTime);
 	}
 
 	createNextRound() {
