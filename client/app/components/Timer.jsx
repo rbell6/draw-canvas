@@ -6,7 +6,6 @@ export default class Timer extends React.Component {
 	componentDidMount() {
 		this.ctx = this.canvas.getContext('2d');
 		this.initialize();
-		this.paint();
 	}
 
 	static get defaultProps() {
@@ -18,6 +17,11 @@ export default class Timer extends React.Component {
 
 	shouldComponentUpdate() {
 		return false;
+	}
+
+	start() {
+		this._startTime = null;
+		this.paint();
 	}
 
 	get canvas() {

@@ -1,9 +1,14 @@
 'use strict';
 
-export default class Round {
+import Model from './Model';
+
+export default class Round extends Model {
 	
-	constructor() {
-		// console.log('rr');
+	static defaults() {
+		return {
+			drawer: null,
+			name: 'Round'
+		};
 	}
 
 }

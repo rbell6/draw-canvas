@@ -1,11 +1,13 @@
+@import 'variables.less';
+
 @transition-enter-time: 300ms;
 @transition-leave-time: 3000ms;
 
 .game-text-field {
 	position: absolute;
 	bottom: 0;
-	left: 100px;
-	right: 200px;
+	left: @brush-palette-width;
+	right: @game-panel-width;
 	display: flex;
 	align-items: center;
 	flex-direction: column;
@@ -15,7 +17,7 @@
 	}
 	.game-text-message-container {
 		display: flex;
-		flex-direction: column;
+		flex-direction: column-reverse;
 		align-items: flex-start;
 	}
 	.message-enter {
@@ -40,40 +42,6 @@
 		margin-bottom: 8px;
 		display: inline-flex;
 		overflow: hidden;
-		&:nth-child(1) {
-			order: 4
-		}
-		&:nth-child(2) {
-			order: 3;
-		}
-		&:nth-child(3) {
-			order: 2;
-		}
-		&:nth-child(4) {
-			order: 1;
-		}
-		&:nth-child(5) {
-			order: 0;
-		}
-		&:nth-child(6) {
-			order: -1;
-		}
-		&:nth-child(7) {
-			order: -2;
-		}
-		&:nth-child(8) {
-			order: -3;
-		}
-		&:nth-child(9) {
-			order: -4;
-		}
-		&:nth-child(10) {
-			order: -5;
-		}
-		&:nth-child(11) {
-			order: -6;
-		}
-		// TODO isn't there a better way to do this?
 	}
 	.game-text-message-user-icon {
 		display: flex;

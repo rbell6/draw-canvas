@@ -1,5 +1,34 @@
+@modal-transition-enter-time: 400ms;
+@modal-transition-leave-time: 1000ms;
+@keyframes bounce {
+	0% {
+		opacity: 0.01;
+	}
+	50% {
+		transform: translateY(10px);
+	}
+	100% {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
 .views {
 	position: absolute;
 	left: 5px;
 	bottom: 5px;
+}
+.pre-round-modal-enter {
+	transform: translateY(-120%);
+	&.pre-round-modal-enter-active {
+		opacity: 1;
+		animation: bounce @modal-transition-enter-time;
+	}
+}
+.pre-round-modal-leave {
+	opacity: 1;
+	&.pre-round-modal-leave-active {
+		opacity: 0;
+		transition: opacity @modal-transition-leave-time;
+	}
 }

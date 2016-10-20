@@ -4,6 +4,7 @@ import ViewOnlyCanvas from '../components/ViewOnlyCanvas';
 import BrushPalette from '../components/BrushPalette';
 import GamePanel from '../components/GamePanel';
 import GameTextField from '../components/GameTextField';
+import PreRoundModal from '../components/PreRoundModal';
 import Brush from '../models/Brush';
 import classNames from 'classnames';
 import io from 'socket.io-client';
@@ -12,9 +13,19 @@ import util from '../models/util';
 import Message from '../models/Message';
 import HotkeyService from '../services/HotkeyService';
 import UserService from '../services/UserService';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 // TODO move
 let socket = io();
+
+function FirstChild(props) {
+	var childrenArray = React.Children.toArray(props.children);
+	return childrenArray[0] || null;
+}
+
+const modalDelayTime = 3000;
+const modalTransitionEnterTime = 400;
+const modalTransitionLeaveTime = 1000;
 
 export default class GamePage extends React.Component {
 	constructor(props, context) {
@@ -28,9 +39,38 @@ export default class GamePage extends React.Component {
 				name: util.colors()[0].name
 			}),
 			view: 'draw', // || 'view'
+			showPreRoundModal: false
 		};
 
 		HotkeyService.on('undo', () => this.onUndo());
+		window.game = this.state.game;
+	}
+
+	componentDidMount() {
+		this.onActiveRoundChange = this.onActiveRoundChange.bind(this);
+		this.state.game.on('change:activeRound', this.onActiveRoundChange);
+		if (!this.state.game.activeRound) {
+			this.state.game.createRound();
+		}
+		this.createNextRound();
+	}
+
+	createNextRound() {
+		if (this.state.game.get('activeRoundIndex')+1 < this.state.game.get('numRounds')) {
+			setTimeout(() => {
+				this.state.game.createRound();
+				this.createNextRound();
+			}, this.state.game.get('gameTime'));
+		}
+	}
+
+	componentWillUnmount() {
+		this.state.game.off('change:activeRound', this.onActiveRoundChange);
+	}
+
+	onActiveRoundChange() {
+		this.setState({showPreRoundModal: true});
+		setTimeout(() => this.setState({showPreRoundModal: false}), modalDelayTime);
 	}
 
 	onBrushChange(brush) {
@@ -82,6 +122,14 @@ export default class GamePage extends React.Component {
 				</div>
 				<GamePanel game={this.state.game} />
 				<GameTextField game={this.state.game} onChange={e => this.onTextFieldChange(e.value)} />
+				<ReactCSSTransitionGroup
+					component={FirstChild}
+					transitionName="pre-round-modal"
+					className="pre-round-modal"
+					transitionEnterTimeout={modalTransitionEnterTime}
+					transitionLeaveTimeout={modalTransitionLeaveTime}>
+					{this.state.showPreRoundModal ? <PreRoundModal game={this.state.game} /> : null}
+				</ReactCSSTransitionGroup>
 			</div>
 		);
 	}
