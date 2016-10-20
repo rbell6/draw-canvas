@@ -8,6 +8,7 @@ import Collection from './Collection';
 import User from './User';
 import UserCollection from './UserCollection';
 import RoundCollection from './RoundCollection';
+import MessageCollection from './RoundCollection';
 
 export default class Game extends Model {
 	constructor(data) {
@@ -87,6 +88,7 @@ export default class Game extends Model {
 			host: new User(json.host),
 			users: UserCollection.fromJSON(json.users),
 			rounds: RoundCollection.fromJSON(json.rounds),
+			messages: MessageCollection.fromJSON(json.messages)
 		});
 		return new this(gameJSON);
 	}
