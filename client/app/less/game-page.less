@@ -1,5 +1,9 @@
+@modal-delay-time: 200ms;
 @modal-transition-enter-time: 400ms;
 @modal-transition-leave-time: 1000ms;
+@brush-palette-transition-time: 300ms;
+@game-text-field-transition-time: 300ms;
+@game-text-field-delay-time: 700ms;
 @keyframes bounce {
 	0% {
 		opacity: 0.01;
@@ -22,7 +26,7 @@
 	transform: translateY(-120%);
 	&.pre-round-modal-enter-active {
 		opacity: 1;
-		animation: bounce @modal-transition-enter-time;
+		animation: bounce @modal-transition-enter-time @modal-delay-time;
 	}
 }
 .pre-round-modal-leave {
@@ -30,5 +34,37 @@
 	&.pre-round-modal-leave-active {
 		opacity: 0;
 		transition: opacity @modal-transition-leave-time;
+	}
+}
+.brush-palette-enter {
+	transform: translateX(-100%);
+	opacity: 0.1;
+	&.brush-palette-enter-active {
+		transform: translateX(0);
+		opacity: 1;
+		transition: opacity @brush-palette-transition-time, transform @brush-palette-transition-time;
+	}
+}
+.brush-palette-leave {
+	opacity: 1;
+	transform: translateX(0);
+	&.brush-palette-leave-active {
+		opacity: 0;
+		transform: translateX(-100%);
+		transition: opacity @brush-palette-transition-time, transform @brush-palette-transition-time;
+	}
+}
+.game-text-field-enter {
+	opacity: 0.01;
+	&.game-text-field-enter-active {
+		opacity: 1;
+		transition: opacity @game-text-field-transition-time @game-text-field-delay-time;
+	}
+}
+.game-text-field-leave {
+	opacity: 1;
+	&.game-text-field-leave-active {
+		opacity: 0;
+		transition: opacity @game-text-field-transition-time;
 	}
 }

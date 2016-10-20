@@ -18,6 +18,12 @@ export default class Game extends Model {
 		this.get('users').on('remove', this.emit.bind(this, 'change'));
 		this.get('users').add(data.host);
 		this._previousDrawerIds = [];
+		this._currentUserIndex = -1;
+
+		// TODO remove
+		this.get('users').add(new User({
+			name: 'bilbo'
+		}));
 	}
 
 	static defaults() {
@@ -52,15 +58,23 @@ export default class Game extends Model {
 	createRound() {
 		this.advanceActiveRoundIndex();
 		this.get('rounds').add(new Round({
-			drawer: this._getNextRandomUser(),
+			drawer: this._getNextUser(),
 			name: `Round ${this.get('activeRoundIndex')+1}`
 		}));
 		this.emit('change:activeRound');
 	}
 
+	_getNextUser() {
+		this._currentUserIndex++;
+		if (this._currentUserIndex === this.get('users').length) {
+			this._currentUserIndex = 0;
+		}
+		return this.get('users').getAtIndex(this._currentUserIndex);
+	}
+
 	_getNextRandomUser() {
 		let allUsers = this.get('users').getAll();
-		let nextDrawers = allUsers.filter(user => this._previousDrawerIds.indexOf(user.id) > -1);
+		let nextDrawers = allUsers.filter(user => this._previousDrawerIds.indexOf(user.id) < 0);
 		if (!nextDrawers.length) {
 			nextDrawers = allUsers;
 			this._previousDrawerIds = [];

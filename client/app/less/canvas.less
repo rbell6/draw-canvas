@@ -1,13 +1,11 @@
-@line-color: rgba(0, 0, 0, .1);
 * {
   margin: 0;
   padding: 0;
 }
 .canvas {
   cursor: none;
-  background-image: linear-gradient(0deg, transparent 99%, @line-color 100%), linear-gradient(90deg, transparent 99%, @line-color 100%);
   height:100%;
-  background-size:100px 100px;
+  position: relative;
   &.view-only {
   	cursor: default;
   }

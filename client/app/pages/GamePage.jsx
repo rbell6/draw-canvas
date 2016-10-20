@@ -23,9 +23,11 @@ function FirstChild(props) {
 	return childrenArray[0] || null;
 }
 
-const modalDelayTime = 3000;
-const modalTransitionEnterTime = 400;
+const modalViewableTime = 3000;
+const modalTransitionEnterTime = 600;
 const modalTransitionLeaveTime = 1000;
+const brushPaletteTransitionTime = 300;
+const gameTextFieldTransitionTime = 1000;
 
 export default class GamePage extends React.Component {
 	constructor(props, context) {
@@ -38,7 +40,6 @@ export default class GamePage extends React.Component {
 				color: util.colors()[0].value,
 				name: util.colors()[0].name
 			}),
-			view: 'draw', // || 'view'
 			showPreRoundModal: false
 		};
 
@@ -70,7 +71,7 @@ export default class GamePage extends React.Component {
 
 	onActiveRoundChange() {
 		this.setState({showPreRoundModal: true});
-		setTimeout(() => this.setState({showPreRoundModal: false}), modalDelayTime);
+		setTimeout(() => this.setState({showPreRoundModal: false}), modalViewableTime);
 	}
 
 	onBrushChange(brush) {
@@ -99,36 +100,52 @@ export default class GamePage extends React.Component {
 		this.forceUpdate();
 	}
 
+	drawerIsMe() {
+		if (!this.state.game.activeRound) { return false; }
+		return UserService.get().id === this.state.game.activeRound.get('drawer').id;
+	}
+
 	render() {
 		return (
 			<div className="app">
-				{ this.state.view == 'draw' ? 
+				<ReactCSSTransitionGroup
+					component={FirstChild}
+					transitionName="pre-round-modal"
+					transitionEnterTimeout={modalTransitionEnterTime}
+					transitionLeaveTimeout={modalTransitionLeaveTime}>
+					{this.state.showPreRoundModal ? <PreRoundModal game={this.state.game} /> : null}
+				</ReactCSSTransitionGroup>
+				{ this.drawerIsMe() ? 
 					<Canvas brush={this.state.brush} onChange={e => this.onCanvasChange(e.value)} ref="canvas" />
 					:
 					<ViewOnlyCanvas socket={socket} />
 				}
-				{ this.state.view == 'draw' ?
-					<BrushPalette 
-						brush={this.state.brush} 
-						onBrushChange={brush => this.onBrushChange(brush)} 
-						onUndo={() => this.onUndo()}
-						onTrash={() => this.onTrash()} />
-					:
-					null
-				}
-				<div className="views">
-					<button onClick={() => this.setState({view: 'draw'})}>Draw</button>
-					<button onClick={() => this.setState({view: 'view'})}>View</button>
-				</div>
-				<GamePanel game={this.state.game} />
-				<GameTextField game={this.state.game} onChange={e => this.onTextFieldChange(e.value)} />
 				<ReactCSSTransitionGroup
 					component={FirstChild}
-					transitionName="pre-round-modal"
-					className="pre-round-modal"
-					transitionEnterTimeout={modalTransitionEnterTime}
-					transitionLeaveTimeout={modalTransitionLeaveTime}>
-					{this.state.showPreRoundModal ? <PreRoundModal game={this.state.game} /> : null}
+					transitionName="brush-palette"
+					transitionEnterTimeout={brushPaletteTransitionTime}
+					transitionLeaveTimeout={brushPaletteTransitionTime}>
+					{ this.drawerIsMe() ?
+						<BrushPalette 
+							brush={this.state.brush} 
+							onBrushChange={brush => this.onBrushChange(brush)} 
+							onUndo={() => this.onUndo()}
+							onTrash={() => this.onTrash()} />
+						:
+						null
+					}
+				</ReactCSSTransitionGroup>
+				<GamePanel game={this.state.game} />
+				<ReactCSSTransitionGroup
+					component={FirstChild}
+					transitionName="game-text-field"
+					transitionEnterTimeout={gameTextFieldTransitionTime}
+					transitionLeaveTimeout={gameTextFieldTransitionTime}>
+					{ this.state.game.activeRound && !this.drawerIsMe() ? 
+						<GameTextField game={this.state.game} onChange={e => this.onTextFieldChange(e.value)} /> 
+						: 
+						null 
+					}
 				</ReactCSSTransitionGroup>
 			</div>
 		);

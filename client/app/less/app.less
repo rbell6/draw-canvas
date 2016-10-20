@@ -3,12 +3,17 @@
 @import 'https://fonts.googleapis.com/css?family=Roboto+Slab:300';
 @import 'https://fonts.googleapis.com/css?family=Roboto+Slab:400';
 @import 'https://fonts.googleapis.com/css?family=Roboto+Slab:700';
+
+@line-color: rgba(0, 0, 0, .1);
+
 * {
 	font-family: 'Roboto Slab', sans-serif;
 	color: #333;
 }
 .app {
 	display: flex;
+  background-image: linear-gradient(0deg, transparent 99%, @line-color 100%), linear-gradient(90deg, transparent 99%, @line-color 100%);
+  background-size:100px 100px;
 }
 .page {
 	position: absolute;

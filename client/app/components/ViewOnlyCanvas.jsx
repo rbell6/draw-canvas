@@ -84,7 +84,7 @@ export default class ViewOnlyCanvas extends React.Component {
 
 	render() {
 		return (
-			<canvas ref="canvas" className="view-only"></canvas>
+			<canvas ref="canvas" className="view-only canvas"></canvas>
 		);
 	}
 }
