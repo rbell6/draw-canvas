@@ -2,11 +2,14 @@
 
 .pre-round-modal {
 	position: absolute;
-	left: @brush-palette-width;
+	left: 0;
 	right: @game-panel-width;
 	top: 0;
 	display: flex;
 	justify-content: center;
+	.drawer-is-me & {
+		left: @brush-palette-width;
+	}
 	.pre-round-modal-container {
 		background: @white;
 		padding: 10px 40px;

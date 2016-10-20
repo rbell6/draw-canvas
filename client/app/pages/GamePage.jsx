@@ -107,7 +107,7 @@ export default class GamePage extends React.Component {
 
 	render() {
 		return (
-			<div className="app">
+			<div className={classNames('app', {'drawer-is-me': this.drawerIsMe()})}>
 				<ReactCSSTransitionGroup
 					component={FirstChild}
 					transitionName="pre-round-modal"
