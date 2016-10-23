@@ -2,24 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import TextField from './TextField';
 import HotkeyService from '../services/HotkeyService';
+import UserService from '../services/UserService';
+import MessageService from '../services/MessageService';
 import UserIcon from './UserIcon';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-
-const transitionEnterTime = 300;
-const transitionLeaveTime = 3000;
-const transitionLeaveDelay = 1000;
-
-function GameMessage(props) {
-	return (
-		<div className="game-text-message">
-			<UserIcon user={props.message.get('user')} size="tiny" showName={false} className="game-text-message-user-icon" />
-			<div className="game-text-message-username-and-text">
-				<div className="game-text-message-username">{props.message.get('user').get('name')}</div>
-				<div className="game-text-message-text">{props.message.get('text')}</div>
-			</div>
-		</div>
-	);
-}
 
 export default class GameTextField extends React.Component {
 	constructor(props, context) {
@@ -27,41 +12,18 @@ export default class GameTextField extends React.Component {
 
 		this.state = {
 			value: '',
-			messages: []
 		};
 		this.onSubmit = this.onSubmit.bind(this);
-		this._archivedMessages = [];
 	}
 
 	componentDidMount() {
 		this.textField = ReactDOM.findDOMNode(this.refs.textField);
 		this.textField.focus();
+		this.messageService = new MessageService(this.props.game);
 	}
 
-	componentWillReceiveProps(newProps) {
-		let messages = [];
-		newProps.game.get('messages').reverse().slice(0, 4).forEach(message => {
-			if (this._archivedMessages.indexOf(message) < 0) {
-				messages.push(message);
-				this._removeMessageAfterTime(message, transitionLeaveDelay);
-			}
-		});
-		this.setState({
-			messages: messages
-		});
-	}
-
-	_removeMessageAfterTime(message, time) {
-		setTimeout(() => {
-			let index = this.state.messages.indexOf(message);
-			if (index > -1) {
-				let messages = this.state.messages.slice();
-				this._archivedMessages.push(...messages.splice(index, 1));
-				this.setState({
-					messages: messages
-				});
-			}
-		}, time);
+	componentWillUnmount() {
+		HotkeyService.off('enter', this.onSubmit);
 	}
 
 	onFocus() {
@@ -73,21 +35,16 @@ export default class GameTextField extends React.Component {
 	}
 
 	onSubmit() {
-		this.props.onChange({value: this.state.value});
+		this.messageService.addMessage({
+			userId: UserService.get().id,
+			text: this.state.value
+		});
 		this.setState({value: ''});
 	}
 
 	render() {
 		return (
 			<div className="game-text-field">
-				<ReactCSSTransitionGroup
-					component="div"
-					transitionName="message"
-					className="game-text-message-container"
-					transitionEnterTimeout={transitionEnterTime}
-					transitionLeaveTimeout={transitionLeaveTime}>
-					{this.state.messages.map(message => <GameMessage message={message} key={message.id} />)}
-				</ReactCSSTransitionGroup>
 				<div className="game-text-field-container">
 					<TextField 
 						ref="textField"

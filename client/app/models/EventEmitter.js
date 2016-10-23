@@ -18,10 +18,10 @@ export default class EventEmitter {
 		}
 	}
 
-	emit(event) {
+	emit(event, data) {
 		let cbs = this._registeredEvents[event];
 		if (cbs && cbs.length) {
-			cbs.forEach(cb => cb({type: event}));
+			cbs.forEach(cb => cb({type: event, data: data}));
 		}
 	}
 }

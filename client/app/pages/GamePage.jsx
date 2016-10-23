@@ -4,6 +4,7 @@ import ViewOnlyCanvas from '../components/ViewOnlyCanvas';
 import BrushPalette from '../components/BrushPalette';
 import GamePanel from '../components/GamePanel';
 import GameTextField from '../components/GameTextField';
+import GameMessages from '../components/GameMessages';
 import PreRoundModal from '../components/PreRoundModal';
 import Brush from '../models/Brush';
 import classNames from 'classnames';
@@ -95,14 +96,6 @@ export default class GamePage extends React.Component {
 		socket.emit('draw', lines.toJSON());
 	}
 
-	onTextFieldChange(value) {
-		this.state.game.get('messages').add(new Message({
-			user: UserService.get(),
-			text: value
-		}));
-		this.forceUpdate();
-	}
-
 	drawerIsMe() {
 		if (!this.state.game.activeRound) { return false; }
 		return UserService.get().id === this.state.game.activeRound.get('drawer').id;
@@ -118,6 +111,7 @@ export default class GamePage extends React.Component {
 					transitionLeaveTimeout={modalTransitionLeaveTime}>
 					{this.state.showPreRoundModal ? <PreRoundModal game={this.state.game} /> : null}
 				</ReactCSSTransitionGroup>
+				<GameMessages game={this.state.game} /> 
 				{ this.drawerIsMe() ? 
 					<Canvas brush={this.state.brush} onChange={e => this.onCanvasChange(e.value)} ref="canvas" />
 					:

@@ -1,0 +1,69 @@
+@import 'variables.less';
+
+@transition-enter-time: 300ms;
+@transition-leave-time: 3000ms;
+
+.game-messages {
+	position: absolute;
+	bottom: 100px;
+	left: 0;
+	right: @game-panel-width;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	.drawer-is-me & {
+		bottom: 10px;
+		left: @brush-palette-width;
+	}
+	& > * {
+		width: 400px;
+		max-width: 100%;
+	}
+	.game-text-message-container {
+		display: flex;
+		flex-direction: column-reverse;
+		align-items: flex-start;
+	}
+	.message-enter {
+		height: 0;
+		&.message-enter-active {
+			height: 28px;
+			transition: height @transition-enter-time;
+		}
+	}
+	.message-leave {
+		opacity: 1;
+		&.message-leave-active {
+			opacity: 0;
+			transition: opacity @transition-leave-time;
+		}
+	}
+	.game-text-message {
+		background: #333;
+		border-radius: 3px;
+		padding: 4px 8px;
+		display: inline-block;
+		margin-bottom: 8px;
+		display: inline-flex;
+		overflow: hidden;
+	}
+	.game-text-message-user-icon {
+		display: flex;
+		justify-content: center;
+		padding-top: 2px;
+	}
+	.game-text-message-username-and-text {
+		margin-left: 8px;
+	}
+	.game-text-message-username {
+		font-size: 9px;
+		font-weight: 100;
+		color: #bbb;
+	}
+	.game-text-message-text {
+		font-size: 12px;
+		font-weight: 100;
+		color: #eee;
+
+	}
+}
