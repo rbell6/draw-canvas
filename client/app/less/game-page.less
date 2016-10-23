@@ -37,7 +37,7 @@
 	}
 }
 .brush-palette-enter {
-	transform: translateX(-100%);
+	transform: translateX(-20%);
 	opacity: 0.1;
 	&.brush-palette-enter-active {
 		transform: translateX(0);
@@ -50,7 +50,7 @@
 	transform: translateX(0);
 	&.brush-palette-leave-active {
 		opacity: 0;
-		transform: translateX(-100%);
+		transform: translateX(-20%);
 		transition: opacity @brush-palette-transition-time, transform @brush-palette-transition-time;
 	}
 }

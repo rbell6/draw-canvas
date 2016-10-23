@@ -1,9 +1,10 @@
 @import 'variables.less';
 
-@slide-in-time: 600ms;
+@slide-in-time: 300ms;
 @keyframes slide-in {
 	100% {
 		transform: translate(0);
+		opacity: 1;
 	}
 }
 
@@ -17,7 +18,8 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	transform: translate(100%);
+	transform: translate(20%);
+	opacity: 0;
 	animation: slide-in @slide-in-time forwards;
 	.game-panel-header {
 		display: flex;
