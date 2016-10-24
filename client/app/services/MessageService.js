@@ -12,10 +12,14 @@ export default class MessageService {
 
 	addMessage(params) {
 		setTimeout(() => {
-			this.game.get('messages').add(new Message({
-				text: params.text,
-				user: this.game.get('users').find(user => user.id === params.userId)
-			}));
+			this.onAddMessage(params);
 		}, 10);
+	}
+
+	onAddMessage(params) {
+		this.game.get('messages').add(new Message({
+			text: params.text,
+			user: this.game.get('users').find(user => user.id === params.userId)
+		}));
 	}
 }
