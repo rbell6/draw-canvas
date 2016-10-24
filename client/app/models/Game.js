@@ -21,9 +21,11 @@ export default class Game extends Model {
 		this._currentUserIndex = -1;
 
 		// TODO remove
-		this.get('users').add(new User({
-			name: 'bilbo'
-		}));
+		if (!this.get('users').find(user => user.get('name') === 'bilbo')) {
+			this.get('users').add(new User({
+				name: 'bilbo'
+			}));
+		}
 	}
 
 	static defaults() {
@@ -55,12 +57,13 @@ export default class Game extends Model {
 		this.set('activeRoundIndex', this.get('activeRoundIndex')+1);
 	}
 
-	createRound() {
+	createRound(roundParams) {
 		this.advanceActiveRoundIndex();
-		this.get('rounds').add(new Round({
-			drawer: this._getNextUser(),
-			name: `Round ${this.get('activeRoundIndex')+1}`
-		}));
+		let index = this.get('activeRoundIndex');
+		this.get('rounds').add(new Round(Object.assign({
+			index: index,
+			name: `Round ${index+1}`
+		}, roundParams)));
 		this.emit('change:activeRound');
 	}
 

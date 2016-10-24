@@ -19,8 +19,9 @@ export default class Timer extends React.Component {
 		return false;
 	}
 
-	start() {
+	start(percentOfTimeInitiallySpent=0) {
 		this._startTime = null;
+		this._percentOfTimeInitiallySpent = percentOfTimeInitiallySpent;
 		this.paint();
 	}
 
@@ -41,6 +42,7 @@ export default class Timer extends React.Component {
 		this.canvas.height = this.size;
 		this.canvas.style.width = this.size/2 + 'px';
 		this.canvas.style.height = this.size/2 + 'px';
+		this._percentOfTimeInitiallySpent = 0;
 		this.drawBackgroundRing();
 	}
 
@@ -79,7 +81,7 @@ export default class Timer extends React.Component {
 		requestAnimationFrame(timestamp => {
 			this._startTime = this._startTime || timestamp;
 			let deltaTime = timestamp-this._startTime;
-			let percentComplete = Math.min(deltaTime/this.time, 1);
+			let percentComplete = Math.min((deltaTime/this.time)+this._percentOfTimeInitiallySpent, 1);
 			let startingDegrees = this.percentToDegrees(percentComplete);
 			let startingRadians = this.degreesToRadians(startingDegrees);
 			

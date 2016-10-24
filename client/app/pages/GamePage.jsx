@@ -14,6 +14,7 @@ import util from '../models/util';
 import Message from '../models/Message';
 import HotkeyService from '../services/HotkeyService';
 import UserService from '../services/UserService';
+import ActiveRoundService from '../services/ActiveRoundService';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 // TODO move
@@ -29,7 +30,6 @@ const modalTransitionEnterTime = 600;
 const modalTransitionLeaveTime = 1000;
 const brushPaletteTransitionTime = 300;
 const gameTextFieldTransitionTime = 1000;
-const initialDelayTime = 1000;
 
 export default class GamePage extends React.Component {
 	constructor(props, context) {
@@ -45,28 +45,14 @@ export default class GamePage extends React.Component {
 			showPreRoundModal: false
 		};
 
-		HotkeyService.on('undo', () => this.onUndo());
 		window.game = this.state.game;
 	}
 
 	componentDidMount() {
 		this.onActiveRoundChange = this.onActiveRoundChange.bind(this);
 		this.state.game.on('change:activeRound', this.onActiveRoundChange);
-		setTimeout(() => {
-			if (!this.state.game.activeRound) {
-				this.state.game.createRound();
-			}
-			this.createNextRound();
-		}, initialDelayTime);
-	}
-
-	createNextRound() {
-		if (this.state.game.get('activeRoundIndex')+1 < this.state.game.get('numRounds')) {
-			setTimeout(() => {
-				this.state.game.createRound();
-				this.createNextRound();
-			}, this.state.game.get('gameTime'));
-		}
+		HotkeyService.on('undo', () => this.onUndo());
+		this.activeRoundService = new ActiveRoundService(this.state.game);
 	}
 
 	componentWillUnmount() {

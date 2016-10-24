@@ -13,7 +13,7 @@ export default class GamePanel extends React.Component {
 	}
 
 	onActiveRoundChange() {
-		this.refs.timer.start();
+		this.refs.timer.start(this.props.game.activeRound.get('percentOfTimeInitiallySpent'));
 	}
 
 	render() {
