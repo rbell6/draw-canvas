@@ -37,7 +37,7 @@ export default class Game extends Model {
 			activeRoundIndex: -1,
 			name: 'Untitled Game',
 			messages: new Collection(),
-			gameTime: 6000
+			gameTime: 60000
 		};
 	}
 

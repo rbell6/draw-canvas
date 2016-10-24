@@ -8,13 +8,14 @@ export default class UserIcon extends React.Component {
 		return {
 			user: new User({name: 'phil'}),
 			size: 'regular',
-			showName: true
+			showName: true,
+			status: 'normal'
 		};
 	}
 
 	render() {
 		return (
-			<div className={classNames('user-icon', `user-icon-${this.props.size}`, this.props.className)}>
+			<div className={classNames('user-icon', `user-icon-${this.props.size}`, `user-icon-status-${this.props.status}`, this.props.className)}>
 				<i className="user-avatar fa fa-user" />
 				{this.props.showName ? <span className="user-name">{this.props.user.get('name')}</span> : null }
 			</div>

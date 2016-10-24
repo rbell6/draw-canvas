@@ -13,7 +13,7 @@ function GameMessage(props) {
 			<UserIcon user={props.message.get('user')} size="tiny" showName={false} className="game-text-message-user-icon" />
 			<div className="game-text-message-username-and-text">
 				<div className="game-text-message-username">{props.message.get('user').get('name')}</div>
-				<div className="game-text-message-text">{props.message.get('text')}</div>
+				<div className="game-text-message-text">{props.message.get('isChecked') ? <i className="fa fa-check" /> : props.message.get('text')}</div>
 			</div>
 		</div>
 	);

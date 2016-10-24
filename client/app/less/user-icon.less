@@ -2,9 +2,16 @@
 
 @width: 60px;
 @height: 80px;
+@border-width: 3px;
 
 @tiny-width: 18px;
 @tiny-height: 24px;
+
+@keyframes pop-icon {
+	100% {
+		transform: scale(1.2);
+	}
+}
 
 .user-icon {
 	width: @width;
@@ -21,17 +28,26 @@
 			width: @tiny-width;
 			height: @tiny-width;
 			font-size: 14px;
+			border-width: 0;
 		}
 	}
 	.user-avatar {
 		align-items: center;
 		justify-content: center;
-		width: @width;
-		height: @width;
+		width: @width - @border-width*2;
+		height: @width - @border-width*2;
 		display: flex;
 		background: #ccc;
 		border-radius: 50%;
 		font-size: 30px;
+		border: solid @border-width transparent;
+	}
+	&.user-icon-status-normal .user-avatar {
+		border-color: #6c6c6c;	
+	}
+	&.user-icon-status-correct .user-avatar {
+		border-color: @green;
+		animation: pop-icon 0.3s alternate 2;
 	}
 	.user-name {
 		text-align: center;

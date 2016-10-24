@@ -5,7 +5,8 @@ export default class Message extends Model {
 	static defaults() {
 		return {
 			user: new User(),
-			text: ''
+			text: '',
+			isChecked: false
 		};
 	}
 }
