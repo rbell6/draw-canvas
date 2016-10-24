@@ -5,6 +5,7 @@
 */
 
 import _ from 'lodash';
+import UserService from './UserService';
 
 const initialDelayTime = 1000;
 const words = [
@@ -38,9 +39,10 @@ export default class ActiveRoundService {
 	createNextRoundParams() {
 		let newRoundIndex = this.game.get('activeRoundIndex')+1;
 		let users = this.game.get('users');
+		let drawerId = users.getAtIndex(newRoundIndex%users.length).id;
 		return {
-			drawerId: users.getAtIndex(newRoundIndex%users.length).id,
-			word: _.sample(words),
+			drawerId: drawerId,
+			word: drawerId === UserService.get().id ? _.sample(words) : null,
 			percentOfTimeInitiallySpent: 0,
 		};
 	}

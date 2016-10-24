@@ -1,3 +1,5 @@
+@import 'variables.less';
+
 @modal-delay-time: 200ms;
 @modal-transition-enter-time: 400ms;
 @modal-transition-leave-time: 1000ms;
@@ -17,10 +19,15 @@
 	}
 }
 
-.views {
+.round-word {
 	position: absolute;
-	left: 5px;
-	bottom: 5px;
+	left: @brush-palette-width;
+	right: @game-panel-width;
+	bottom: 50px;
+	font-size: 40px;
+	font-weight: 800;
+	text-align: center;
+	color: #444;
 }
 .pre-round-modal-enter {
 	transform: translateY(-120%);
