@@ -26,6 +26,11 @@ export default class Game extends Model {
 				name: 'bilbo'
 			}));
 		}
+		if (!this.get('users').find(user => user.get('name') === 'frank')) {
+			this.get('users').getAll().unshift(new User({
+				name: 'frank'
+			}));
+		}
 	}
 
 	static defaults() {
@@ -62,7 +67,7 @@ export default class Game extends Model {
 				totalPoints += round.get('userPoints')[user.id] || 0;
 			});
 			return {user: user, points: totalPoints};
-		});
+		}).sort((a, b) => b.points - a.points);
 	}
 
 	advanceActiveRoundIndex() {

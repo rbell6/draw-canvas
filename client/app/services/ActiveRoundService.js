@@ -41,7 +41,7 @@ export default class ActiveRoundService {
 		let newRoundIndex = this.game.get('activeRoundIndex')+1;
 		let users = this.game.get('users');
 		// let drawerId = users.getAtIndex(newRoundIndex%users.length).id;
-		let drawerId = users.getAtIndex(1).id;
+		let drawerId = users.getAtIndex(0).id;
 		return {
 			drawerId: drawerId,
 			word: drawerId === UserService.get().id ? _.sample(words) : null,

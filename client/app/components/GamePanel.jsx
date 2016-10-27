@@ -1,6 +1,7 @@
 import React from 'react';
 import Timer from './Timer';
 import UserIcon from './UserIcon';
+import FlipMove from 'react-flip-move';
 
 export default class GamePanel extends React.Component {
 	componentDidMount() {
@@ -49,11 +50,13 @@ export default class GamePanel extends React.Component {
 				</div>
 				<Timer className="round-timer" time={this.props.game.get('gameTime')} ref="timer" />
 				<div className="game-users">
-					{this.props.game.usersWithPoints.map(userWithPoints => (
-						<div key={userWithPoints.user.id} className="game-user">
-							<UserIcon user={userWithPoints.user} status={this.getStatusForUser(userWithPoints.user)} points={this.activeRoundPointsForUser(userWithPoints.user)} />
-						</div>
-					))}
+					<FlipMove>
+						{this.props.game.usersWithPoints.map(userWithPoints => (
+							<div key={userWithPoints.user.id} className="game-user">
+								<UserIcon user={userWithPoints.user} status={this.getStatusForUser(userWithPoints.user)} points={this.activeRoundPointsForUser(userWithPoints.user)} />
+							</div>
+						))}
+					</FlipMove>
 				</div>
 			</div>
 		);
