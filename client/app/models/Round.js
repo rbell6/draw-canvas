@@ -12,7 +12,7 @@ export default class Round extends Model {
 			index: 0,
 			word: null,
 			percentOfTimeInitiallySpent: 0, // [0,1]
-			correctUsers: new Collection()
+			userPoints: {} // {userId: points}
 		};
 	}
 

@@ -53,6 +53,18 @@ export default class Game extends Model {
 		return this.activeRound ? this.activeRound.get('drawer').get('name') : '';
 	}
 
+	// [{user: User, points: Number}, ...]
+	get usersWithPoints() {
+		let rounds = this.get('rounds');
+		return this.get('users').map(user => {
+			let totalPoints = 0;
+			rounds.forEach(round => {
+				totalPoints += round.get('userPoints')[user.id] || 0;
+			});
+			return {user: user, points: totalPoints};
+		});
+	}
+
 	advanceActiveRoundIndex() {
 		this.set('activeRoundIndex', this.get('activeRoundIndex')+1);
 	}

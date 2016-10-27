@@ -7,12 +7,12 @@ export default class GamePanel extends React.Component {
 		this.onActiveRoundChange = this.onActiveRoundChange.bind(this);
 		this.onUserStatusChange = this.onUserStatusChange.bind(this);
 		this.props.game.on('change:activeRound', this.onActiveRoundChange);
-		this.props.game.on('add:correctUsers', this.onUserStatusChange);
+		this.props.game.on('change:usersWithPoints', this.onUserStatusChange);
 	}
 
 	componentWillUnmount() {
 		this.props.game.off('change:activeRound', this.onActiveRoundChange);
-		this.props.game.off('add:correctUsers', this.onUserStatusChange);
+		this.props.game.off('change:usersWithPoints', this.onUserStatusChange);
 	}
 
 	onActiveRoundChange() {
@@ -24,10 +24,15 @@ export default class GamePanel extends React.Component {
 	}
 
 	getStatusForUser(user) {
-		if (this.props.game.activeRound && this.props.game.activeRound.get('correctUsers').find(correctUser => correctUser.id === user.id)) {
+		if (this.props.game.activeRound && this.props.game.activeRound.get('userPoints')[user.id]) {
 			return 'correct';
 		}
 		return 'normal';
+	}
+
+	activeRoundPointsForUser(user) {
+		if (!this.props.game.activeRound) { return 0; }
+		return this.props.game.activeRound.get('userPoints')[user.id];
 	}
 
 	render() {
@@ -44,9 +49,9 @@ export default class GamePanel extends React.Component {
 				</div>
 				<Timer className="round-timer" time={this.props.game.get('gameTime')} ref="timer" />
 				<div className="game-users">
-					{this.props.game.get('users').map(user => (
-						<div key={user.id} className="game-user">
-							<UserIcon user={user} status={this.getStatusForUser(user)} />
+					{this.props.game.usersWithPoints.map(userWithPoints => (
+						<div key={userWithPoints.user.id} className="game-user">
+							<UserIcon user={userWithPoints.user} status={this.getStatusForUser(userWithPoints.user)} points={this.activeRoundPointsForUser(userWithPoints.user)} />
 						</div>
 					))}
 				</div>
