@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import {
 	Link,
 	browserHistory
@@ -15,6 +16,11 @@ export default class CreateUserPage extends React.Component {
 		this.state = {
 			user: UserService.get() || new User()
 		};
+	}
+
+	componentDidMount() {
+		this.textField = ReactDOM.findDOMNode(this.refs.textField);
+		this.textField.focus();
 	}
 
 	get userName() {
@@ -36,7 +42,8 @@ export default class CreateUserPage extends React.Component {
 				<div className="create-user-container">
 					<TextField 
 						placeholder="Nickname"
-						value={this.userName} 
+						value={this.userName}
+						ref="textField" 
 						onChange={e => this.onNicknameChange(e.target.value)} />
 					<div className="launch-buttons">
 						<Button onClick={() => browserHistory.push('/game')} className="launch-button" disabled={true /*this.userName.length === 0*/}>Play</Button>
