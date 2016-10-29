@@ -9,6 +9,7 @@ let GameCollection = require('../../models/gameCollection');
 
 let userCollection = new UserCollection();
 let gameCollection = new GameCollection();
+let userSockets = new Map();
 
 // Notify all of the users when a game is added/removed
 function notifyUsersOfGamesChange() {
@@ -97,27 +98,27 @@ module.exports = opts => {
 	});
 
 	io.on('connection', function(socket) {
-		socket.on('createUser', createUser.bind(this, socket));
+		socket.on('saveUser', saveUser.bind(this, socket));
 	});
-	function createUser(socket, user, cb) {
+	function saveUser(socket, user, cb) {
 		let newUser = new User({
-			name: user.name,
-			socket: socket
+			name: user.name
 		});
 		userCollection.add(newUser);
+		userSockets.set(newUser, socket);
 		cb(newUser.toJSON());
 	}
 
 
 	// TESTING
 
-
+/*
 	let fakeSocket = new EventEmitter();
 
 	io.emit('connection', fakeSocket);
 
 	let user;
-	fakeSocket.emit('createUser', {
+	fakeSocket.emit('saveUser', {
 		name: 'harry potter'
 	}, o => user = o);
 
@@ -140,7 +141,7 @@ module.exports = opts => {
 
 	console.log('g', game);
 
-
+*/
 
 
 };

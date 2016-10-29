@@ -12,6 +12,7 @@
     "prod": "brunch build --production"
   },
   "dependencies": {
+    "axios": "^0.15.2",
     "lodash": "^4.16.1",
     "react": "~15.3.0",
     "react-dom": "~15.3.0",

@@ -13,8 +13,22 @@ import GamePage from 'pages/GamePage';
 import CreateUserPage from 'pages/CreateUserPage';
 import GameListPage from 'pages/GameListPage';
 import GameStagePage from 'pages/GameStagePage';
+import UserService from 'services/UserService';
+import axios from 'axios';
 
 window._ = _;
+
+// Add user to all saving methods
+axios.interceptors.request.use(function (config) {
+	config.headers['Content-Type'] = 'application/json;charset=utf-8';
+	if (['POST', 'PUT', 'PATCH'].indexOf(config.method.toUpperCase()) > -1) {
+		config.data = config.data || null;
+		var data = JSON.parse(config.data) || {};
+		data.user = UserService.get();
+		config.data = JSON.stringify(data);
+	}
+	return config;
+});
 
 function AppPages({children, location}) {
 	const transitionTime = 400;
@@ -33,6 +47,14 @@ function AppPages({children, location}) {
 }
 
 export default class App extends React.Component {
+	redirectIfUserDoesNotExist(nextState, replace) {
+		if (!UserService.get()) {
+			replace({
+				pathname: '/create-user'
+			});
+		}
+	}
+
 	render() {
 		return (
 			<Shell>
@@ -40,10 +62,10 @@ export default class App extends React.Component {
 					<Route path="/" component={AppPages}>
 						<IndexRedirect to="/create-user" />
 						<Route path="/create-user" component={CreateUserPage} />
-						<Route path="/game" component={GamePage} />
-						<Route path="/game-list" component={GameListPage} />
-						<Route path="/game/:id" component={GamePage} />
-						<Route path="/game-stage/:id" component={GameStagePage} />
+						<Route path="/game" component={GamePage} onEnter={this.redirectIfUserDoesNotExist.bind(this)} />
+						<Route path="/game-list" component={GameListPage} onEnter={this.redirectIfUserDoesNotExist.bind(this)} />
+						<Route path="/game/:id" component={GamePage} onEnter={this.redirectIfUserDoesNotExist.bind(this)} />
+						<Route path="/game-stage/:id" component={GameStagePage} onEnter={this.redirectIfUserDoesNotExist.bind(this)} />
 					</Route>
 				</Router>
 			</Shell>
