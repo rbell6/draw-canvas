@@ -1,7 +1,7 @@
 import React from 'react';
-import Line from '../models/Line';
-import LineCollection from '../models/LineCollection';
-import Brush from '../models/Brush';
+import Line from '../../../models/Line';
+import LineCollection from '../../../models/LineCollection';
+import Brush from '../../../models/Brush';
 
 export default class Canvas extends React.Component {
 	constructor(props, context) {

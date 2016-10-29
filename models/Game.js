@@ -1,16 +1,16 @@
 'use strict';
 
-import Round from './Round';
-import util from './util';
-import _ from 'lodash';
-import Model from './Model';
-import Collection from './Collection';
-import User from './User';
-import UserCollection from './UserCollection';
-import RoundCollection from './RoundCollection';
-import MessageCollection from './RoundCollection';
+let Round = require('./Round');
+let util = require('./util');
+let _ = require('lodash');
+let Model = require('./Model');
+let Collection = require('./Collection');
+let User = require('./User');
+let UserCollection = require('./UserCollection');
+let RoundCollection = require('./RoundCollection');
+let MessageCollection = require('./RoundCollection');
 
-export default class Game extends Model {
+module.exports = class Game extends Model {
 	constructor(data) {
 		super(data);
 		this.set('host', data.host);
@@ -106,7 +106,7 @@ export default class Game extends Model {
 
 	addUser(user) {
 		this.get('users').add(user);
-		user.on('change:connected', this.onChangeConnected.bind(this, user));
+		// user.on('change:connected', this.onChangeConnected.bind(this, user));
 	}
 
 	hostName() {

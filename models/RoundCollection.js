@@ -1,7 +1,7 @@
-import Collection from './Collection';
-import Round from './Round';
+let Collection = require('./Collection');
+let Round = require('./Round');
 
-export default class RoundCollection extends Collection {
+module.exports = class RoundCollection extends Collection {
 	static fromJSON(json) {
 		let roundCollection = new RoundCollection();
 		json.forEach(round => roundCollection.add(new Round(round)));

@@ -3,7 +3,7 @@ import {
 	Link,
 	browserHistory
 } from 'react-router';
-import Game from '../models/Game';
+import Game from '../../../models/Game';
 import TextField from '../components/TextField';
 import Button from '../components/Button';
 import {

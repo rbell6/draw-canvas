@@ -1,7 +1,7 @@
 import React from 'react';
 import UserService from '../services/UserService';
 import GameService from '../services/GameService';
-import Game from '../models/Game';
+import Game from '../../../models/Game';
 import {
 	browserHistory
 } from 'react-router';

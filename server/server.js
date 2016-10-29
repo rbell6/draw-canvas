@@ -12,6 +12,12 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
+// Bootstrap the game
+require('./src')({
+	app: app,
+	io: io
+});
+
 app.use('/static/', express.static(buildDir));
 
 app.all('/*', function(req, res){

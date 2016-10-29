@@ -5,7 +5,7 @@ import {
 } from 'react-router';
 import TextField from '../components/TextField';
 import Button from '../components/Button';
-import User from '../models/User';
+import User from '../../../models/User';
 import UserService from '../services/UserService';
 
 export default class CreateUserPage extends React.Component {

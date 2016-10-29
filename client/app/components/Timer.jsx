@@ -1,5 +1,5 @@
 import React from 'react';
-import util from '../models/util';
+import util from '../../../models/util';
 import classNames from 'classnames';
 
 export default class Timer extends React.Component {

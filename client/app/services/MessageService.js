@@ -3,7 +3,7 @@
 	For now this is a mock service. In the future it will send/receive messages via a websocket
 
 */
-import Message from '../models/Message';
+import Message from '../../../models/Message';
 import UserService from './UserService';
 import _ from 'lodash';
 

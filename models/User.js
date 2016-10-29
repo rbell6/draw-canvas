@@ -1,10 +1,10 @@
 'use strict';
 
-import util from './util';
-import _ from 'lodash';
-import Model from './Model';
+let util = require('./util');
+let _ = require('lodash');
+let Model = require('./Model');
 
-export default class User extends Model {
+module.exports = class User extends Model {
 	static defaults() {
 		return {
 			connected: true,

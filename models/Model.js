@@ -1,7 +1,7 @@
-import EventEmitter from './EventEmitter';
-import _ from 'lodash';
+let EventEmitter = require('./EventEmitter');
+let _ = require('lodash');
 
-export default class Model extends EventEmitter {
+module.exports = class Model extends EventEmitter {
 
 	constructor(data={}) {
 		data.id = data.id || Model.generateId();

@@ -1,6 +1,6 @@
 import React from 'react';
-import util from '../models/util';
-import Brush from '../models/Brush';
+import util from '../../../models/util';
+import Brush from '../../../models/Brush';
 import classNames from 'classnames';
 
 const brushSizes = [12, 20, 28, 38];

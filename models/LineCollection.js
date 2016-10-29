@@ -1,7 +1,7 @@
-import Collection from './Collection';
-import Line from './Line';
+let Collection = require('./Collection');
+let Line = require('./Line');
 
-export default class LineCollection extends Collection {
+module.exports = class LineCollection extends Collection {
 	add(line) {
 		super.add(line);
 		line.on('change', e => this.emit('change'));

@@ -1,9 +1,9 @@
 'use strict';
 
-import Collection from './Collection';
-import User from './User';
+let Collection = require('./Collection');
+let User = require('./User');
 
-export default class UserCollection extends Collection {
+module.exports = class UserCollection extends Collection {
 	add(user) {
 		super.add(user);
 		user.on('change:connected', this.onChangeConnected.bind(this, user));

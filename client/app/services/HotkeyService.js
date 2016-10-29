@@ -1,4 +1,4 @@
-import EventEmitter from '../models/EventEmitter';
+import EventEmitter from '../../../models/EventEmitter';
 
 const ENTER_KEY = 13;
 

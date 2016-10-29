@@ -1,6 +1,6 @@
-import Model from './Model';
+let Model = require('./Model');
 
-export default class Brush extends Model {
+module.exports = class Brush extends Model {
 	static defaults() {
 		return {
 			color: 'blue',

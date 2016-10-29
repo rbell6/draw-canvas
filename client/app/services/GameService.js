@@ -1,6 +1,6 @@
-import GameCollection from '../models/GameCollection';
-import Game from '../models/Game';
-import User from '../models/User';
+import GameCollection from '../../../models/GameCollection';
+import Game from '../../../models/Game';
+import User from '../../../models/User';
 import _ from 'lodash';
 
 let GameService = {

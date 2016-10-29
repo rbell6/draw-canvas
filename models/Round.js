@@ -1,9 +1,9 @@
 'use strict';
 
-import Model from './Model';
-import Collection from './Collection';
+let Model = require('./Model');
+let Collection = require('./Collection');
 
-export default class Round extends Model {
+module.exports = class Round extends Model {
 	
 	static defaults() {
 		return {

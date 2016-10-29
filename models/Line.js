@@ -1,7 +1,7 @@
-import Model from './Model';
-import Brush from './Brush';
+let Model = require('./Model');
+let Brush = require('./Brush');
 
-export default class Line extends Model {
+module.exports = class Line extends Model {
 	static defaults() {
 		return {
 			points: [],

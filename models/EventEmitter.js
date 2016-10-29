@@ -1,4 +1,4 @@
-export default class EventEmitter {
+module.exports = class EventEmitter {
 	constructor() {
 		this._registeredEvents	= {};
 	}

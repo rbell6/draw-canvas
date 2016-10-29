@@ -1,7 +1,7 @@
-import EventEmitter from './EventEmitter';
-import _ from 'lodash';
+let EventEmitter = require('./EventEmitter');
+let _ = require('lodash');
 
-export default class Collection extends EventEmitter {
+module.exports = class Collection extends EventEmitter {
 
 	constructor() {
 		super();

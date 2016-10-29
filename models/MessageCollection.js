@@ -1,7 +1,7 @@
-import Collection from './Collection';
-import Message from './Message';
+let Collection = require('./Collection');
+let Message = require('./Message');
 
-export default class MessageCollection extends Collection {
+module.exports = class MessageCollection extends Collection {
 	static fromJSON(json) {
 		let messageCollection = new MessageCollection();
 		json.forEach(message => messageCollection.add(new Message(message)));
