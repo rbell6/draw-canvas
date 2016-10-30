@@ -27,6 +27,17 @@ module.exports = opts => {
 		res.send(gameCollection.getAll());
 	});
 
+	app.get('/api/user/:userId', getUser);
+	function getUser(req, res) {
+		let userId = req.params.userId;
+		let user = userCollection.get({id: userId});
+		if (user) {
+			res.send(user.toJSON());
+			return;
+		}
+		res.send({});
+	}
+
 	// Join a game
 	app.post('/api/game/:gameId', joinGame);
 	function joinGame(req, res) {
