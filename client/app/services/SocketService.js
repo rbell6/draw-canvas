@@ -8,6 +8,10 @@ class SocketService {
 	emit(msg, data, cb) {
 		this.socket.emit(msg, data, cb);
 	}
+
+	on(msg, cb) {
+		this.socket.on(msg, cb);
+	}
 }
 
 export default new SocketService();

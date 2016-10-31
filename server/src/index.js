@@ -23,20 +23,9 @@ module.exports = opts => {
 	let app = opts.app;
 	let io = opts.io;
 
-	app.get('/api/gameList', function(req, res) {
+	app.get('/api/game', function(req, res) {
 		res.send(gameCollection.getAll());
 	});
-
-	app.get('/api/user/:userId', getUser);
-	function getUser(req, res) {
-		let userId = req.params.userId;
-		let user = userCollection.get({id: userId});
-		if (user) {
-			res.send(user.toJSON());
-			return;
-		}
-		res.send({});
-	}
 
 	// Join a game
 	app.post('/api/game/:gameId', joinGame);
@@ -65,6 +54,9 @@ module.exports = opts => {
 			host: user
 		});
 		gameCollection.add(game);
+		userSockets.forEach(socket => {
+			socket.emit('change:gameList', gameCollection.toJSON());
+		});
 		res.send(game.toJSON());
 	}
 
@@ -110,6 +102,7 @@ module.exports = opts => {
 
 	io.on('connection', function(socket) {
 		socket.on('saveUser', saveUser.bind(this, socket));
+		socket.on('getUserById', getUserById.bind(this, socket));
 	});
 	function saveUser(socket, user, cb) {
 		let newUser = new User({
@@ -118,6 +111,16 @@ module.exports = opts => {
 		userCollection.add(newUser);
 		userSockets.set(newUser, socket);
 		cb(newUser.toJSON());
+	}
+
+	function getUserById(socket, userId, cb) {
+		let user = userCollection.get({id: userId});
+		if (user) {
+			userSockets.set(user, socket);
+			cb(user.toJSON());
+			return;
+		}
+		cb({});
 	}
 
 

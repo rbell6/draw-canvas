@@ -8,12 +8,28 @@ import {
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 export default class GameListPage extends React.Component {
+	constructor(props, context) {
+		super(props, context);
+		this.state = {
+			gameList: []
+		};
+	}
+
+	componentDidMount() {
+		GameService.on('change:gameList', e => {
+			this.setState({
+				gameList: e.data
+			});
+		});
+		GameService.getAll();
+	}
+
 	createGame() {
 		let game = new Game({
 			host: UserService.get()
 		});
-		GameService.add(game);
-		browserHistory.push(`/game-stage/${game.id}`);
+		GameService.save(game);
+		// browserHistory.push(`/game-stage/${game.id}`);
 	}
 
 	render() {
@@ -29,7 +45,7 @@ export default class GameListPage extends React.Component {
 						transitionEnterTimeout={transitionTime}
 						transitionLeaveTimeout={transitionTime}
 					>
-						{GameService.getAll().map(game => (
+						{this.state.gameList.map(game => (
 							<div key={game.id} className="join-game-button" onClick={() => browserHistory.push(`/game-stage/${game.id}`)}>
 								<h2>{game.get('name')}</h2>
 								<h3><i className="fa fa-user" /> {game.hostName()} &nbsp; <i className="fa fa-users" /> {game.numUsers()}</h3>
