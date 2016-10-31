@@ -36,7 +36,6 @@ export default class GamePage extends React.Component {
 		super(props, context);
 
 		this.state = {
-			game: GameService.getById(props.params.id),
 			brush: new Brush({
 				size: 20,
 				color: util.colors()[0].value,
@@ -45,18 +44,29 @@ export default class GamePage extends React.Component {
 			showPreRoundModal: false
 		};
 
+		this.onActiveRoundChange = this.onActiveRoundChange.bind(this);
 		window.game = this.state.game;
 	}
 
 	componentDidMount() {
-		this.onActiveRoundChange = this.onActiveRoundChange.bind(this);
-		this.state.game.on('change:activeRound', this.onActiveRoundChange);
+		GameService.getById(this.props.params.id).then(game => {
+			if (!game) {
+				browserHistory.push('/game-list');
+				return;
+			}
+			this.setState({
+				game: game
+			});
+			game.on('change:activeRound', this.onActiveRoundChange);
+			this.activeRoundService = new ActiveRoundService(game);
+		});
 		HotkeyService.on('undo', () => this.onUndo());
-		this.activeRoundService = new ActiveRoundService(this.state.game);
 	}
 
 	componentWillUnmount() {
-		this.state.game.off('change:activeRound', this.onActiveRoundChange);
+		if (this.state.game) {
+			this.state.game.off('change:activeRound', this.onActiveRoundChange);
+		}
 	}
 
 	onActiveRoundChange() {
@@ -89,52 +99,58 @@ export default class GamePage extends React.Component {
 
 	render() {
 		return (
-			<div className={classNames('app', {'drawer-is-me': this.drawerIsMe()})}>
-				{ this.drawerIsMe() ?
-					<div className="round-word">{this.state.game.activeRound ? this.state.game.activeRound.get('word') : null}</div>
+			<div className="game-page">
+				{this.state.game ?
+					<div className={classNames('app', {'drawer-is-me': this.drawerIsMe()})}>
+						{ this.drawerIsMe() ?
+							<div className="round-word">{this.state.game.activeRound ? this.state.game.activeRound.get('word') : null}</div>
+							:
+							null
+						}
+						<ReactCSSTransitionGroup
+							component={FirstChild}
+							transitionName="pre-round-modal"
+							transitionEnterTimeout={modalTransitionEnterTime}
+							transitionLeaveTimeout={modalTransitionLeaveTime}>
+							{this.state.showPreRoundModal ? <PreRoundModal game={this.state.game} /> : null}
+						</ReactCSSTransitionGroup>
+						<GameMessages game={this.state.game} /> 
+						{ this.drawerIsMe() ? 
+							<Canvas brush={this.state.brush} onChange={e => this.onCanvasChange(e.value)} ref="canvas" />
+							:
+							<ViewOnlyCanvas socket={socket} />
+						}
+						<ReactCSSTransitionGroup
+							component={FirstChild}
+							transitionName="brush-palette"
+							transitionEnterTimeout={brushPaletteTransitionTime}
+							transitionLeaveTimeout={brushPaletteTransitionTime}>
+							{ this.drawerIsMe() ?
+								<BrushPalette 
+									brush={this.state.brush} 
+									onBrushChange={brush => this.onBrushChange(brush)} 
+									onUndo={() => this.onUndo()}
+									onTrash={() => this.onTrash()} />
+								:
+								null
+							}
+						</ReactCSSTransitionGroup>
+						<GamePanel game={this.state.game} />
+						<ReactCSSTransitionGroup
+							component={FirstChild}
+							transitionName="game-text-field"
+							transitionEnterTimeout={gameTextFieldTransitionTime}
+							transitionLeaveTimeout={gameTextFieldTransitionTime}>
+							{ this.state.game.activeRound && !this.drawerIsMe() ? 
+								<GameTextField game={this.state.game} onChange={e => this.onTextFieldChange(e.value)} /> 
+								: 
+								null 
+							}
+						</ReactCSSTransitionGroup>
+					</div>
 					:
-					null
+					<div className="app-loading"><div className="spinner"><i className="fa fa-cog fa-spin" /></div></div>
 				}
-				<ReactCSSTransitionGroup
-					component={FirstChild}
-					transitionName="pre-round-modal"
-					transitionEnterTimeout={modalTransitionEnterTime}
-					transitionLeaveTimeout={modalTransitionLeaveTime}>
-					{this.state.showPreRoundModal ? <PreRoundModal game={this.state.game} /> : null}
-				</ReactCSSTransitionGroup>
-				<GameMessages game={this.state.game} /> 
-				{ this.drawerIsMe() ? 
-					<Canvas brush={this.state.brush} onChange={e => this.onCanvasChange(e.value)} ref="canvas" />
-					:
-					<ViewOnlyCanvas socket={socket} />
-				}
-				<ReactCSSTransitionGroup
-					component={FirstChild}
-					transitionName="brush-palette"
-					transitionEnterTimeout={brushPaletteTransitionTime}
-					transitionLeaveTimeout={brushPaletteTransitionTime}>
-					{ this.drawerIsMe() ?
-						<BrushPalette 
-							brush={this.state.brush} 
-							onBrushChange={brush => this.onBrushChange(brush)} 
-							onUndo={() => this.onUndo()}
-							onTrash={() => this.onTrash()} />
-						:
-						null
-					}
-				</ReactCSSTransitionGroup>
-				<GamePanel game={this.state.game} />
-				<ReactCSSTransitionGroup
-					component={FirstChild}
-					transitionName="game-text-field"
-					transitionEnterTimeout={gameTextFieldTransitionTime}
-					transitionLeaveTimeout={gameTextFieldTransitionTime}>
-					{ this.state.game.activeRound && !this.drawerIsMe() ? 
-						<GameTextField game={this.state.game} onChange={e => this.onTextFieldChange(e.value)} /> 
-						: 
-						null 
-					}
-				</ReactCSSTransitionGroup>
 			</div>
 		);
 	}
