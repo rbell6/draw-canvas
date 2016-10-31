@@ -23,8 +23,32 @@ module.exports = opts => {
 	let app = opts.app;
 	let io = opts.io;
 
+	// Get all games
 	app.get('/api/game', function(req, res) {
 		res.send(gameCollection.getAll());
+	});
+
+	// Get game by id
+	app.get('/api/game/:gameId', function(req, res) {
+		let gameId = req.params.gameId;
+		let game = gameCollection.get({id: gameId});
+		if (game) {
+			res.send(game.toJSON());
+			return;
+		}
+		res.send({});
+	});
+
+	// Delete a game
+	app.delete('/api/game/:gameId', function(req, res) {
+		let gameId = req.params.gameId;
+		let game = gameCollection.get({id: gameId});
+		let userId = _.get(req, 'body.user.id');
+		// Only allow the host to delete
+		if (game.get('host').id === userId) {
+			gameCollection.remove({id: gameId});
+		}
+		res.send(game.toJSON());
 	});
 
 	// Join a game
@@ -45,6 +69,7 @@ module.exports = opts => {
 		}
 	}
 
+	// Create a game
 	app.post('/api/game', createGame); 
 	function createGame(req, res) {
 		let userId = _.get(req, 'body.user.id');

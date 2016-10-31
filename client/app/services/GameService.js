@@ -17,11 +17,19 @@ class GameService extends EventEmitter {
 	}
 
 	getAll() {
-		axios.get('/api/game').then(res => this._onGameListChange(res.data));
+		return axios.get('/api/game').then(res => GameCollection.fromJSON(res.data));
+	}
+
+	getById(id) {
+		return axios.get(`/api/game/${id}`).then(res => Game.fromJSON(res.data));
 	}
 
 	save(game) {
-		return axios.post('/api/game', game.toJSON());
+		return axios.post('/api/game', game.toJSON()).then(res => Game.fromJSON(res.data));
+	}
+
+	delete(game) {
+		return axios.delete(`/api/game/${game.id}`).then(res => Game.fromJSON(res.data));
 	}
 }
 

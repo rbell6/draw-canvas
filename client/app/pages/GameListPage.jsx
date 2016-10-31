@@ -13,23 +13,35 @@ export default class GameListPage extends React.Component {
 		this.state = {
 			gameList: []
 		};
+		this._onGameListChange = this._onGameListChange.bind(this);
 	}
 
 	componentDidMount() {
-		GameService.on('change:gameList', e => {
+		GameService.on('change:gameList', this._onGameListChange);
+		GameService.getAll().then(gameList => {
 			this.setState({
-				gameList: e.data
+				gameList: gameList
 			});
 		});
-		GameService.getAll();
+	}
+
+	componentWillUnmount() {
+		GameService.off('change:gameList', this._onGameListChange);
+	}
+
+	_onGameListChange(e) {
+		this.setState({
+			gameList: e.data
+		});
 	}
 
 	createGame() {
 		let game = new Game({
 			host: UserService.get()
 		});
-		GameService.save(game);
-		// browserHistory.push(`/game-stage/${game.id}`);
+		GameService.save(game).then(savedGame => {
+			browserHistory.push(`/game-stage/${savedGame.id}`);
+		});
 	}
 
 	render() {

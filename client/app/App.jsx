@@ -21,7 +21,7 @@ window._ = _;
 // Add user to all saving methods
 axios.interceptors.request.use(function (config) {
 	config.headers['Content-Type'] = 'application/json;charset=utf-8';
-	if (['POST', 'PUT', 'PATCH'].indexOf(config.method.toUpperCase()) > -1) {
+	if (['POST', 'PUT', 'PATCH', 'DELETE'].indexOf(config.method.toUpperCase()) > -1) {
 		config.data = config.data || {};
 		config.data.user = UserService.get();
 	}
