@@ -81,7 +81,7 @@ export default class App extends React.Component {
 						</Route>
 					</Router>
 					:
-					<div className="app-loading"><i className="fa fa-cog fa-spin" /></div>
+					<div className="app-loading"><div className="spinner"><i className="fa fa-cog fa-spin" /></div></div>
 				}
 			</Shell>
 		);
