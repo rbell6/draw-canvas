@@ -106,7 +106,10 @@ module.exports = class Game extends Model {
 
 	addUser(user) {
 		this.get('users').add(user);
-		// user.on('change:connected', this.onChangeConnected.bind(this, user));
+	}
+
+	removeUser(user) {
+		this.get('users').remove(user);
 	}
 
 	hostName() {

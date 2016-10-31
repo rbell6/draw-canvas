@@ -17,6 +17,8 @@ export default class GameStagePage extends React.Component {
 	constructor(props, context) {
 		super(props, context);
 		this.state = {};
+		this._leaveGame = this._leaveGame.bind(this);
+		this._onGameChange = this._onGameChange.bind(this);
 	}
 
 	componentDidMount() {
@@ -28,7 +30,25 @@ export default class GameStagePage extends React.Component {
 			this.setState({
 				game: game
 			});
+			GameService.joinGame(game);
 		});
+		GameService.on('change:game', this._onGameChange);
+		GameService.on('leaveGame', this._leaveGame);
+	}
+
+	componentWillUnmount() {
+		GameService.off('change:game', this._onGameChange);
+		GameService.off('leaveGame', this._leaveGame);
+	}
+
+	_onGameChange(e) {
+		this.setState({
+			game: e.data
+		});
+	}
+
+	_leaveGame() {
+		browserHistory.push('/game-list');
 	}
 
 	onNameChange(name) {
@@ -37,11 +57,10 @@ export default class GameStagePage extends React.Component {
 	}
 
 	cancel() {
-		// TODO if this is the host then delete, and notify everyone
 		if (this.state.game.get('host').id === UserService.get().id) {
 			GameService.delete(this.state.game);
 		}
-		browserHistory.push('/game-list');
+		GameService.leaveGame(this.state.game).then(() => this._leaveGame());
 	}
 
 	start() {

@@ -10,10 +10,20 @@ class GameService extends EventEmitter {
 	constructor() {
 		super();
 		SocketService.on('change:gameList', gameList => this._onGameListChange(gameList));
+		SocketService.on('change:game', game => this._onGameChange(game));
+		SocketService.on('leaveGame', () => this._onLeaveGame());
 	}
 
 	_onGameListChange(gameList) {
 		this.emit('change:gameList', GameCollection.fromJSON(gameList));
+	}
+
+	_onGameChange(game) {
+		this.emit('change:game', Game.fromJSON(game));
+	}
+
+	_onLeaveGame() {
+		this.emit('leaveGame');
 	}
 
 	getAll() {
@@ -21,7 +31,12 @@ class GameService extends EventEmitter {
 	}
 
 	getById(id) {
-		return axios.get(`/api/game/${id}`).then(res => Game.fromJSON(res.data));
+		return axios.get(`/api/game/${id}`).then(res => {
+			if (res.data) {
+				return Game.fromJSON(res.data)
+			}
+			return null;
+		});
 	}
 
 	save(game) {
@@ -30,6 +45,14 @@ class GameService extends EventEmitter {
 
 	delete(game) {
 		return axios.delete(`/api/game/${game.id}`).then(res => Game.fromJSON(res.data));
+	}
+
+	joinGame(game) {
+		return axios.post(`/api/game/${game.id}`);
+	}
+
+	leaveGame(game) {
+		return axios.delete(`/api/game/${game.id}/user`);
 	}
 }
 

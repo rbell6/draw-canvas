@@ -36,7 +36,7 @@ module.exports = opts => {
 			res.send(game.toJSON());
 			return;
 		}
-		res.send({});
+		res.send(null);
 	});
 
 	// Delete a game
@@ -47,6 +47,12 @@ module.exports = opts => {
 		// Only allow the host to delete
 		if (game.get('host').id === userId) {
 			gameCollection.remove({id: gameId});
+			game.get('users').forEach(user => {
+				let socket = userSockets.get(user);
+				if (socket) {
+					socket.emit('leaveGame');
+				}
+			});
 		}
 		res.send(game.toJSON());
 	});
@@ -61,6 +67,12 @@ module.exports = opts => {
 		if (game) {
 			if (!_.find(game.get('users'), {id: userId})) {
 				game.addUser(user);
+				game.get('users').forEach(user => {
+					let socket = userSockets.get(user);
+					if (socket) {
+						socket.emit('change:game', game);
+					}
+				});
 				// user.addGame(game);
 			}
 			res.send(game.toJSON());
@@ -68,6 +80,24 @@ module.exports = opts => {
 			// Game not found
 		}
 	}
+
+	// Remove user from game
+	app.delete('/api/game/:gameId/user', function(req, res) {
+		let userId = _.get(req, 'body.user.id');
+		let gameId = req.params.gameId;
+		let game = gameCollection.get({id: gameId});
+		let user = userCollection.get({id: userId});
+		if (game && game.get('users').find({id: userId})) {
+			game.removeUser(user);
+			game.get('users').forEach(user => {
+				let socket = userSockets.get(user);
+				if (socket) {
+					socket.emit('change:game', game);
+				}
+			});
+		}
+		res.send();
+	});
 
 	// Create a game
 	app.post('/api/game', createGame); 
@@ -84,46 +114,6 @@ module.exports = opts => {
 		});
 		res.send(game.toJSON());
 	}
-
-	// app.post('/api/game', function(req, res) {
-	// 	let gameId = _.get(req, 'body.id');
-	// 	let userId = _.get(req, 'body.user.id');
-	// 	let user = userCollection.get({id: userId});
-	// 	// TODO remove this (join game is above)
-	// 	if (gameId) {
-	// 		// Join game
-	// 		let game = gameCollection.get({id: gameId});
-	// 		if (game) {
-	// 			if (!_.find(game.users, {id: userId})) {
-	// 				game.addUser(user);
-	// 			}
-	// 			res.send(game);
-	// 		} else {
-	// 			// Game not found
-	// 		}
-	// 	} else {
-	// 		// Create game
-	// 		let game = new Game({
-	// 			name: req.body.name,
-	// 			host: user
-	// 		});
-	// 		gameCollection.add(game);
-	// 		userCollection.getAll().forEach(user => user.socket.emit('update:gameList', gameCollection.getAll()));
-	// 		res.send(game);
-	// 	}
-	// });
-
-	// Remove user from game
-	app.delete('/api/game/user', function(req, res) {
-		let gameId = _.get(req, 'query.gameId');
-		let userId = _.get(req, 'query.userId');
-		let user = userCollection.get({id: userId});
-		let game = gameCollection.get({id: gameId});
-		if (game.users.indexOf(user) > -1) {
-			game.removeUser(user);
-		}
-		res.send();
-	});
 
 	io.on('connection', function(socket) {
 		socket.on('saveUser', saveUser.bind(this, socket));
