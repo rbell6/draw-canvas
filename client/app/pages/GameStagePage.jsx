@@ -52,8 +52,7 @@ export default class GameStagePage extends React.Component {
 	}
 
 	onNameChange(name) {
-		this.state.game.set('name', name);
-		this.forceUpdate();
+		GameService.updateGameName(this.state.game, name);
 	}
 
 	cancel() {
@@ -82,8 +81,8 @@ export default class GameStagePage extends React.Component {
 								{this.state.game.get('users').map(user => <UserIcon user={user} key={user.id} />) }
 							</div>
 						</div>
-						<TextField 
-							placeholder="Say something ..." />
+						{/*<TextField 
+							placeholder="Say something ..." />*/}
 						<div className="buttons">
 							<Button onClick={() => this.cancel()}>Cancel</Button>
 							<Button onClick={() => this.start()} variant="success">Start game</Button>

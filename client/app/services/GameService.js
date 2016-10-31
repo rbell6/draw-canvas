@@ -54,6 +54,13 @@ class GameService extends EventEmitter {
 	leaveGame(game) {
 		return axios.delete(`/api/game/${game.id}/user`);
 	}
+
+	updateGameName(game, name) {
+		return axios.post('/api/game/name', {
+			gameId: game.id,
+			gameName: name
+		});
+	}
 }
 
 // let GameService = {

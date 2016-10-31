@@ -47,6 +47,9 @@ module.exports = opts => {
 		// Only allow the host to delete
 		if (game.get('host').id === userId) {
 			gameCollection.remove({id: gameId});
+			userSockets.forEach(socket => {
+				socket.emit('change:gameList', gameCollection.toJSON());
+			});
 			game.get('users').forEach(user => {
 				let socket = userSockets.get(user);
 				if (socket) {
@@ -55,6 +58,28 @@ module.exports = opts => {
 			});
 		}
 		res.send(game.toJSON());
+	});
+
+	// Update game name
+	app.post('/api/game/name', function(req, res) {
+		let userId = _.get(req, 'body.user.id');
+		let gameId = _.get(req, 'body.gameId');
+		let gameName = _.get(req, 'body.gameName');
+		let game = gameCollection.get({id: gameId});
+		// Only allow the host to update the game name
+		if (game && game.get('host').id === userId) {
+			game.set('name', gameName);
+			game.get('users').forEach(user => {
+				let socket = userSockets.get(user);
+				if (socket) {
+					socket.emit('change:game', game);
+				}
+			});
+			userSockets.forEach(socket => {
+				socket.emit('change:gameList', gameCollection.toJSON());
+			});
+		}
+		res.send();
 	});
 
 	// Join a game
@@ -72,6 +97,9 @@ module.exports = opts => {
 					if (socket) {
 						socket.emit('change:game', game);
 					}
+				});
+				userSockets.forEach(socket => {
+					socket.emit('change:gameList', gameCollection.toJSON());
 				});
 				// user.addGame(game);
 			}
