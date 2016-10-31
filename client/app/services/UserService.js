@@ -19,10 +19,13 @@ let UserService = {
 	fetch: function() {
 		let userId = _.get(this.localUserJSON, 'id');
 		if (userId) {
-			return axios.get(`/api/user/${userId}`).then(res => {
-				if (res.data.id) {
-					this._user = new User(res.data);
-				}
+			return new Promise((resolve, reject) => {
+				SocketService.emit('getUserById', userId, userData => {
+					if (userData.id) {
+						this._user = new User(userData);
+					}
+					resolve(this._user);
+				});
 			});
 		}
 		return Promise.resolve();
