@@ -82,6 +82,23 @@ module.exports = opts => {
 		res.send();
 	});
 
+	// Start game
+	app.post('/api/game/start', function(req, res) {
+		let userId = _.get(req, 'body.user.id');
+		let gameId = _.get(req, 'body.gameId');
+		let game = gameCollection.get({id: gameId});
+		// Only allow the host to start the game
+		if (game && game.get('host').id === userId) {
+			game.get('users').forEach(user => {
+				let socket = userSockets.get(user);
+				if (socket) {
+					socket.emit('startGame', game);
+				}
+			});
+		}
+		res.send();
+	});
+
 	// Join a game
 	app.post('/api/game/:gameId', joinGame);
 	function joinGame(req, res) {

@@ -120,6 +120,10 @@ module.exports = class Game extends Model {
 		return this.get('users').length;
 	}
 
+	userIsHost(user) {
+		return this.get('host').id === user.id;
+	}
+
 	static fromJSON(json) {
 		let gameJSON = _.extend(json, {
 			host: new User(json.host),

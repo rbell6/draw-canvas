@@ -7,6 +7,7 @@ import Game from '../../../models/Game';
 import TextField from '../components/TextField';
 import Button from '../components/Button';
 import {
+	H1,
 	H3 
 } from '../components/Headers';
 import UserIcon from '../components/UserIcon';
@@ -18,6 +19,7 @@ export default class GameStagePage extends React.Component {
 		super(props, context);
 		this.state = {};
 		this._leaveGame = this._leaveGame.bind(this);
+		this._startGame = this._startGame.bind(this);
 		this._onGameChange = this._onGameChange.bind(this);
 	}
 
@@ -34,11 +36,13 @@ export default class GameStagePage extends React.Component {
 		});
 		GameService.on('change:game', this._onGameChange);
 		GameService.on('leaveGame', this._leaveGame);
+		GameService.on('startGame', this._startGame);
 	}
 
 	componentWillUnmount() {
 		GameService.off('change:game', this._onGameChange);
 		GameService.off('leaveGame', this._leaveGame);
+		GameService.off('startGame', this._startGame);
 	}
 
 	_onGameChange(e) {
@@ -51,19 +55,27 @@ export default class GameStagePage extends React.Component {
 		browserHistory.push('/game-list');
 	}
 
+	_startGame() {
+		browserHistory.push(`/game/${this.state.game.id}`);
+	}
+
 	onNameChange(name) {
 		GameService.updateGameName(this.state.game, name);
 	}
 
 	cancel() {
-		if (this.state.game.get('host').id === UserService.get().id) {
+		if (this.state.game.userIsHost(UserService.get())) {
 			GameService.delete(this.state.game);
 		}
 		GameService.leaveGame(this.state.game).then(() => this._leaveGame());
 	}
 
 	start() {
-		browserHistory.push(`/game/${this.state.game.id}`);
+		GameService.startGame(this.state.game);
+	}
+
+	userIsHost() {
+		return this.state.game.userIsHost(UserService.get());
 	}
 
 	render() {
@@ -71,10 +83,14 @@ export default class GameStagePage extends React.Component {
 			<div className="game-stage-page">
 				{this.state.game ?
 					<div className="game-stage-container">
-						<TextField 
-							placeholder="Game Name"
-							value={this.state.game.get('name')} 
-							onChange={e => this.onNameChange(e.target.value)} />
+						{ this.userIsHost() ?
+							<TextField 
+								placeholder="Game Name"
+								value={this.state.game.get('name')} 
+								onChange={e => this.onNameChange(e.target.value)} />
+							:
+							<H1 className="game-stage-header">{this.state.game.get('name')}</H1>
+						}
 						<div className="game-users-container">
 							<H3>Players</H3>
 							<div className="game-users">
@@ -84,8 +100,8 @@ export default class GameStagePage extends React.Component {
 						{/*<TextField 
 							placeholder="Say something ..." />*/}
 						<div className="buttons">
-							<Button onClick={() => this.cancel()}>Cancel</Button>
-							<Button onClick={() => this.start()} variant="success">Start game</Button>
+							<Button onClick={() => this.cancel()} variant="quiet">Cancel</Button>
+							{this.userIsHost() ? <Button onClick={() => this.start()} variant="success">Start game</Button> : null}
 						</div>
 					</div>
 					:

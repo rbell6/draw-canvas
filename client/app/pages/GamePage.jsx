@@ -57,6 +57,7 @@ export default class GamePage extends React.Component {
 			this.setState({
 				game: game
 			});
+			GameService.joinGame(game);
 			game.on('change:activeRound', this.onActiveRoundChange);
 			this.activeRoundService = new ActiveRoundService(game);
 		});

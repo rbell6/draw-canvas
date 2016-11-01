@@ -12,6 +12,7 @@ class GameService extends EventEmitter {
 		SocketService.on('change:gameList', gameList => this._onGameListChange(gameList));
 		SocketService.on('change:game', game => this._onGameChange(game));
 		SocketService.on('leaveGame', () => this._onLeaveGame());
+		SocketService.on('startGame', () => this._onStartGame());
 	}
 
 	_onGameListChange(gameList) {
@@ -24,6 +25,10 @@ class GameService extends EventEmitter {
 
 	_onLeaveGame() {
 		this.emit('leaveGame');
+	}
+
+	_onStartGame() {
+		this.emit('startGame');
 	}
 
 	getAll() {
@@ -59,6 +64,12 @@ class GameService extends EventEmitter {
 		return axios.post('/api/game/name', {
 			gameId: game.id,
 			gameName: name
+		});
+	}
+
+	startGame(game) {
+		return axios.post('/api/game/start', {
+			gameId: game.id
 		});
 	}
 }
