@@ -1,3 +1,5 @@
+'use strict';
+
 let Model = require('./Model');
 
 module.exports = class Brush extends Model {

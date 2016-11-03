@@ -1,3 +1,5 @@
+'use strict';
+
 let Collection = require('./Collection');
 let Round = require('./Round');
 

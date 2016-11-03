@@ -1,9 +1,12 @@
+'use strict';
+
 let EventEmitter = require('./EventEmitter');
 let _ = require('lodash');
 
 module.exports = class Model extends EventEmitter {
 
-	constructor(data={}) {
+	constructor(data) {
+		data = data || {};
 		data.id = data.id || Model.generateId();
 		super(data);
 		this._data = _.invoke(this, 'constructor.defaults');

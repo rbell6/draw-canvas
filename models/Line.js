@@ -1,3 +1,5 @@
+'use strict';
+
 let Model = require('./Model');
 let Brush = require('./Brush');
 

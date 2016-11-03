@@ -1,3 +1,5 @@
+'use strict';
+
 const red = '#c94045';
 const blue = '#6090bc';
 const orange = '#dd783b';

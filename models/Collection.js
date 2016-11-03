@@ -1,3 +1,5 @@
+'use strict';
+
 let EventEmitter = require('./EventEmitter');
 let _ = require('lodash');
 

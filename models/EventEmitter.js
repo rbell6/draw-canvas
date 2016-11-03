@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = class EventEmitter {
 	constructor() {
 		this._registeredEvents	= {};
