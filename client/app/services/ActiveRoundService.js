@@ -1,59 +1,24 @@
-/*
-
-	For now this is a mock service. In the future it will send/receive messages via a websocket
-
-*/
-
 import _ from 'lodash';
 import UserService from './UserService';
+import SocketService from './SocketService';
+import RoundCollection from '../../../models/RoundCollection';
+import EventEmitter from '../../../models/EventEmitter';
+import axios from 'axios';
 
-const initialDelayTime = 1000;
-const words = [
-	'pizza',
-	'fence',
-	'pumpkin',
-	'doorknob',
-	'ladder',
-	'girl',
-	'boy',
-	'apple'
-];
-
-export default class ActiveRoundService {
+export default class ActiveRoundService extends EventEmitter {
 	constructor(game) {
+		super();
 		this.game = game;
-		setTimeout(() => {
-			this.createNextRound();
-		}, initialDelayTime);
+		SocketService.on(`change:rounds:${game.id}`, rounds => this._onRoundsChange(rounds));
 	}
 
-	createNextRound() {
-		if (this.game.get('activeRoundIndex')+1<this.game.get('numRounds')) {
-			_.set(window, '_serverGame.activeRound.startTime', Date.now()); // TODO make this a private param on the game on the server
-			this.onActiveRoundChange(this.createNextRoundParams());
-			setTimeout(() => {
-				this.createNextRound();
-			}, this.game.get('gameTime'));
-		}
+	getRounds(game) {
+		return axios.get(`/api/rounds/${game.id}/${UserService.get().id}`).then(res => this._onRoundsChange(res.data));
 	}
 
-	createNextRoundParams() {
-		let newRoundIndex = this.game.get('activeRoundIndex')+1;
-		let users = this.game.get('users');
-		// let drawerId = users.getAtIndex(newRoundIndex%users.length).id;
-		let drawerId = users.getAtIndex(0).id;
-		return {
-			drawerId: drawerId,
-			word: drawerId === UserService.get().id ? _.sample(words) : null,
-			percentOfTimeInitiallySpent: 0,
-		};
+	_onRoundsChange(rounds) {
+		if (!rounds.length) { return; }
+		this.game.set('rounds', RoundCollection.fromJSON(rounds));
 	}
 
-	onActiveRoundChange(e) {
-		this.game.createRound({
-			drawer: this.game.get('users').find(user => user.id === e.drawerId),
-			word: e.word,
-			percentOfTimeInitiallySpent: e.percentOfTimeInitiallySpent,
-		});
-	}
 }

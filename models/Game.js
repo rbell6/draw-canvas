@@ -39,7 +39,6 @@ module.exports = class Game extends Model {
 			users: new UserCollection(),
 			rounds: new Collection(),
 			numRounds: 10,
-			activeRoundIndex: -1,
 			name: 'Untitled Game',
 			messages: new Collection(),
 			gameTime: 60000
@@ -47,7 +46,7 @@ module.exports = class Game extends Model {
 	}
 
 	get activeRound() {
-		return this.get('rounds').getAtIndex(this.get('activeRoundIndex'));
+		return this.get('rounds').getAtIndex(this.get('rounds').length-1);
 	}
 
 	get activeRoundName() {
@@ -55,7 +54,14 @@ module.exports = class Game extends Model {
 	}
 
 	get activeRoundDrawerName() {
-		return this.activeRound ? this.activeRound.get('drawer').get('name') : '';
+		let drawer;
+		if (this.activeRound) {
+			drawer = this.get('users').find(user => user.id === this.activeRound.get('drawerId'));
+		}
+		if (drawer) {
+			return drawer.get('name');
+		}
+		return '';
 	}
 
 	// [{user: User, points: Number}, ...]
@@ -68,20 +74,6 @@ module.exports = class Game extends Model {
 			});
 			return {user: user, points: totalPoints};
 		}).sort((a, b) => b.points - a.points);
-	}
-
-	advanceActiveRoundIndex() {
-		this.set('activeRoundIndex', this.get('activeRoundIndex')+1);
-	}
-
-	createRound(roundParams) {
-		this.advanceActiveRoundIndex();
-		let index = this.get('activeRoundIndex');
-		this.get('rounds').add(new Round(Object.assign({
-			index: index,
-			name: `Round ${index+1}`
-		}, roundParams)));
-		this.emit('change:activeRound');
 	}
 
 	_getNextUser() {

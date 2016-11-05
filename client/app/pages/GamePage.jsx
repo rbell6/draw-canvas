@@ -16,6 +16,9 @@ import HotkeyService from '../services/HotkeyService';
 import UserService from '../services/UserService';
 import ActiveRoundService from '../services/ActiveRoundService';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import {
+	browserHistory
+} from 'react-router';
 
 // TODO move
 let socket = io();
@@ -45,7 +48,7 @@ export default class GamePage extends React.Component {
 		};
 
 		this.onActiveRoundChange = this.onActiveRoundChange.bind(this);
-		window.game = this.state.game;
+		this.onUndo = this.onUndo.bind(this);
 	}
 
 	componentDidMount() {
@@ -57,22 +60,33 @@ export default class GamePage extends React.Component {
 			this.setState({
 				game: game
 			});
-			GameService.joinGame(game);
-			game.on('change:activeRound', this.onActiveRoundChange);
+			window.game = game;
+			GameService.joinGame(game).then(g => this.state.game.set('users', g.get('users')));
 			this.activeRoundService = new ActiveRoundService(game);
+			this.activeRoundService.getRounds(game);
+			game.on('change:rounds', this.onActiveRoundChange);
 		});
-		HotkeyService.on('undo', () => this.onUndo());
+		HotkeyService.on('undo', this.onUndo);
 	}
 
 	componentWillUnmount() {
 		if (this.state.game) {
-			this.state.game.off('change:activeRound', this.onActiveRoundChange);
+			// this.state.game.off('change:activeRound', this.onActiveRoundChange);
+			this.state.game.off('change:rounds', this.onActiveRoundChange);
 		}
+		HotkeyService.off('undo', this.onUndo);
 	}
 
 	onActiveRoundChange() {
+		if (this.state.game.get('rounds').length === this.state.game.get('numRounds')) {
+			this.endGame();
+		}
 		this.setState({showPreRoundModal: true});
 		setTimeout(() => this.setState({showPreRoundModal: false}), modalViewableTime);
+	}
+
+	endGame() {
+		browserHistory.push('/game-list');
 	}
 
 	onBrushChange(brush) {
@@ -95,7 +109,7 @@ export default class GamePage extends React.Component {
 
 	drawerIsMe() {
 		if (!this.state.game.activeRound) { return false; }
-		return UserService.get().id === this.state.game.activeRound.get('drawer').id;
+		return UserService.get().id === this.state.game.activeRound.get('drawerId');
 	}
 
 	render() {
@@ -136,7 +150,7 @@ export default class GamePage extends React.Component {
 								null
 							}
 						</ReactCSSTransitionGroup>
-						<GamePanel game={this.state.game} />
+							<GamePanel game={this.state.game} />
 						<ReactCSSTransitionGroup
 							component={FirstChild}
 							transitionName="game-text-field"

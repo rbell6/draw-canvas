@@ -7,12 +7,12 @@ export default class GamePanel extends React.Component {
 	componentDidMount() {
 		this.onActiveRoundChange = this.onActiveRoundChange.bind(this);
 		this.onUserStatusChange = this.onUserStatusChange.bind(this);
-		this.props.game.on('change:activeRound', this.onActiveRoundChange);
+		this.props.game.on('change:rounds', this.onActiveRoundChange);
 		this.props.game.on('change:usersWithPoints', this.onUserStatusChange);
 	}
 
 	componentWillUnmount() {
-		this.props.game.off('change:activeRound', this.onActiveRoundChange);
+		this.props.game.off('change:rounds', this.onActiveRoundChange);
 		this.props.game.off('change:usersWithPoints', this.onUserStatusChange);
 	}
 
@@ -37,7 +37,7 @@ export default class GamePanel extends React.Component {
 	}
 
 	render() {
-		let roundNumber = this.props.game.get('activeRoundIndex')+1;
+		let roundNumber = this.props.game.get('rounds').length;
 		return (
 			<div className="game-panel">
 				<div className="game-panel-header">

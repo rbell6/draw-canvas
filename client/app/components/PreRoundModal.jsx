@@ -4,7 +4,7 @@ import UserService from '../services/UserService';
 export default class PreRoundModal extends React.Component {
 	drawerIsMe() {
 		if (!this.props.game.activeRound) { return false; }
-		return UserService.get().id === this.props.game.activeRound.get('drawer').id;
+		return UserService.get().id === this.props.game.activeRound.get('drawerId');
 	}
 
 	render() {

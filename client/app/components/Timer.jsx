@@ -79,6 +79,7 @@ export default class Timer extends React.Component {
 
 	paint() {
 		requestAnimationFrame(timestamp => {
+			if (!this.canvas) { return; }
 			this._startTime = this._startTime || timestamp;
 			let deltaTime = timestamp-this._startTime;
 			let percentComplete = Math.min((deltaTime/this.time)+this._percentOfTimeInitiallySpent, 1);

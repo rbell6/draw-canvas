@@ -53,7 +53,7 @@ class GameService extends EventEmitter {
 	}
 
 	joinGame(game) {
-		return axios.post(`/api/game/${game.id}`);
+		return axios.post(`/api/game/${game.id}`).then(res => Game.fromJSON(res.data));
 	}
 
 	leaveGame(game) {

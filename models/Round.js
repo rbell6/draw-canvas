@@ -7,7 +7,7 @@ module.exports = class Round extends Model {
 	
 	static defaults() {
 		return {
-			drawer: null,
+			drawerId: null,
 			name: 'Round',
 			index: 0,
 			word: null,

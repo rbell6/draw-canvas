@@ -5,11 +5,11 @@ let User = require('../../models/User');
 let _ = require('lodash');
 let EventEmitter = require('events');
 let UserCollection = require('../../models/userCollection');
-let GameCollection = require('../../models/gameCollection');
+let Games = require('./Games');
+let UserSockets = require('./UserSockets');
 
 let userCollection = new UserCollection();
-let gameCollection = new GameCollection();
-let userSockets = new Map();
+let gameCollection = Games;
 
 // Notify all of the users when a game is added/removed
 function notifyUsersOfGamesChange() {
@@ -22,6 +22,10 @@ gameCollection.on('remove', notifyUsersOfGamesChange);
 module.exports = opts => {
 	let app = opts.app;
 	let io = opts.io;
+	let activeRoundAPI = require('./api/ActiveRoundAPI')({
+		app: app,
+		io: io
+	});
 
 	// Get all games
 	app.get('/api/game', function(req, res) {
@@ -47,11 +51,11 @@ module.exports = opts => {
 		// Only allow the host to delete
 		if (game.get('host').id === userId) {
 			gameCollection.remove({id: gameId});
-			userSockets.forEach(socket => {
+			UserSockets.forEach(socket => {
 				socket.emit('change:gameList', gameCollection.toJSON());
 			});
 			game.get('users').forEach(user => {
-				let socket = userSockets.get(user);
+				let socket = UserSockets.get(user);
 				if (socket) {
 					socket.emit('leaveGame');
 				}
@@ -70,12 +74,12 @@ module.exports = opts => {
 		if (game && game.get('host').id === userId) {
 			game.set('name', gameName);
 			game.get('users').forEach(user => {
-				let socket = userSockets.get(user);
+				let socket = UserSockets.get(user);
 				if (socket) {
 					socket.emit('change:game', game);
 				}
 			});
-			userSockets.forEach(socket => {
+			UserSockets.forEach(socket => {
 				socket.emit('change:gameList', gameCollection.toJSON());
 			});
 		}
@@ -89,8 +93,9 @@ module.exports = opts => {
 		let game = gameCollection.get({id: gameId});
 		// Only allow the host to start the game
 		if (game && game.get('host').id === userId) {
+			activeRoundAPI.startGame(game);
 			game.get('users').forEach(user => {
-				let socket = userSockets.get(user);
+				let socket = UserSockets.get(user);
 				if (socket) {
 					socket.emit('startGame', game);
 				}
@@ -110,12 +115,12 @@ module.exports = opts => {
 			if (!_.find(game.get('users'), {id: userId})) {
 				game.addUser(user);
 				game.get('users').forEach(user => {
-					let socket = userSockets.get(user);
+					let socket = UserSockets.get(user);
 					if (socket) {
 						socket.emit('change:game', game);
 					}
 				});
-				userSockets.forEach(socket => {
+				UserSockets.forEach(socket => {
 					socket.emit('change:gameList', gameCollection.toJSON());
 				});
 				// user.addGame(game);
@@ -135,7 +140,7 @@ module.exports = opts => {
 		if (game && game.get('users').find({id: userId})) {
 			game.removeUser(user);
 			game.get('users').forEach(user => {
-				let socket = userSockets.get(user);
+				let socket = UserSockets.get(user);
 				if (socket) {
 					socket.emit('change:game', game);
 				}
@@ -154,7 +159,7 @@ module.exports = opts => {
 			host: user
 		});
 		gameCollection.add(game);
-		userSockets.forEach(socket => {
+		UserSockets.forEach(socket => {
 			socket.emit('change:gameList', gameCollection.toJSON());
 		});
 		res.send(game.toJSON());
@@ -169,14 +174,14 @@ module.exports = opts => {
 			name: user.name
 		});
 		userCollection.add(newUser);
-		userSockets.set(newUser, socket);
+		UserSockets.set(newUser, socket);
 		cb(newUser.toJSON());
 	}
 
 	function getUserById(socket, userId, cb) {
 		let user = userCollection.get({id: userId});
 		if (user) {
-			userSockets.set(user, socket);
+			UserSockets.set(user, socket);
 			cb(user.toJSON());
 			return;
 		}
