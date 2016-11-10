@@ -42,13 +42,17 @@ export default class GamePanel extends React.Component {
 			<div className="game-panel">
 				<div className="game-panel-header">
 					<div className="game-name">{this.props.game.get('name')}</div>
-					{roundNumber > 0 ? 
-						<div className="round-label"><span className="number">{roundNumber}</span>/<span className="number">{this.props.game.get('numRounds')}</span></div>
-						:
-						null
-					} 
 				</div>
-				<Timer className="round-timer" time={this.props.game.get('gameTime')} ref="timer" />
+				<div className="round-timer">
+					<Timer className="round-timer" time={this.props.game.get('gameTime')} ref="timer" />
+					<div className="round-timer-children">
+						{roundNumber > 0 ? 
+							<div className="round-label"><span className="number">{roundNumber}</span>/<span className="number">{this.props.game.get('numRounds')}</span></div>
+							:
+							null
+						} 
+					</div>
+				</div>
 				<div className="game-users">
 					<FlipMove>
 						{this.props.game.usersWithPoints.map(userWithPoints => (

@@ -14,7 +14,6 @@
 	width: @game-panel-width;
 	top: 0;
 	bottom: 0;
-	background: rgba(100, 100, 100, 0.4);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -24,7 +23,7 @@
 	.game-panel-header {
 		display: flex;
 		padding: 0 10px;
-		margin: 10px 0 20px 0;
+		margin: 15px 0;
 		width: 100%;
 		box-sizing: border-box;
 	}
@@ -34,18 +33,29 @@
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		display: flex;
+		justify-content: center;
 	}
 	.round-label {
 		font-size: 18px;
-		text-align: center;
 		color: #444;
-		padding-left: 3px;
+		line-height: 1;
 		.number {
 			font-weight: 600;
 		}
 	}
 	.round-timer {
-		margin-bottom: 30px;
+		position: relative;
+	}
+	.round-timer-children {
+		position: absolute;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 	.game-users {
 	}
