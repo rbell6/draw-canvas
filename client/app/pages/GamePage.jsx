@@ -67,6 +67,7 @@ export default class GamePage extends React.Component {
 			game.on('change:rounds', this.onActiveRoundChange);
 		});
 		HotkeyService.on('undo', this.onUndo);
+		this._mounted = true;
 	}
 
 	componentWillUnmount() {
@@ -75,14 +76,19 @@ export default class GamePage extends React.Component {
 			this.state.game.off('change:rounds', this.onActiveRoundChange);
 		}
 		HotkeyService.off('undo', this.onUndo);
+		this._mounted = false;
 	}
 
 	onActiveRoundChange() {
+		if (!this._mounted) { return; }
 		if (this.state.game.get('rounds').length === this.state.game.get('numRounds')) {
 			this.endGame();
 		}
 		this.setState({showPreRoundModal: true});
-		setTimeout(() => this.setState({showPreRoundModal: false}), modalViewableTime);
+		setTimeout(() => {
+			if (!this._mounted) { return; }
+			this.setState({showPreRoundModal: false}), modalViewableTime
+		});
 	}
 
 	endGame() {
