@@ -48,6 +48,7 @@ export default class GamePage extends React.Component {
 		};
 
 		this.onActiveRoundChange = this.onActiveRoundChange.bind(this);
+		this.endGame = this.endGame.bind(this);
 		this.onUndo = this.onUndo.bind(this);
 	}
 
@@ -63,7 +64,8 @@ export default class GamePage extends React.Component {
 			window.game = game;
 			GameService.joinGame(game).then(g => this.state.game.set('users', g.get('users')));
 			this.activeRoundService = new ActiveRoundService(game);
-			this.activeRoundService.getRounds(game);
+			this.activeRoundService.getRounds();
+			this.activeRoundService.on('endGame', this.endGame);
 			game.on('change:rounds', this.onActiveRoundChange);
 		});
 		HotkeyService.on('undo', this.onUndo);

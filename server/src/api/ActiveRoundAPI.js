@@ -59,6 +59,13 @@ class ActiveRoundAPI {
 			setTimeout(() => {
 				this.createNextRound(game);
 			}, game.get('gameTime'));
+		} else {
+			game.get('users').forEach(user => {
+				let socket = UserSockets.get(user);
+				if (socket) {
+					socket.emit(`endGame:${game.id}`);
+				}
+			});	
 		}
 	}
 
