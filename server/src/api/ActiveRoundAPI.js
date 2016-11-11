@@ -66,6 +66,10 @@ class ActiveRoundAPI {
 					socket.emit(`endGame:${game.id}`);
 				}
 			});	
+			Games.remove(game);
+			UserSockets.forEach(socket => {
+				socket.emit('change:gameList', Games.toJSON());
+			});
 		}
 	}
 
