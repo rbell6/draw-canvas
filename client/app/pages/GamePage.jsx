@@ -163,7 +163,11 @@ export default class GamePage extends React.Component {
 								null
 							}
 						</ReactCSSTransitionGroup>
+						{this.state.game ? 
 							<GamePanel game={this.state.game} />
+							:
+							null
+						}
 						<ReactCSSTransitionGroup
 							component={FirstChild}
 							transitionName="game-text-field"
