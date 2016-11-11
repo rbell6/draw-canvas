@@ -30,8 +30,8 @@ export default class ViewOnlyCanvas extends React.Component {
 		window.addEventListener('resize', this.resizeCanvas, false);
 		this.resizeCanvas();
 
-		this.props.socket.on('draw', linesJSON => {
-			this.lines = LineCollection.fromJSON(linesJSON);
+		this.props.canvasService.on(`change:canvas:${this.props.game.id}`, e => {
+			this.lines = e.data;
 			this.paint();
 		});
 	}

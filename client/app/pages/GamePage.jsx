@@ -15,6 +15,7 @@ import Message from '../../../models/Message';
 import HotkeyService from '../services/HotkeyService';
 import UserService from '../services/UserService';
 import ActiveRoundService from '../services/ActiveRoundService';
+import CanvasService from '../services/CanvasService';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import {
 	browserHistory
@@ -63,6 +64,7 @@ export default class GamePage extends React.Component {
 			});
 			window.game = game;
 			GameService.joinGame(game).then(g => this.state.game.set('users', g.get('users')));
+			this.canvasService = new CanvasService(game);
 			this.activeRoundService = new ActiveRoundService(game);
 			this.activeRoundService.getRounds();
 			this.activeRoundService.on('endGame', this.endGame);
@@ -112,7 +114,7 @@ export default class GamePage extends React.Component {
 	}
 
 	onCanvasChange(lines) {
-		socket.emit('draw', lines.toJSON());
+		this.canvasService.emitCanvasChange(lines);
 	}
 
 	drawerIsMe() {
@@ -137,11 +139,14 @@ export default class GamePage extends React.Component {
 							transitionLeaveTimeout={modalTransitionLeaveTime}>
 							{this.state.showPreRoundModal ? <PreRoundModal game={this.state.game} /> : null}
 						</ReactCSSTransitionGroup>
-						<GameMessages game={this.state.game} /> 
-						{ this.drawerIsMe() ? 
-							<Canvas brush={this.state.brush} onChange={e => this.onCanvasChange(e.value)} ref="canvas" />
+						<GameMessages game={this.state.game} />
+						{ this.canvasService ?
+							this.drawerIsMe() ? 
+								<Canvas brush={this.state.brush} onChange={e => this.onCanvasChange(e.value)} ref="canvas" />
+								:
+								<ViewOnlyCanvas canvasService={this.canvasService} game={this.state.game} />
 							:
-							<ViewOnlyCanvas socket={socket} />
+							null
 						}
 						<ReactCSSTransitionGroup
 							component={FirstChild}

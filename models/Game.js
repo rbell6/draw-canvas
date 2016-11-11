@@ -21,16 +21,16 @@ module.exports = class Game extends Model {
 		this._currentUserIndex = -1;
 
 		// TODO remove
-		if (!this.get('users').find(user => user.get('name') === 'bilbo')) {
-			this.get('users').add(new User({
-				name: 'bilbo'
-			}));
-		}
-		if (!this.get('users').find(user => user.get('name') === 'frank')) {
-			this.get('users').getAll().unshift(new User({
-				name: 'frank'
-			}));
-		}
+		// if (!this.get('users').find(user => user.get('name') === 'bilbo')) {
+		// 	this.get('users').add(new User({
+		// 		name: 'bilbo'
+		// 	}));
+		// }
+		// if (!this.get('users').find(user => user.get('name') === 'frank')) {
+		// 	this.get('users').getAll().unshift(new User({
+		// 		name: 'frank'
+		// 	}));
+		// }
 	}
 
 	static defaults() {
