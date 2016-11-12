@@ -3,6 +3,7 @@
 let Games = require('../Games');
 let _ = require('lodash');
 let UserSockets = require('../UserSockets');
+let RoundStartTimes = require('../RoundStartTimes');
 
 class MessageAPI {
 	constructor(opts) {
@@ -22,12 +23,12 @@ class MessageAPI {
 		let message = opts.message;
 		let res;
 		if (opts.userId && activeRound) {
-			let wordIsCorrect = this.wordIsCorrect(message);
+			let wordIsCorrect = this.wordIsCorrect(activeRound, message);
 			if (wordIsCorrect) {
 				// If someone has already guessed the correct answer and they type it again then do nothing
 				if (game.activeRound.get('userPoints')[opts.userId]) { return; }
 				if (game.activeRound.get('drawerId') === opts.userId) { return; }
-				let points = this.getPoints();
+				let points = this.getPoints(game);
 				game.activeRound.get('userPoints')[opts.userId] = points;
 				game.get('users').forEach(user => {
 					let socket = UserSockets.get(user);
@@ -57,13 +58,12 @@ class MessageAPI {
 		}
 	}
 
-	wordIsCorrect(word) {
-		return _.random(1,10) > 5;
+	wordIsCorrect(round, word) {
+		return round.get('word') === word;
 	}
 
-	getPoints() {
-		return 77;
-		let percentTimeLeftInRound = 1-((Date.now()-window._serverGame.activeRound.startTime)/this.game.get('gameTime'));
+	getPoints(game) {
+		let percentTimeLeftInRound = 1-((Date.now()-RoundStartTimes.get(game))/game.get('gameTime'));
 		return Math.round(percentTimeLeftInRound*100);
 	}	
 }
