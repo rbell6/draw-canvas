@@ -27,15 +27,3 @@ app.all('/*', function(req, res){
 http.listen(3007, function(){
   console.log('listening on *:3007');
 });
-
-
-let sockets = [];
-
-io.on('connection', socket => {
-	sockets.push(socket);
-	socket.on('draw', lines => {
-		sockets.forEach(socket => socket.emit('draw', lines));
-	});
-
-	socket.on('disconnect', () => sockets.splice(sockets.indexOf(socket), 1));
-});
