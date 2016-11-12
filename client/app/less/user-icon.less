@@ -1,6 +1,7 @@
 @import 'variables.less';
 
 @width: 60px;
+@outer-width: 80px;
 @height: 80px;
 @border-width: 3px;
 
@@ -14,12 +15,14 @@
 }
 
 .user-icon {
-	width: @width;
+	width: @outer-width;
 	height: @height;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
 	margin: @gutter/2;
+	align-items: center;
+	cursor: default;
 	&.user-icon-tiny {
 		width: @tiny-width;
 		height: @tiny-height;
@@ -49,10 +52,26 @@
 		border-color: @green;
 		animation: pop-icon 0.3s alternate 2;
 	}
-	.user-name {
-		text-align: center;
+	.user-name-wrap {
+		justify-content: center;
 		font-size: 12px;
 		font-weight: 600;
+		display: flex;
+		width: @outer-width;
+	}
+	.user-name {
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+	}
+	.total-user-points {
+		display: none;
+	}
+	&:hover .total-user-points {
+		display: inherit;
+	}
+	&:hover .user-points {
+		display: none;
 	}
 	.user-points {
 		color: @green;

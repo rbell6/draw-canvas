@@ -57,7 +57,11 @@ export default class GamePanel extends React.Component {
 					<FlipMove>
 						{this.props.game.usersWithPoints.map(userWithPoints => (
 							<div key={userWithPoints.user.id} className="game-user">
-								<UserIcon user={userWithPoints.user} status={this.getStatusForUser(userWithPoints.user)} points={this.activeRoundPointsForUser(userWithPoints.user)} />
+								<UserIcon 
+									user={userWithPoints.user} 
+									status={this.getStatusForUser(userWithPoints.user)} 
+									totalPoints={userWithPoints.points}
+									points={this.activeRoundPointsForUser(userWithPoints.user)} />
 							</div>
 						))}
 					</FlipMove>
