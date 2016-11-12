@@ -12,6 +12,10 @@ class SocketService {
 	on(msg, cb) {
 		this.socket.on(msg, cb);
 	}
+
+	off(msg, cb) {
+		this.socket.off(msg, cb);
+	}
 }
 
 export default new SocketService();

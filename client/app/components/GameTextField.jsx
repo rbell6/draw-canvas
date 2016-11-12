@@ -24,6 +24,7 @@ export default class GameTextField extends React.Component {
 
 	componentWillUnmount() {
 		HotkeyService.off('enter', this.onSubmit);
+		this.messageService.destroy();
 	}
 
 	onFocus() {
@@ -35,10 +36,7 @@ export default class GameTextField extends React.Component {
 	}
 
 	onSubmit() {
-		this.messageService.addMessage({
-			userId: UserService.get().id,
-			text: this.state.value
-		});
+		this.messageService.addMessage(this.state.value);
 		this.setState({value: ''});
 	}
 

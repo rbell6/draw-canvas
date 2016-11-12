@@ -9,6 +9,7 @@ export default class ActiveRoundService extends EventEmitter {
 	constructor(game) {
 		super();
 		this.game = game;
+		this._onActiveRoundPointsChange = this._onActiveRoundPointsChange.bind(this);
 		SocketService.on(`change:rounds:${game.id}`, rounds => this._onRoundsChange(rounds));
 		SocketService.on(`endGame:${game.id}`, () => this._onEndGame());
 	}
@@ -20,6 +21,15 @@ export default class ActiveRoundService extends EventEmitter {
 	_onRoundsChange(rounds) {
 		if (!rounds.length) { return; }
 		this.game.set('rounds', RoundCollection.fromJSON(rounds));
+		if (game.get('rounds').length > 1) {
+			let prevRound = game.get('rounds').getAtIndex(game.get('rounds').length-1);
+			SocketService.off(`change:activeRoundPoints:${prevRound.id}`, this._onActiveRoundPointsChange);
+		}
+		SocketService.on(`change:activeRoundPoints:${game.activeRound.id}`, this._onActiveRoundPointsChange);
+	}
+
+	_onActiveRoundPointsChange(points) {
+		this.game.activeRound.set('userPoints', points);
 	}
 
 	_onEndGame() {

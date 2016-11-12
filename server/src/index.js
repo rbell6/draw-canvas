@@ -30,6 +30,10 @@ module.exports = opts => {
 		app: app,
 		io: io
 	});
+	let messageAPI = require('./api/MessageAPI')({
+		app: app,
+		io: io
+	});
 
 	// Get all games
 	app.get('/api/game', function(req, res) {
