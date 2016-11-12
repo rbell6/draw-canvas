@@ -80,6 +80,8 @@ export default class GamePage extends React.Component {
 		}
 		HotkeyService.off('undo', this.onUndo);
 		this._mounted = false;
+		this.activeRoundService.destroy();
+		this.canvasService.destroy();
 	}
 
 	onRoundsChange() {

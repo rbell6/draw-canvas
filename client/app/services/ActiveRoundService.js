@@ -10,8 +10,18 @@ export default class ActiveRoundService extends EventEmitter {
 		super();
 		this.game = game;
 		this._onActiveRoundPointsChange = this._onActiveRoundPointsChange.bind(this);
-		SocketService.on(`change:rounds:${game.id}`, rounds => this._onRoundsChange(rounds));
-		SocketService.on(`endGame:${game.id}`, () => this._onEndGame());
+		this._onRoundsChange = this._onRoundsChange.bind(this);
+		this._onEndGame = this._onEndGame.bind(this);
+		SocketService.on(`change:rounds:${game.id}`, this._onRoundsChange);
+		SocketService.on(`endGame:${game.id}`, this._onEndGame);
+	}
+
+	destroy() {
+		SocketService.off(`change:rounds:${game.id}`, this._onRoundsChange);
+		SocketService.off(`endGame:${game.id}`, this._onEndGame);
+		if (this.game.activeRound) {
+			SocketService.off(`change:activeRoundPoints:${this.game.activeRound.id}`, this._onActiveRoundPointsChange);
+		}
 	}
 
 	getRounds() {
@@ -22,10 +32,10 @@ export default class ActiveRoundService extends EventEmitter {
 		if (!rounds.length) { return; }
 		this.game.set('rounds', RoundCollection.fromJSON(rounds));
 		if (game.get('rounds').length > 1) {
-			let prevRound = game.get('rounds').getAtIndex(game.get('rounds').length-1);
+			let prevRound = this.game.get('rounds').getAtIndex(this.game.get('rounds').length-1);
 			SocketService.off(`change:activeRoundPoints:${prevRound.id}`, this._onActiveRoundPointsChange);
 		}
-		SocketService.on(`change:activeRoundPoints:${game.activeRound.id}`, this._onActiveRoundPointsChange);
+		SocketService.on(`change:activeRoundPoints:${this.game.activeRound.id}`, this._onActiveRoundPointsChange);
 	}
 
 	_onActiveRoundPointsChange(points) {

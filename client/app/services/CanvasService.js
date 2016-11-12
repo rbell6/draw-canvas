@@ -8,7 +8,11 @@ export default class CanvasService extends EventEmitter {
 		super();
 		this.game = game;
 		this._onCanvasChange = this._onCanvasChange.bind(this);
-		SocketService.on(`change:canvas:${game.id}`, this._onCanvasChange);
+		SocketService.on(`change:canvas:${this.game.id}`, this._onCanvasChange);
+	}
+
+	destroy() {
+		SocketService.off(`change:canvas:${this.game.id}`, this._onCanvasChange);
 	}
 
 	emitCanvasChange(lines) {
