@@ -23,7 +23,8 @@ app.use('/static/', express.static(buildDir));
 app.all('/*', function(req, res){
 	res.sendFile('index.html', {root: buildDir});
 });
-
+console.log(5);
 http.listen(3007, function(){
+	console.log(6);
   console.log('listening on *:3007');
 });
