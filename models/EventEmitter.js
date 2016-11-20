@@ -16,7 +16,7 @@ module.exports = class EventEmitter {
 			let index = this._registeredEvents[event].indexOf(cb);
 			this._registeredEvents[event].splice(index, 1);
 		} else {
-			delete this._registeredEvents[events];
+			delete this._registeredEvents[event];
 		}
 	}
 
