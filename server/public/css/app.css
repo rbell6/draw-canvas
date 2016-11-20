@@ -373,6 +373,7 @@
 .game-list-page .join-game-button.new-game-button {
   justify-content: center;
   padding: 15px 20px;
+  background: #eee;
 }
 .game-list-page .join-game-button h2 {
   font-size: 22px;
@@ -381,9 +382,6 @@
 .game-list-page .join-game-button h3 {
   font-size: 12px;
   font-weight: 400;
-}
-.game-list-page .join-game-button:first-child {
-  background: #eee;
 }
 .game-list-page .join-game-button:disabled {
   color: #999;
