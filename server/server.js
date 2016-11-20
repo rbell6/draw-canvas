@@ -1,16 +1,21 @@
 'use strict';
 
-var http      = require('http');
-var express   = require('express');
-var app       = express();
-var http      = require('http').Server(app);
-var path      = require('path');
-var io        = require('socket.io')(http);
-var buildDir  = path.resolve(__dirname, '../client/public');
-var bodyParser = require('body-parser');
+let express = require('express');
+let socketIO = require('socket.io');
+let path = require('path');
+
+let PORT = process.env.PORT || 3007;
+let buildDir  = path.resolve(__dirname, './public');
+
+let app = express();
+let http = require('http');
+let server = http.createServer(app);
+let bodyParser = require('body-parser');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+
+let io = socketIO(server);
 
 // Bootstrap the game
 require('./src')({
@@ -19,12 +24,11 @@ require('./src')({
 });
 
 app.use('/static/', express.static(buildDir));
+app.all('/*', (req, res) => res.sendFile('index.html', {root: buildDir}));
 
-app.all('/*', function(req, res){
-	res.sendFile('index.html', {root: buildDir});
-});
-console.log(5);
-http.listen(3007, function(){
-	console.log(6);
-  console.log('listening on *:3007');
+server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+
+io.on('connection', (socket) => {
+  console.log('Client connected');
+  socket.on('disconnect', () => console.log('Client disconnected'));
 });

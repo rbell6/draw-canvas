@@ -1,3 +1,0 @@
-[submodule "server/src/models"]
-	path = server/src/models
-	url = git@github.com:timperkins/draw-models.git

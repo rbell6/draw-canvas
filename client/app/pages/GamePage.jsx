@@ -22,7 +22,7 @@ import {
 } from 'react-router';
 
 // TODO move
-let socket = io();
+// let socket = io();
 
 function FirstChild(props) {
 	var childrenArray = React.Children.toArray(props.children);

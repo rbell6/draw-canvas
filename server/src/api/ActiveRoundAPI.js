@@ -5,7 +5,7 @@ let RoundStartTimes = require('../RoundStartTimes');
 let WordService = require('../WordService');
 let Games = require('../Games');
 let words = WordService.get();
-let Round = require('../../../models/Round');
+let Round = require('../models/Round');
 let _ = require('lodash');
 const initialDelayTime = 1000;
 

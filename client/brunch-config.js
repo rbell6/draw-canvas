@@ -8,7 +8,9 @@ module.exports = {
     },
     stylesheets: {joinTo: 'css/app.css'}
   },
-
+  paths: {
+    public: '../server/public'
+  },
   plugins: {
     babel: {presets: ['es2015', 'react']},
     less: {}
