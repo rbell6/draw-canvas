@@ -3,7 +3,16 @@
 module.exports = {
 	get: () => {
 		return [
-			'a'
+			'pizza',
+			'house',
+			'foot',
+			'santa',
+			'guitar',
+			'slide',
+			'tongue',
+			'hammer',
+			'horse',
+			'cloud'
 		];
 	}
 };
