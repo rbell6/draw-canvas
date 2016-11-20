@@ -23,26 +23,25 @@ export default class GameStagePage extends React.Component {
 		this._startGame = this._startGame.bind(this);
 		this._onGameChange = this._onGameChange.bind(this);
 		this._onRoundsChange = this._onRoundsChange.bind(this);
-		this._endGame = this._endGame.bind(this);
 	}
 
 	componentDidMount() {
 		GameService.getById(this.props.params.id).then(game => {
 			if (!game) {
-				browserHistory.push('/game-list');
-				return;
-			}
-			if (game.activeRound) {
-				this._startGame(game);
+				this._leaveGame();
 				return;
 			}
 			this.setState({
 				game: game
 			});
+			if (game.activeRound) {
+				this._startGame();
+				return;
+			}
 			GameService.joinGame(game);
 			this.activeRoundService = new ActiveRoundService(game);
 			this.activeRoundService.getRounds();
-			this.activeRoundService.on('endGame', this._endGame);
+			this.activeRoundService.on('endGame', this._leaveGame);
 			game.on('change:rounds', this._onRoundsChange);
 		});
 		GameService.on('change:game', this._onGameChange);
@@ -55,7 +54,7 @@ export default class GameStagePage extends React.Component {
 			this.state.game.off('change:rounds', this._onRoundsChange);
 		}
 		if (this.activeRoundService) {
-			this.activeRoundService.off('endGame', this._endGame);
+			this.activeRoundService.off('endGame', this._leaveGame);
 			this.activeRoundService.destroy();
 		}
 		GameService.off('change:game', this._onGameChange);
@@ -79,15 +78,10 @@ export default class GameStagePage extends React.Component {
 		browserHistory.push('/game-list');
 	}
 
-	_startGame(game) {
-		let _game = game || this.state.game;
-		if (_game) {
-			browserHistory.push(`/game/${_game.id}`);
+	_startGame() {
+		if (this.state.game) {
+			browserHistory.push(`/game/${this.state.game.id}`);
 		}
-	}
-
-	_endGame() {
-		browserHistory.push('/game-list');
 	}
 
 	onNameChange(name) {

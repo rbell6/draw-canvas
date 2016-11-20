@@ -44,6 +44,11 @@ export default class GameListPage extends React.Component {
 		});
 	}
 
+	joinGame(game) {
+		let page = game.activeRound ? 'game' : 'game-stage';
+		browserHistory.push(`/${page}/${game.id}`);
+	}
+
 	render() {
 		const transitionTime = 400;
 		return (
@@ -58,7 +63,7 @@ export default class GameListPage extends React.Component {
 						transitionLeaveTimeout={transitionTime}
 					>
 						{this.state.gameList.map(game => (
-							<div key={game.id} className="join-game-button" onClick={() => browserHistory.push(`/game-stage/${game.id}`)}>
+							<div key={game.id} className="join-game-button" onClick={() => this.joinGame(game)}>
 								<h2>{game.get('name')}</h2>
 								<h3><i className="fa fa-user" /> {game.hostName()} &nbsp; <i className="fa fa-users" /> {game.numUsers()}</h3>
 							</div>

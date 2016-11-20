@@ -53085,6 +53085,12 @@ var GameListPage = function (_React$Component) {
 			});
 		}
 	}, {
+		key: 'joinGame',
+		value: function joinGame(game) {
+			var page = game.activeRound ? 'game' : 'game-stage';
+			_reactRouter.browserHistory.push('/' + page + '/' + game.id);
+		}
+	}, {
 		key: 'render',
 		value: function render() {
 			var _this3 = this;
@@ -53117,7 +53123,7 @@ var GameListPage = function (_React$Component) {
 							return _react2.default.createElement(
 								'div',
 								{ key: game.id, className: 'join-game-button', onClick: function onClick() {
-										return _reactRouter.browserHistory.push('/game-stage/' + game.id);
+										return _this3.joinGame(game);
 									} },
 								_react2.default.createElement(
 									'h2',
@@ -53288,7 +53294,7 @@ var GamePage = function (_React$Component) {
 
 			_GameService2.default.getById(this.props.params.id).then(function (game) {
 				if (!game) {
-					_reactRouter.browserHistory.push('/game-list');
+					_this2.endGame();
 					return;
 				}
 				_this2.setState({
@@ -53519,7 +53525,6 @@ var GameStagePage = function (_React$Component) {
 		_this._startGame = _this._startGame.bind(_this);
 		_this._onGameChange = _this._onGameChange.bind(_this);
 		_this._onRoundsChange = _this._onRoundsChange.bind(_this);
-		_this._endGame = _this._endGame.bind(_this);
 		return _this;
 	}
 
@@ -53530,20 +53535,20 @@ var GameStagePage = function (_React$Component) {
 
 			_GameService2.default.getById(this.props.params.id).then(function (game) {
 				if (!game) {
-					_reactRouter.browserHistory.push('/game-list');
-					return;
-				}
-				if (game.activeRound) {
-					_this2._startGame(game);
+					_this2._leaveGame();
 					return;
 				}
 				_this2.setState({
 					game: game
 				});
+				if (game.activeRound) {
+					_this2._startGame();
+					return;
+				}
 				_GameService2.default.joinGame(game);
 				_this2.activeRoundService = new _ActiveRoundService2.default(game);
 				_this2.activeRoundService.getRounds();
-				_this2.activeRoundService.on('endGame', _this2._endGame);
+				_this2.activeRoundService.on('endGame', _this2._leaveGame);
 				game.on('change:rounds', _this2._onRoundsChange);
 			});
 			_GameService2.default.on('change:game', this._onGameChange);
@@ -53557,7 +53562,7 @@ var GameStagePage = function (_React$Component) {
 				this.state.game.off('change:rounds', this._onRoundsChange);
 			}
 			if (this.activeRoundService) {
-				this.activeRoundService.off('endGame', this._endGame);
+				this.activeRoundService.off('endGame', this._leaveGame);
 				this.activeRoundService.destroy();
 			}
 			_GameService2.default.off('change:game', this._onGameChange);
@@ -53585,16 +53590,10 @@ var GameStagePage = function (_React$Component) {
 		}
 	}, {
 		key: '_startGame',
-		value: function _startGame(game) {
-			var _game = game || this.state.game;
-			if (_game) {
-				_reactRouter.browserHistory.push('/game/' + _game.id);
+		value: function _startGame() {
+			if (this.state.game) {
+				_reactRouter.browserHistory.push('/game/' + this.state.game.id);
 			}
-		}
-	}, {
-		key: '_endGame',
-		value: function _endGame() {
-			_reactRouter.browserHistory.push('/game-list');
 		}
 	}, {
 		key: 'onNameChange',

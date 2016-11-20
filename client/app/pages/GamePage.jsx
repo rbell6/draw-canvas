@@ -56,7 +56,7 @@ export default class GamePage extends React.Component {
 	componentDidMount() {
 		GameService.getById(this.props.params.id).then(game => {
 			if (!game) {
-				browserHistory.push('/game-list');
+				this.endGame();
 				return;
 			}
 			this.setState({
