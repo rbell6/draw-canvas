@@ -19,66 +19,66 @@ export default class GameStagePage extends React.Component {
 	constructor(props, context) {
 		super(props, context);
 		this.state = {};
-		this._leaveGame = this._leaveGame.bind(this);
-		this._startGame = this._startGame.bind(this);
-		this._onGameChange = this._onGameChange.bind(this);
-		this._onRoundsChange = this._onRoundsChange.bind(this);
+		this.leaveGame = this.leaveGame.bind(this);
+		this.startGame = this.startGame.bind(this);
+		this.onGameChange = this.onGameChange.bind(this);
+		this.onRoundsChange = this.onRoundsChange.bind(this);
 	}
 
 	componentDidMount() {
 		GameService.getById(this.props.params.id).then(game => {
 			if (!game) {
-				this._leaveGame();
+				this.leaveGame();
 				return;
 			}
 			this.setState({
 				game: game
 			});
 			if (game.activeRound) {
-				this._startGame();
+				this.startGame();
 				return;
 			}
 			GameService.joinGame(game);
 			this.activeRoundService = new ActiveRoundService(game);
 			this.activeRoundService.getRounds();
-			this.activeRoundService.on('endGame', this._leaveGame);
-			game.on('change:rounds', this._onRoundsChange);
+			this.activeRoundService.on('endGame', this.leaveGame);
+			game.on('change:rounds', this.onRoundsChange);
 		});
-		GameService.on('change:game', this._onGameChange);
-		GameService.on('leaveGame', this._leaveGame);
-		GameService.on('startGame', this._startGame);
+		GameService.on('change:game', this.onGameChange);
+		GameService.on('leaveGame', this.leaveGame);
+		GameService.on('startGame', this.startGame);
 	}
 
 	componentWillUnmount() {
 		if (this.state.game) {
-			this.state.game.off('change:rounds', this._onRoundsChange);
+			this.state.game.off('change:rounds', this.onRoundsChange);
 		}
 		if (this.activeRoundService) {
-			this.activeRoundService.off('endGame', this._leaveGame);
+			this.activeRoundService.off('endGame', this.leaveGame);
 			this.activeRoundService.destroy();
 		}
-		GameService.off('change:game', this._onGameChange);
-		GameService.off('leaveGame', this._leaveGame);
-		GameService.off('startGame', this._startGame);
+		GameService.off('change:game', this.onGameChange);
+		GameService.off('leaveGame', this.leaveGame);
+		GameService.off('startGame', this.startGame);
 	}
 
-	_onGameChange(e) {
+	onGameChange(e) {
 		this.setState({
 			game: e.data
 		});
 	}
 
-	_onRoundsChange(e) {
+	onRoundsChange(e) {
 		if (this.state.game && this.state.game.activeRound) {
-			this._startGame();
+			this.startGame();
 		}
 	}
 
-	_leaveGame() {
+	leaveGame() {
 		browserHistory.push('/game-list');
 	}
 
-	_startGame() {
+	startGame() {
 		if (this.state.game) {
 			browserHistory.push(`/game/${this.state.game.id}`);
 		}
@@ -92,7 +92,7 @@ export default class GameStagePage extends React.Component {
 		if (this.state.game.userIsHost(UserService.get())) {
 			GameService.delete(this.state.game);
 		}
-		GameService.leaveGame(this.state.game).then(() => this._leaveGame());
+		GameService.leaveGame(this.state.game).then(() => this.leaveGame());
 	}
 
 	start() {
