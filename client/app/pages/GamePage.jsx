@@ -78,10 +78,15 @@ export default class GamePage extends React.Component {
 		if (this.state.game) {
 			this.state.game.off('change:rounds', this.onRoundsChange);
 		}
+		if (this.activeRoundService) {
+			this.activeRoundService.off('endGame', this.endGame);
+			this.activeRoundService.destroy();
+		}
+		if (this.canvasService) {
+			this.canvasService.destroy();
+		}
 		HotkeyService.off('undo', this.onUndo);
 		this._mounted = false;
-		this.activeRoundService.destroy();
-		this.canvasService.destroy();
 	}
 
 	onRoundsChange() {

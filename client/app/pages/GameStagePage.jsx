@@ -13,6 +13,7 @@ import {
 import UserIcon from '../components/UserIcon';
 import UserService from '../services/UserService';
 import GameService from '../services/GameService';
+import ActiveRoundService from '../services/ActiveRoundService';
 
 export default class GameStagePage extends React.Component {
 	constructor(props, context) {
@@ -21,6 +22,8 @@ export default class GameStagePage extends React.Component {
 		this._leaveGame = this._leaveGame.bind(this);
 		this._startGame = this._startGame.bind(this);
 		this._onGameChange = this._onGameChange.bind(this);
+		this._onRoundsChange = this._onRoundsChange.bind(this);
+		this._endGame = this._endGame.bind(this);
 	}
 
 	componentDidMount() {
@@ -29,10 +32,18 @@ export default class GameStagePage extends React.Component {
 				browserHistory.push('/game-list');
 				return;
 			}
+			if (game.activeRound) {
+				this._startGame(game);
+				return;
+			}
 			this.setState({
 				game: game
 			});
 			GameService.joinGame(game);
+			this.activeRoundService = new ActiveRoundService(game);
+			this.activeRoundService.getRounds();
+			this.activeRoundService.on('endGame', this._endGame);
+			game.on('change:rounds', this._onRoundsChange);
 		});
 		GameService.on('change:game', this._onGameChange);
 		GameService.on('leaveGame', this._leaveGame);
@@ -40,6 +51,13 @@ export default class GameStagePage extends React.Component {
 	}
 
 	componentWillUnmount() {
+		if (this.state.game) {
+			this.state.game.off('change:rounds', this._onRoundsChange);
+		}
+		if (this.activeRoundService) {
+			this.activeRoundService.off('endGame', this._endGame);
+			this.activeRoundService.destroy();
+		}
 		GameService.off('change:game', this._onGameChange);
 		GameService.off('leaveGame', this._leaveGame);
 		GameService.off('startGame', this._startGame);
@@ -51,12 +69,25 @@ export default class GameStagePage extends React.Component {
 		});
 	}
 
+	_onRoundsChange(e) {
+		if (this.state.game && this.state.game.activeRound) {
+			this._startGame();
+		}
+	}
+
 	_leaveGame() {
 		browserHistory.push('/game-list');
 	}
 
-	_startGame() {
-		browserHistory.push(`/game/${this.state.game.id}`);
+	_startGame(game) {
+		let _game = game || this.state.game;
+		if (_game) {
+			browserHistory.push(`/game/${_game.id}`);
+		}
+	}
+
+	_endGame() {
+		browserHistory.push('/game-list');
 	}
 
 	onNameChange(name) {

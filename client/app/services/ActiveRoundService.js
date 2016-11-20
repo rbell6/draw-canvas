@@ -17,8 +17,8 @@ export default class ActiveRoundService extends EventEmitter {
 	}
 
 	destroy() {
-		SocketService.off(`change:rounds:${game.id}`, this._onRoundsChange);
-		SocketService.off(`endGame:${game.id}`, this._onEndGame);
+		SocketService.off(`change:rounds:${this.game.id}`, this._onRoundsChange);
+		SocketService.off(`endGame:${this.game.id}`, this._onEndGame);
 		if (this.game.activeRound) {
 			SocketService.off(`change:activeRoundPoints:${this.game.activeRound.id}`, this._onActiveRoundPointsChange);
 		}
@@ -31,7 +31,7 @@ export default class ActiveRoundService extends EventEmitter {
 	_onRoundsChange(rounds) {
 		if (!rounds.length) { return; }
 		this.game.set('rounds', RoundCollection.fromJSON(rounds));
-		if (game.get('rounds').length > 1) {
+		if (this.game.get('rounds').length > 1) {
 			let prevRound = this.game.get('rounds').getAtIndex(this.game.get('rounds').length-1);
 			SocketService.off(`change:activeRoundPoints:${prevRound.id}`, this._onActiveRoundPointsChange);
 		}
