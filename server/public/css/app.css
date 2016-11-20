@@ -616,6 +616,7 @@
 .game-stage-page .game-users-container {
   flex-grow: 1;
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 .game-stage-page .game-users {
   display: flex;
