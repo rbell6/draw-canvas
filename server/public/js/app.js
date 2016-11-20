@@ -51952,7 +51952,7 @@ module.exports = function () {
 				var index = this._registeredEvents[event].indexOf(cb);
 				this._registeredEvents[event].splice(index, 1);
 			} else {
-				delete this._registeredEvents[events];
+				delete this._registeredEvents[event];
 			}
 		}
 	}, {
@@ -53313,10 +53313,15 @@ var GamePage = function (_React$Component) {
 			if (this.state.game) {
 				this.state.game.off('change:rounds', this.onRoundsChange);
 			}
+			if (this.activeRoundService) {
+				this.activeRoundService.off('endGame', this.endGame);
+				this.activeRoundService.destroy();
+			}
+			if (this.canvasService) {
+				this.canvasService.destroy();
+			}
 			_HotkeyService2.default.off('undo', this.onUndo);
 			this._mounted = false;
-			this.activeRoundService.destroy();
-			this.canvasService.destroy();
 		}
 	}, {
 		key: 'onRoundsChange',
@@ -53331,8 +53336,8 @@ var GamePage = function (_React$Component) {
 				if (!_this3._mounted) {
 					return;
 				}
-				_this3.setState({ showPreRoundModal: false }), modalViewableTime;
-			});
+				_this3.setState({ showPreRoundModal: false });
+			}, modalViewableTime);
 		}
 	}, {
 		key: 'endGame',
@@ -53489,6 +53494,10 @@ var _GameService = require('../services/GameService');
 
 var _GameService2 = _interopRequireDefault(_GameService);
 
+var _ActiveRoundService = require('../services/ActiveRoundService');
+
+var _ActiveRoundService2 = _interopRequireDefault(_ActiveRoundService);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -53509,6 +53518,8 @@ var GameStagePage = function (_React$Component) {
 		_this._leaveGame = _this._leaveGame.bind(_this);
 		_this._startGame = _this._startGame.bind(_this);
 		_this._onGameChange = _this._onGameChange.bind(_this);
+		_this._onRoundsChange = _this._onRoundsChange.bind(_this);
+		_this._endGame = _this._endGame.bind(_this);
 		return _this;
 	}
 
@@ -53522,10 +53533,18 @@ var GameStagePage = function (_React$Component) {
 					_reactRouter.browserHistory.push('/game-list');
 					return;
 				}
+				if (game.activeRound) {
+					_this2._startGame(game);
+					return;
+				}
 				_this2.setState({
 					game: game
 				});
 				_GameService2.default.joinGame(game);
+				_this2.activeRoundService = new _ActiveRoundService2.default(game);
+				_this2.activeRoundService.getRounds();
+				_this2.activeRoundService.on('endGame', _this2._endGame);
+				game.on('change:rounds', _this2._onRoundsChange);
 			});
 			_GameService2.default.on('change:game', this._onGameChange);
 			_GameService2.default.on('leaveGame', this._leaveGame);
@@ -53534,6 +53553,13 @@ var GameStagePage = function (_React$Component) {
 	}, {
 		key: 'componentWillUnmount',
 		value: function componentWillUnmount() {
+			if (this.state.game) {
+				this.state.game.off('change:rounds', this._onRoundsChange);
+			}
+			if (this.activeRoundService) {
+				this.activeRoundService.off('endGame', this._endGame);
+				this.activeRoundService.destroy();
+			}
 			_GameService2.default.off('change:game', this._onGameChange);
 			_GameService2.default.off('leaveGame', this._leaveGame);
 			_GameService2.default.off('startGame', this._startGame);
@@ -53546,14 +53572,29 @@ var GameStagePage = function (_React$Component) {
 			});
 		}
 	}, {
+		key: '_onRoundsChange',
+		value: function _onRoundsChange(e) {
+			if (this.state.game && this.state.game.activeRound) {
+				this._startGame();
+			}
+		}
+	}, {
 		key: '_leaveGame',
 		value: function _leaveGame() {
 			_reactRouter.browserHistory.push('/game-list');
 		}
 	}, {
 		key: '_startGame',
-		value: function _startGame() {
-			_reactRouter.browserHistory.push('/game/' + this.state.game.id);
+		value: function _startGame(game) {
+			var _game = game || this.state.game;
+			if (_game) {
+				_reactRouter.browserHistory.push('/game/' + _game.id);
+			}
+		}
+	}, {
+		key: '_endGame',
+		value: function _endGame() {
+			_reactRouter.browserHistory.push('/game-list');
 		}
 	}, {
 		key: 'onNameChange',
@@ -53717,8 +53758,8 @@ var ActiveRoundService = function (_EventEmitter) {
 	_createClass(ActiveRoundService, [{
 		key: 'destroy',
 		value: function destroy() {
-			_SocketService2.default.off('change:rounds:' + game.id, this._onRoundsChange);
-			_SocketService2.default.off('endGame:' + game.id, this._onEndGame);
+			_SocketService2.default.off('change:rounds:' + this.game.id, this._onRoundsChange);
+			_SocketService2.default.off('endGame:' + this.game.id, this._onEndGame);
 			if (this.game.activeRound) {
 				_SocketService2.default.off('change:activeRoundPoints:' + this.game.activeRound.id, this._onActiveRoundPointsChange);
 			}
@@ -53739,7 +53780,7 @@ var ActiveRoundService = function (_EventEmitter) {
 				return;
 			}
 			this.game.set('rounds', _RoundCollection2.default.fromJSON(rounds));
-			if (game.get('rounds').length > 1) {
+			if (this.game.get('rounds').length > 1) {
 				var prevRound = this.game.get('rounds').getAtIndex(this.game.get('rounds').length - 1);
 				_SocketService2.default.off('change:activeRoundPoints:' + prevRound.id, this._onActiveRoundPointsChange);
 			}
