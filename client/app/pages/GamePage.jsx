@@ -94,8 +94,8 @@ export default class GamePage extends React.Component {
 		this.setState({showPreRoundModal: true});
 		setTimeout(() => {
 			if (!this._mounted) { return; }
-			this.setState({showPreRoundModal: false}), modalViewableTime
-		});
+			this.setState({showPreRoundModal: false});
+		}, modalViewableTime);
 	}
 
 	endGame() {
