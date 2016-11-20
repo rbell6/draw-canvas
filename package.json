@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "git subtree push --prefix server heroku master"
+    "deploy": "git subtree push --prefix server heroku master",
+    "forceDeploy": "git push heroku `git subtree split --prefix server master`:master --force"
   },
   "author": "",
   "license": "ISC"
