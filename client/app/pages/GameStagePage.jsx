@@ -14,6 +14,7 @@ import UserIcon from '../components/UserIcon';
 import UserService from '../services/UserService';
 import GameService from '../services/GameService';
 import ActiveRoundService from '../services/ActiveRoundService';
+import LocationService from '../services/LocationService';
 
 export default class GameStagePage extends React.Component {
 	constructor(props, context) {
@@ -28,6 +29,10 @@ export default class GameStagePage extends React.Component {
 	componentDidMount() {
 		GameService.getById(this.props.params.id).then(game => {
 			if (!game) {
+				this.leaveGame();
+				return;
+			}
+			if (LocationService.previousPath === `/game/${game.id}`) {
 				this.leaveGame();
 				return;
 			}

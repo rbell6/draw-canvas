@@ -50128,6 +50128,10 @@ var _axios = require('axios');
 
 var _axios2 = _interopRequireDefault(_axios);
 
+var _LocationService = require('services/LocationService');
+
+var _LocationService2 = _interopRequireDefault(_LocationService);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -53519,6 +53523,10 @@ var _ActiveRoundService = require('../services/ActiveRoundService');
 
 var _ActiveRoundService2 = _interopRequireDefault(_ActiveRoundService);
 
+var _LocationService = require('../services/LocationService');
+
+var _LocationService2 = _interopRequireDefault(_LocationService);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -53536,10 +53544,10 @@ var GameStagePage = function (_React$Component) {
 		var _this = _possibleConstructorReturn(this, (GameStagePage.__proto__ || Object.getPrototypeOf(GameStagePage)).call(this, props, context));
 
 		_this.state = {};
-		_this._leaveGame = _this._leaveGame.bind(_this);
-		_this._startGame = _this._startGame.bind(_this);
-		_this._onGameChange = _this._onGameChange.bind(_this);
-		_this._onRoundsChange = _this._onRoundsChange.bind(_this);
+		_this.leaveGame = _this.leaveGame.bind(_this);
+		_this.startGame = _this.startGame.bind(_this);
+		_this.onGameChange = _this.onGameChange.bind(_this);
+		_this.onRoundsChange = _this.onRoundsChange.bind(_this);
 		return _this;
 	}
 
@@ -53550,62 +53558,66 @@ var GameStagePage = function (_React$Component) {
 
 			_GameService2.default.getById(this.props.params.id).then(function (game) {
 				if (!game) {
-					_this2._leaveGame();
+					_this2.leaveGame();
+					return;
+				}
+				if (_LocationService2.default.previousPath === '/game/' + game.id) {
+					_this2.leaveGame();
 					return;
 				}
 				_this2.setState({
 					game: game
 				});
 				if (game.activeRound) {
-					_this2._startGame();
+					_this2.startGame();
 					return;
 				}
 				_GameService2.default.joinGame(game);
 				_this2.activeRoundService = new _ActiveRoundService2.default(game);
 				_this2.activeRoundService.getRounds();
-				_this2.activeRoundService.on('endGame', _this2._leaveGame);
-				game.on('change:rounds', _this2._onRoundsChange);
+				_this2.activeRoundService.on('endGame', _this2.leaveGame);
+				game.on('change:rounds', _this2.onRoundsChange);
 			});
-			_GameService2.default.on('change:game', this._onGameChange);
-			_GameService2.default.on('leaveGame', this._leaveGame);
-			_GameService2.default.on('startGame', this._startGame);
+			_GameService2.default.on('change:game', this.onGameChange);
+			_GameService2.default.on('leaveGame', this.leaveGame);
+			_GameService2.default.on('startGame', this.startGame);
 		}
 	}, {
 		key: 'componentWillUnmount',
 		value: function componentWillUnmount() {
 			if (this.state.game) {
-				this.state.game.off('change:rounds', this._onRoundsChange);
+				this.state.game.off('change:rounds', this.onRoundsChange);
 			}
 			if (this.activeRoundService) {
-				this.activeRoundService.off('endGame', this._leaveGame);
+				this.activeRoundService.off('endGame', this.leaveGame);
 				this.activeRoundService.destroy();
 			}
-			_GameService2.default.off('change:game', this._onGameChange);
-			_GameService2.default.off('leaveGame', this._leaveGame);
-			_GameService2.default.off('startGame', this._startGame);
+			_GameService2.default.off('change:game', this.onGameChange);
+			_GameService2.default.off('leaveGame', this.leaveGame);
+			_GameService2.default.off('startGame', this.startGame);
 		}
 	}, {
-		key: '_onGameChange',
-		value: function _onGameChange(e) {
+		key: 'onGameChange',
+		value: function onGameChange(e) {
 			this.setState({
 				game: e.data
 			});
 		}
 	}, {
-		key: '_onRoundsChange',
-		value: function _onRoundsChange(e) {
+		key: 'onRoundsChange',
+		value: function onRoundsChange(e) {
 			if (this.state.game && this.state.game.activeRound) {
-				this._startGame();
+				this.startGame();
 			}
 		}
 	}, {
-		key: '_leaveGame',
-		value: function _leaveGame() {
+		key: 'leaveGame',
+		value: function leaveGame() {
 			_reactRouter.browserHistory.push('/game-list');
 		}
 	}, {
-		key: '_startGame',
-		value: function _startGame() {
+		key: 'startGame',
+		value: function startGame() {
 			if (this.state.game) {
 				_reactRouter.browserHistory.push('/game/' + this.state.game.id);
 			}
@@ -53624,7 +53636,7 @@ var GameStagePage = function (_React$Component) {
 				_GameService2.default.delete(this.state.game);
 			}
 			_GameService2.default.leaveGame(this.state.game).then(function () {
-				return _this3._leaveGame();
+				return _this3.leaveGame();
 			});
 		}
 	}, {
@@ -54124,6 +54136,57 @@ var HotkeyService = function (_EventEmitter) {
 }(_EventEmitter3.default);
 
 exports.default = new HotkeyService();
+});
+
+require.register("services/LocationService.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _reactRouter = require('react-router');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var LocationService = function () {
+	function LocationService() {
+		var _this = this;
+
+		_classCallCheck(this, LocationService);
+
+		this._pathStack = [];
+		_reactRouter.browserHistory.listen(function (location) {
+			return _this._pathStack.push(location.pathname);
+		});
+	}
+
+	_createClass(LocationService, [{
+		key: 'currentPath',
+		get: function get() {
+			return this.pathStack[this.pathStack.length - 1];
+		}
+	}, {
+		key: 'previousPath',
+		get: function get() {
+			if (this.pathStack.length > 1) {
+				return this.pathStack[this.pathStack.length - 2];
+			}
+			return null;
+		}
+	}, {
+		key: 'pathStack',
+		get: function get() {
+			return this._pathStack;
+		}
+	}]);
+
+	return LocationService;
+}();
+
+exports.default = new LocationService();
 });
 
 require.register("services/MessageService.js", function(exports, require, module) {

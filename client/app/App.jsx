@@ -15,6 +15,7 @@ import GameListPage from 'pages/GameListPage';
 import GameStagePage from 'pages/GameStagePage';
 import UserService from 'services/UserService';
 import axios from 'axios';
+import LocationService from 'services/LocationService';
 
 window._ = _;
 
