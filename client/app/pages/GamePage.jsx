@@ -50,6 +50,7 @@ export default class GamePage extends React.Component {
 
 		this.onRoundsChange = this.onRoundsChange.bind(this);
 		this.endGame = this.endGame.bind(this);
+		this.onGameChange = this.onGameChange.bind(this);
 		this.onUndo = this.onUndo.bind(this);
 	}
 
@@ -63,13 +64,14 @@ export default class GamePage extends React.Component {
 				game: game
 			});
 			window.game = game;
-			GameService.joinGame(game).then(g => this.state.game.set('users', g.get('users')));
+			GameService.joinGame(game).then(g => this.updateGameUsers(g.get('users')));
 			this.canvasService = new CanvasService(game);
 			this.activeRoundService = new ActiveRoundService(game);
 			this.activeRoundService.getRounds();
 			this.activeRoundService.on('endGame', this.endGame);
 			game.on('change:rounds', this.onRoundsChange);
 		});
+		GameService.on('change:game', this.onGameChange);
 		HotkeyService.on('undo', this.onUndo);
 		this._mounted = true;
 	}
@@ -85,6 +87,7 @@ export default class GamePage extends React.Component {
 		if (this.canvasService) {
 			this.canvasService.destroy();
 		}
+		GameService.off('change:game', this.onGameChange);
 		HotkeyService.off('undo', this.onUndo);
 		this._mounted = false;
 	}
@@ -118,6 +121,16 @@ export default class GamePage extends React.Component {
 
 	onCanvasChange(lines) {
 		this.canvasService.emitCanvasChange(lines);
+	}
+
+	onGameChange(e) {
+		let game = e.data;
+		this.updateGameUsers(game.get('users'));
+	}
+
+	updateGameUsers(newUsers) {
+		this.state.game.set('users', newUsers);
+		this.forceUpdate();
 	}
 
 	drawerIsMe() {

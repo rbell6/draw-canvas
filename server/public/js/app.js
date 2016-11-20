@@ -53283,6 +53283,7 @@ var GamePage = function (_React$Component) {
 
 		_this.onRoundsChange = _this.onRoundsChange.bind(_this);
 		_this.endGame = _this.endGame.bind(_this);
+		_this.onGameChange = _this.onGameChange.bind(_this);
 		_this.onUndo = _this.onUndo.bind(_this);
 		return _this;
 	}
@@ -53302,7 +53303,7 @@ var GamePage = function (_React$Component) {
 				});
 				window.game = game;
 				_GameService2.default.joinGame(game).then(function (g) {
-					return _this2.state.game.set('users', g.get('users'));
+					return _this2.updateGameUsers(g.get('users'));
 				});
 				_this2.canvasService = new _CanvasService2.default(game);
 				_this2.activeRoundService = new _ActiveRoundService2.default(game);
@@ -53310,6 +53311,7 @@ var GamePage = function (_React$Component) {
 				_this2.activeRoundService.on('endGame', _this2.endGame);
 				game.on('change:rounds', _this2.onRoundsChange);
 			});
+			_GameService2.default.on('change:game', this.onGameChange);
 			_HotkeyService2.default.on('undo', this.onUndo);
 			this._mounted = true;
 		}
@@ -53326,6 +53328,7 @@ var GamePage = function (_React$Component) {
 			if (this.canvasService) {
 				this.canvasService.destroy();
 			}
+			_GameService2.default.off('change:game', this.onGameChange);
 			_HotkeyService2.default.off('undo', this.onUndo);
 			this._mounted = false;
 		}
@@ -53371,6 +53374,18 @@ var GamePage = function (_React$Component) {
 		key: 'onCanvasChange',
 		value: function onCanvasChange(lines) {
 			this.canvasService.emitCanvasChange(lines);
+		}
+	}, {
+		key: 'onGameChange',
+		value: function onGameChange(e) {
+			var game = e.data;
+			this.updateGameUsers(game.get('users'));
+		}
+	}, {
+		key: 'updateGameUsers',
+		value: function updateGameUsers(newUsers) {
+			this.state.game.set('users', newUsers);
+			this.forceUpdate();
 		}
 	}, {
 		key: 'drawerIsMe',
