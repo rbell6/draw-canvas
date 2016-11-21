@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import TextField from './TextField';
 import HotkeyService from '../services/HotkeyService';
 import UserService from '../services/UserService';
-import MessageService from '../services/MessageService';
 import UserIcon from './UserIcon';
 
 export default class GameTextField extends React.Component {
@@ -19,12 +18,10 @@ export default class GameTextField extends React.Component {
 	componentDidMount() {
 		this.textField = ReactDOM.findDOMNode(this.refs.textField);
 		this.textField.focus();
-		this.messageService = new MessageService(this.props.game);
 	}
 
 	componentWillUnmount() {
 		HotkeyService.off('enter', this.onSubmit);
-		this.messageService.destroy();
 	}
 
 	onFocus() {
@@ -36,7 +33,7 @@ export default class GameTextField extends React.Component {
 	}
 
 	onSubmit() {
-		this.messageService.addMessage(this.state.value);
+		this.props.messageService.addMessage(this.state.value);
 		this.setState({value: ''});
 	}
 

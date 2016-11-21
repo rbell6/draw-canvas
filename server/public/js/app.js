@@ -50667,10 +50667,6 @@ var _reactAddonsCssTransitionGroup = require('react-addons-css-transition-group'
 
 var _reactAddonsCssTransitionGroup2 = _interopRequireDefault(_reactAddonsCssTransitionGroup);
 
-var _MessageService = require('../services/MessageService');
-
-var _MessageService2 = _interopRequireDefault(_MessageService);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -50727,13 +50723,11 @@ var GameMessages = function (_React$Component) {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
 			this.props.game.get('messages').on('add', this.onAddMessage);
-			this.messageService = new _MessageService2.default(this.props.game);
 		}
 	}, {
 		key: 'componentWillUnmount',
 		value: function componentWillUnmount() {
 			this.props.game.get('messages').off('add', this.onAddMessage);
-			this.messageService.destroy();
 		}
 	}, {
 		key: 'onAddMessage',
@@ -50979,10 +50973,6 @@ var _UserService = require('../services/UserService');
 
 var _UserService2 = _interopRequireDefault(_UserService);
 
-var _MessageService = require('../services/MessageService');
-
-var _MessageService2 = _interopRequireDefault(_MessageService);
-
 var _UserIcon = require('./UserIcon');
 
 var _UserIcon2 = _interopRequireDefault(_UserIcon);
@@ -51015,13 +51005,11 @@ var GameTextField = function (_React$Component) {
 		value: function componentDidMount() {
 			this.textField = _reactDom2.default.findDOMNode(this.refs.textField);
 			this.textField.focus();
-			this.messageService = new _MessageService2.default(this.props.game);
 		}
 	}, {
 		key: 'componentWillUnmount',
 		value: function componentWillUnmount() {
 			_HotkeyService2.default.off('enter', this.onSubmit);
-			this.messageService.destroy();
 		}
 	}, {
 		key: 'onFocus',
@@ -51036,7 +51024,7 @@ var GameTextField = function (_React$Component) {
 	}, {
 		key: 'onSubmit',
 		value: function onSubmit() {
-			this.messageService.addMessage(this.state.value);
+			this.props.messageService.addMessage(this.state.value);
 			this.setState({ value: '' });
 		}
 	}, {
@@ -53242,6 +53230,10 @@ var _CanvasService = require('../services/CanvasService');
 
 var _CanvasService2 = _interopRequireDefault(_CanvasService);
 
+var _MessageService = require('../services/MessageService');
+
+var _MessageService2 = _interopRequireDefault(_MessageService);
+
 var _reactAddonsCssTransitionGroup = require('react-addons-css-transition-group');
 
 var _reactAddonsCssTransitionGroup2 = _interopRequireDefault(_reactAddonsCssTransitionGroup);
@@ -53315,6 +53307,7 @@ var GamePage = function (_React$Component) {
 				_this2.activeRoundService = new _ActiveRoundService2.default(game);
 				_this2.activeRoundService.getRounds();
 				_this2.activeRoundService.on('endGame', _this2.endGame);
+				_this2.messageService = new _MessageService2.default(game);
 				game.on('change:rounds', _this2.onRoundsChange);
 			});
 			_GameService2.default.on('change:game', this.onGameChange);
@@ -53333,6 +53326,9 @@ var GamePage = function (_React$Component) {
 			}
 			if (this.canvasService) {
 				this.canvasService.destroy();
+			}
+			if (this.messageService) {
+				this.messageService.destroy();
 			}
 			_GameService2.default.off('change:game', this.onGameChange);
 			_HotkeyService2.default.off('undo', this.onUndo);
@@ -53457,7 +53453,10 @@ var GamePage = function (_React$Component) {
 							transitionName: 'game-text-field',
 							transitionEnterTimeout: gameTextFieldTransitionTime,
 							transitionLeaveTimeout: gameTextFieldTransitionTime },
-						this.state.game.activeRound && !this.drawerIsMe() ? _react2.default.createElement(_GameTextField2.default, { game: this.state.game, onChange: function onChange(e) {
+						this.state.game.activeRound && !this.drawerIsMe() ? _react2.default.createElement(_GameTextField2.default, {
+							game: this.state.game,
+							messageService: this.messageService,
+							onChange: function onChange(e) {
 								return _this4.onTextFieldChange(e.value);
 							} }) : null
 					)

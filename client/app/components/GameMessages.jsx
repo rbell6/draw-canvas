@@ -1,7 +1,6 @@
 import React from 'react';
 import UserIcon from './UserIcon';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import MessageService from '../services/MessageService';
 
 const transitionEnterTime = 300;
 const transitionLeaveTime = 3000;
@@ -32,12 +31,10 @@ export default class GameMessages extends React.Component {
 
 	componentDidMount() {
 		this.props.game.get('messages').on('add', this.onAddMessage);
-		this.messageService = new MessageService(this.props.game);
 	}
 
 	componentWillUnmount() {
 		this.props.game.get('messages').off('add', this.onAddMessage);
-		this.messageService.destroy();
 	}
 
 	onAddMessage() {

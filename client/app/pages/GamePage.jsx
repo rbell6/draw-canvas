@@ -16,6 +16,7 @@ import HotkeyService from '../services/HotkeyService';
 import UserService from '../services/UserService';
 import ActiveRoundService from '../services/ActiveRoundService';
 import CanvasService from '../services/CanvasService';
+import MessageService from '../services/MessageService';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import {
 	browserHistory
@@ -69,6 +70,7 @@ export default class GamePage extends React.Component {
 			this.activeRoundService = new ActiveRoundService(game);
 			this.activeRoundService.getRounds();
 			this.activeRoundService.on('endGame', this.endGame);
+			this.messageService = new MessageService(game);
 			game.on('change:rounds', this.onRoundsChange);
 		});
 		GameService.on('change:game', this.onGameChange);
@@ -86,6 +88,9 @@ export default class GamePage extends React.Component {
 		}
 		if (this.canvasService) {
 			this.canvasService.destroy();
+		}
+		if (this.messageService) {
+			this.messageService.destroy();
 		}
 		GameService.off('change:game', this.onGameChange);
 		HotkeyService.off('undo', this.onUndo);
@@ -190,7 +195,10 @@ export default class GamePage extends React.Component {
 							transitionEnterTimeout={gameTextFieldTransitionTime}
 							transitionLeaveTimeout={gameTextFieldTransitionTime}>
 							{ this.state.game.activeRound && !this.drawerIsMe() ? 
-								<GameTextField game={this.state.game} onChange={e => this.onTextFieldChange(e.value)} /> 
+								<GameTextField 
+									game={this.state.game}
+									messageService={this.messageService}
+									onChange={e => this.onTextFieldChange(e.value)} /> 
 								: 
 								null 
 							}
