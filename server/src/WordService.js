@@ -12,7 +12,33 @@ module.exports = {
 			'tongue',
 			'hammer',
 			'horse',
-			'cloud'
+			'cloud',
+			'catan',
+			'beanie',
+			'elephant',
+			'pomegranite',
+			'blue',
+			'dragon',
+			'melancholy',
+			'mamba',
+			'highchair',
+			'placenta',
+			'ipad',
+			'avada kadavra',
+			'frodo',
+			'voldemort',
+			'king',
+			'scum',
+			'spikeball',
+			'swamp',
+			'adobe',
+			'qualtrics',
+			'golf cart',
+			'jack-o-lantern',
+			'cymbals',
+			'breezetunes',
+			'nipple ring'
+
 		];
 	}
 };
