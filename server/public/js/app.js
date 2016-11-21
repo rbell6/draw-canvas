@@ -50727,11 +50727,13 @@ var GameMessages = function (_React$Component) {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
 			this.props.game.get('messages').on('add', this.onAddMessage);
+			this.messageService = new _MessageService2.default(this.props.game);
 		}
 	}, {
 		key: 'componentWillUnmount',
 		value: function componentWillUnmount() {
 			this.props.game.get('messages').off('add', this.onAddMessage);
+			this.messageService.destroy();
 		}
 	}, {
 		key: 'onAddMessage',

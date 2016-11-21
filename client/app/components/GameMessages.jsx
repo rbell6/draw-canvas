@@ -32,10 +32,12 @@ export default class GameMessages extends React.Component {
 
 	componentDidMount() {
 		this.props.game.get('messages').on('add', this.onAddMessage);
+		this.messageService = new MessageService(this.props.game);
 	}
 
 	componentWillUnmount() {
 		this.props.game.get('messages').off('add', this.onAddMessage);
+		this.messageService.destroy();
 	}
 
 	onAddMessage() {
