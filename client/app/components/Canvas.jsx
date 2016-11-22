@@ -100,6 +100,7 @@ export default class Canvas extends React.Component {
 	componentDidMount() {
 		window.addEventListener('resize', this.resizeCanvas, false);
 		this.resizeCanvas();
+		this.reparentMouseObserver();
 
 		this.lines.on('change', this.onChange);
 	}
@@ -107,10 +108,24 @@ export default class Canvas extends React.Component {
 	componentWillUnmount() {
 		window.removeEventListener('resize', this.resizeCanvas);
 		this.lines.off('change', this.onChange);
+		// We need to manually remove the mouse observer since we reparented it
+		this.removeMouseObserver();
 	}
 
 	get canvas() {
 		return this.refs.canvas;
+	}
+
+	reparentMouseObserver() {
+		// The mouse observer needs to be on top of the components in center of the page
+		let $mouseObserver = this.refs.mouseObserver.el;
+		let $gameMessages = document.querySelector('.game-messages');
+		let $parent = document.querySelector('.app');
+		$parent.insertBefore($mouseObserver, $gameMessages.nextSibling);
+	}
+
+	removeMouseObserver() {
+		this.refs.mouseObserver.el.remove();
 	}
 
 	onChange() {
@@ -157,6 +172,7 @@ export default class Canvas extends React.Component {
 			<div className="canvas-wrap">
 				<CursorCanvas ref="cursorCanvas" brush={this.props.brush} />
 				<MouseObserver 
+					ref="mouseObserver"
 					onMouseDown={this.startLine} 
 					onMouseDownMove={this.extendLine} 
 					onMouseMove={point => this.refs.cursorCanvas.paint(point)}

@@ -50582,6 +50582,7 @@ var Canvas = function (_React$Component2) {
 		value: function componentDidMount() {
 			window.addEventListener('resize', this.resizeCanvas, false);
 			this.resizeCanvas();
+			this.reparentMouseObserver();
 
 			this.lines.on('change', this.onChange);
 		}
@@ -50590,6 +50591,22 @@ var Canvas = function (_React$Component2) {
 		value: function componentWillUnmount() {
 			window.removeEventListener('resize', this.resizeCanvas);
 			this.lines.off('change', this.onChange);
+			// We need to manually remove the mouse observer since we reparented it
+			this.removeMouseObserver();
+		}
+	}, {
+		key: 'reparentMouseObserver',
+		value: function reparentMouseObserver() {
+			// The mouse observer needs to be on top of the components in center of the page
+			var $mouseObserver = this.refs.mouseObserver.el;
+			var $gameMessages = document.querySelector('.game-messages');
+			var $parent = document.querySelector('.app');
+			$parent.insertBefore($mouseObserver, $gameMessages.nextSibling);
+		}
+	}, {
+		key: 'removeMouseObserver',
+		value: function removeMouseObserver() {
+			this.refs.mouseObserver.el.remove();
 		}
 	}, {
 		key: 'onChange',
@@ -50647,6 +50664,7 @@ var Canvas = function (_React$Component2) {
 				{ className: 'canvas-wrap' },
 				_react2.default.createElement(_CursorCanvas2.default, { ref: 'cursorCanvas', brush: this.props.brush }),
 				_react2.default.createElement(_MouseObserver2.default, {
+					ref: 'mouseObserver',
 					onMouseDown: this.startLine,
 					onMouseDownMove: this.extendLine,
 					onMouseMove: function onMouseMove(point) {
@@ -51304,6 +51322,7 @@ var MouseObserver = function (_React$Component) {
 	}, {
 		key: 'componentWillUnmount',
 		value: function componentWillUnmount() {
+			console.log('will unmount');
 			this.el.removeEventListener('mousedown', this.onMouseDown);
 			this.el.removeEventListener('mousemove', this.onMouseMove);
 			this.el.removeEventListener('mouseup', this.onMouseUp);
@@ -53701,6 +53720,9 @@ var GamePage = function (_React$Component) {
 				this.state.game ? _react2.default.createElement(
 					'div',
 					{ className: (0, _classnames2.default)('app', { 'drawer-is-me': this.drawerIsMe() }) },
+					this.canvasService ? this.drawerIsMe() ? _react2.default.createElement(_Canvas2.default, { brush: this.state.brush, onChange: function onChange(e) {
+							return _this4.onCanvasChange(e.value);
+						}, ref: 'canvas' }) : _react2.default.createElement(_ViewOnlyCanvas2.default, { canvasService: this.canvasService, game: this.state.game }) : null,
 					this.drawerIsMe() ? _react2.default.createElement(
 						'div',
 						{ className: 'round-word' },
@@ -53716,9 +53738,6 @@ var GamePage = function (_React$Component) {
 						this.state.showPreRoundModal ? _react2.default.createElement(_PreRoundModal2.default, { game: this.state.game }) : null
 					),
 					_react2.default.createElement(_GameMessages2.default, { game: this.state.game }),
-					this.canvasService ? this.drawerIsMe() ? _react2.default.createElement(_Canvas2.default, { brush: this.state.brush, onChange: function onChange(e) {
-							return _this4.onCanvasChange(e.value);
-						}, ref: 'canvas' }) : _react2.default.createElement(_ViewOnlyCanvas2.default, { canvasService: this.canvasService, game: this.state.game }) : null,
 					_react2.default.createElement(
 						_reactAddonsCssTransitionGroup2.default,
 						{

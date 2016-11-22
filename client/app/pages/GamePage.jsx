@@ -148,6 +148,14 @@ export default class GamePage extends React.Component {
 			<div className="game-page">
 				{this.state.game ?
 					<div className={classNames('app', {'drawer-is-me': this.drawerIsMe()})}>
+						{ this.canvasService ?
+							this.drawerIsMe() ? 
+								<Canvas brush={this.state.brush} onChange={e => this.onCanvasChange(e.value)} ref="canvas" />
+								:
+								<ViewOnlyCanvas canvasService={this.canvasService} game={this.state.game} />
+							:
+							null
+						}
 						{ this.drawerIsMe() ?
 							<div className="round-word">{this.state.game.activeRound ? this.state.game.activeRound.get('word') : null}</div>
 							:
@@ -161,14 +169,6 @@ export default class GamePage extends React.Component {
 							{this.state.showPreRoundModal ? <PreRoundModal game={this.state.game} /> : null}
 						</ReactCSSTransitionGroup>
 						<GameMessages game={this.state.game} />
-						{ this.canvasService ?
-							this.drawerIsMe() ? 
-								<Canvas brush={this.state.brush} onChange={e => this.onCanvasChange(e.value)} ref="canvas" />
-								:
-								<ViewOnlyCanvas canvasService={this.canvasService} game={this.state.game} />
-							:
-							null
-						}
 						<ReactCSSTransitionGroup
 							component={FirstChild}
 							transitionName="brush-palette"
