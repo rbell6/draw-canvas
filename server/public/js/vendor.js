@@ -75989,7 +75989,7 @@ module.exports = function () {
 				var index = this._registeredEvents[event].indexOf(cb);
 				this._registeredEvents[event].splice(index, 1);
 			} else {
-				delete this._registeredEvents[events];
+				delete this._registeredEvents[event];
 			}
 		}
 	}, {

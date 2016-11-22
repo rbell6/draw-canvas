@@ -1,11 +1,15 @@
-* {
-  margin: 0;
-  padding: 0;
+.canvas-wrap {
+	position: relative;
+}
+.cursor-canvas {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
 }
 .canvas {
-  cursor: none;
   height:100%;
-  position: relative;
   &.view-only {
   	cursor: default;
   }

@@ -67,6 +67,14 @@
   top: 0;
   width: 100px;
   height: 100%;
+  background: transparent;
+  transition: background 0.2s;
+}
+.brush-palette:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+.brush-palette:hover .brush {
+  border-color: #7c7c7c;
 }
 .brush-palette .brushes {
   display: flex;
@@ -275,14 +283,18 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
-* {
-  margin: 0;
-  padding: 0;
+.canvas-wrap {
+  position: relative;
+}
+.cursor-canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
 }
 .canvas {
-  cursor: none;
   height: 100%;
-  position: relative;
 }
 .canvas.view-only {
   cursor: default;
@@ -399,7 +411,7 @@
   position: absolute;
   bottom: 100px;
   left: 0;
-  right: 200px;
+  right: 170px;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -478,7 +490,7 @@
 .round-word {
   position: absolute;
   left: 100px;
-  right: 200px;
+  right: 170px;
   bottom: 50px;
   font-size: 40px;
   font-weight: 800;
@@ -541,7 +553,7 @@
 .game-panel {
   position: absolute;
   right: 0;
-  width: 200px;
+  width: 170px;
   top: 0;
   bottom: 0;
   display: flex;
@@ -550,6 +562,11 @@
   transform: translate(20%);
   opacity: 0;
   animation: slide-in 300ms forwards;
+  background: transparent;
+  transition: background 0.2s;
+}
+.game-panel:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 .game-panel .game-panel-header {
   padding: 0 10px;
@@ -630,7 +647,7 @@
   position: absolute;
   bottom: 0;
   left: 0;
-  right: 200px;
+  right: 170px;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -653,10 +670,23 @@
   margin-bottom: 15px;
 }
 
+body.disable-selection {
+  -webkit-user-select: none;
+  user-select: none;
+}
+.mouse-observer {
+  cursor: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+
 .pre-round-modal {
   position: absolute;
   left: 0;
-  right: 200px;
+  right: 170px;
   top: 0;
   display: flex;
   justify-content: center;

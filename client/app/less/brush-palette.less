@@ -19,6 +19,14 @@
 	top: 0;
 	width: @brush-palette-width;
 	height: 100%;
+	background: transparent;
+	transition: background 0.2s;
+	&:hover {
+		background: rgba(255, 255, 255, 0.05);
+		.brush {
+			border-color: #7c7c7c;
+		}
+	}
 	.brushes {
 		display: flex;
 		flex-wrap: wrap;
