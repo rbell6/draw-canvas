@@ -1,80 +1,10 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import Line from '../../../models/Line';
 import LineCollection from '../../../models/LineCollection';
 import Brush from '../../../models/Brush';
 import MouseObserver from './MouseObserver';
 import CursorCanvas from './CursorCanvas';
-
-class DrawingCanvas extends React.Component {
-	constructor(props, context) {
-		super(props, context);
-		this.paint = this.paint.bind(this);
-	}
-
-	componentDidMount() {
-		this.el = ReactDOM.findDOMNode(this);
-		this.ctx = this.el.getContext('2d');
-		window.ctx = this.ctx;
-	}
-
-	shouldComponentUpdate() {
-		// We don't want to use react to re-render this because we are using a <canvas>
-		return false;
-	}
-
-	updateDimensions({width, height}) {
-		this.el.width = width;
-		this.el.height = height;
-	}
-
-	paint(lines=[]) {
-		// Clear the canvas
-		this.ctx.clearRect(0, 0, this.el.width, this.el.height);
-
-		lines.getAll().forEach(line => {
-			this._startDrawing(line);
-			line.get('points').forEach((point, i) => {
-				this._drawLineToPoint(point);
-			});
-			this._endDrawing();
-		});
-	}
-
-	_startDrawing(line) {
-		let point = line.startingPoint();
-		let brush = line.get('brush');
-		this._setBrushType(brush);
-		this.ctx.beginPath();
-		this.ctx.lineWidth = brush.get('size');
-		this.ctx.strokeStyle = brush.get('color');
-		this.ctx.lineCap = 'round';
-		this.ctx.lineJoin = 'round';
-		this.ctx.moveTo(point.x, point.y);
-	}
-
-	_drawLineToPoint(point) {
-		this.ctx.lineTo(point.x, point.y);
-	}
-
-	_endDrawing() {
-		this.ctx.stroke();
-	}
-
-	_setBrushType(brush) {
-		if (brush.get('name') == 'eraser') {
-			this.ctx.globalCompositeOperation = 'destination-out';
-		} else {
-			this.ctx.globalCompositeOperation = 'source-over';
-		}
-	}
-
-	render() {
-		return (
-			<canvas className="canvas"></canvas>
-		);
-	}
-}
+import CanvasView from './CanvasView';
 
 export default class Canvas extends React.Component {
 	constructor(props, context) {
@@ -82,7 +12,6 @@ export default class Canvas extends React.Component {
 
 		// Bind methods that we'll need to add/remove event listeners
 		this.onChange = this.onChange.bind(this);
-		this.resizeCanvas = this.resizeCanvas.bind(this);
 		this.startLine = this.startLine.bind(this);
 		this.extendLine = this.extendLine.bind(this);
 
@@ -98,15 +27,11 @@ export default class Canvas extends React.Component {
 	}
 
 	componentDidMount() {
-		window.addEventListener('resize', this.resizeCanvas, false);
-		this.resizeCanvas();
 		this.reparentMouseObserver();
-
 		this.lines.on('change', this.onChange);
 	}
 
 	componentWillUnmount() {
-		window.removeEventListener('resize', this.resizeCanvas);
 		this.lines.off('change', this.onChange);
 		// We need to manually remove the mouse observer since we reparented it
 		this.removeMouseObserver();
@@ -116,6 +41,7 @@ export default class Canvas extends React.Component {
 		return this.refs.canvas;
 	}
 
+	// TODO put the mouse observer in the right spot so we don't have to reparent it
 	reparentMouseObserver() {
 		// The mouse observer needs to be on top of the components in center of the page
 		let $mouseObserver = this.refs.mouseObserver.el;
@@ -142,14 +68,6 @@ export default class Canvas extends React.Component {
 		this.canvas.paint(this.lines);
 	}
 
-	resizeCanvas() {
-		this.canvas.updateDimensions({
-			width: window.innerWidth,
-			height: window.innerHeight
-		});
-		this.canvas.paint(this.lines);
-	}
-
 	startLine(point) {
 		this._curLine = new Line({
 			brush: this.props.brush
@@ -171,13 +89,14 @@ export default class Canvas extends React.Component {
 		return (
 			<div className="canvas-wrap">
 				<CursorCanvas ref="cursorCanvas" brush={this.props.brush} />
+				{/* This will get reparented */}
 				<MouseObserver 
 					ref="mouseObserver"
 					onMouseDown={this.startLine} 
 					onMouseDownMove={this.extendLine} 
 					onMouseMove={point => this.refs.cursorCanvas.paint(point)}
 					onMouseLeave={() => this.refs.cursorCanvas.paint()} />
-				<DrawingCanvas ref="canvas" />
+				<CanvasView ref="canvas" />
 			</div>
 		);
 	}

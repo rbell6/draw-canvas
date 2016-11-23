@@ -50432,10 +50432,6 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDom = require('react-dom');
-
-var _reactDom2 = _interopRequireDefault(_reactDom);
-
 var _Line = require('../../../models/Line');
 
 var _Line2 = _interopRequireDefault(_Line);
@@ -50456,6 +50452,10 @@ var _CursorCanvas = require('./CursorCanvas');
 
 var _CursorCanvas2 = _interopRequireDefault(_CursorCanvas);
 
+var _CanvasView = require('./CanvasView');
+
+var _CanvasView2 = _interopRequireDefault(_CanvasView);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -50464,24 +50464,186 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var DrawingCanvas = function (_React$Component) {
-	_inherits(DrawingCanvas, _React$Component);
+var Canvas = function (_React$Component) {
+	_inherits(Canvas, _React$Component);
 
-	function DrawingCanvas(props, context) {
-		_classCallCheck(this, DrawingCanvas);
+	function Canvas(props, context) {
+		_classCallCheck(this, Canvas);
 
-		var _this = _possibleConstructorReturn(this, (DrawingCanvas.__proto__ || Object.getPrototypeOf(DrawingCanvas)).call(this, props, context));
+		// Bind methods that we'll need to add/remove event listeners
+		var _this = _possibleConstructorReturn(this, (Canvas.__proto__ || Object.getPrototypeOf(Canvas)).call(this, props, context));
 
-		_this.paint = _this.paint.bind(_this);
+		_this.onChange = _this.onChange.bind(_this);
+		_this.startLine = _this.startLine.bind(_this);
+		_this.extendLine = _this.extendLine.bind(_this);
+
+		_this.lines = new _LineCollection2.default();
+		_this._curLine = null;
 		return _this;
 	}
 
-	_createClass(DrawingCanvas, [{
+	_createClass(Canvas, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			this.reparentMouseObserver();
+			this.lines.on('change', this.onChange);
+		}
+	}, {
+		key: 'componentWillUnmount',
+		value: function componentWillUnmount() {
+			this.lines.off('change', this.onChange);
+			// We need to manually remove the mouse observer since we reparented it
+			this.removeMouseObserver();
+		}
+	}, {
+		key: 'reparentMouseObserver',
+
+
+		// TODO put the mouse observer in the right spot so we don't have to reparent it
+		value: function reparentMouseObserver() {
+			// The mouse observer needs to be on top of the components in center of the page
+			var $mouseObserver = this.refs.mouseObserver.el;
+			var $gameMessages = document.querySelector('.game-messages');
+			var $parent = document.querySelector('.app');
+			$parent.insertBefore($mouseObserver, $gameMessages.nextSibling);
+		}
+	}, {
+		key: 'removeMouseObserver',
+		value: function removeMouseObserver() {
+			this.refs.mouseObserver.el.remove();
+		}
+	}, {
+		key: 'onChange',
+		value: function onChange() {
+			this.props.onChange({ value: this.lines });
+		}
+	}, {
+		key: 'clear',
+		value: function clear() {
+			this.lines.removeAll();
+			this.canvas.paint(this.lines);
+		}
+	}, {
+		key: 'undo',
+		value: function undo() {
+			this.lines.remove(this.lines.last());
+			this.canvas.paint(this.lines);
+		}
+	}, {
+		key: 'startLine',
+		value: function startLine(point) {
+			this._curLine = new _Line2.default({
+				brush: this.props.brush
+			});
+			this.lines.add(this._curLine);
+			this.addPointToLine(point);
+		}
+	}, {
+		key: 'extendLine',
+		value: function extendLine(point) {
+			this.addPointToLine(point);
+			this.canvas.paint(this.lines);
+		}
+	}, {
+		key: 'addPointToLine',
+		value: function addPointToLine(point) {
+			this._curLine.addPoint(point);
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			return _react2.default.createElement(
+				'div',
+				{ className: 'canvas-wrap' },
+				_react2.default.createElement(_CursorCanvas2.default, { ref: 'cursorCanvas', brush: this.props.brush }),
+				_react2.default.createElement(_MouseObserver2.default, {
+					ref: 'mouseObserver',
+					onMouseDown: this.startLine,
+					onMouseDownMove: this.extendLine,
+					onMouseMove: function onMouseMove(point) {
+						return _this2.refs.cursorCanvas.paint(point);
+					},
+					onMouseLeave: function onMouseLeave() {
+						return _this2.refs.cursorCanvas.paint();
+					} }),
+				_react2.default.createElement(_CanvasView2.default, { ref: 'canvas' })
+			);
+		}
+	}, {
+		key: 'canvas',
+		get: function get() {
+			return this.refs.canvas;
+		}
+	}], [{
+		key: 'defaultProps',
+		get: function get() {
+			return {
+				brush: new _Brush2.default(),
+				onChange: function onChange() {}
+			};
+		}
+	}]);
+
+	return Canvas;
+}(_react2.default.Component);
+
+exports.default = Canvas;
+});
+
+;require.register("components/CanvasView.jsx", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = require('react-dom');
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CanvasView = function (_React$Component) {
+	_inherits(CanvasView, _React$Component);
+
+	function CanvasView(props, context) {
+		_classCallCheck(this, CanvasView);
+
+		var _this = _possibleConstructorReturn(this, (CanvasView.__proto__ || Object.getPrototypeOf(CanvasView)).call(this, props, context));
+
+		_this.paint = _this.paint.bind(_this);
+		_this.resizeCanvas = _this.resizeCanvas.bind(_this);
+		return _this;
+	}
+
+	_createClass(CanvasView, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
 			this.el = _reactDom2.default.findDOMNode(this);
 			this.ctx = this.el.getContext('2d');
 			window.ctx = this.ctx;
+
+			window.addEventListener('resize', this.resizeCanvas, false);
+			this.resizeCanvas();
+		}
+	}, {
+		key: 'componentWillUnmount',
+		value: function componentWillUnmount() {
+			window.removeEventListener('resize', this.resizeCanvas);
 		}
 	}, {
 		key: 'shouldComponentUpdate',
@@ -50490,13 +50652,13 @@ var DrawingCanvas = function (_React$Component) {
 			return false;
 		}
 	}, {
-		key: 'updateDimensions',
-		value: function updateDimensions(_ref) {
-			var width = _ref.width;
-			var height = _ref.height;
-
-			this.el.width = width;
-			this.el.height = height;
+		key: 'resizeCanvas',
+		value: function resizeCanvas() {
+			this.el.width = window.innerWidth;
+			this.el.height = window.innerHeight;
+			if (this._mostRecentLines) {
+				this.paint(this._mostRecentLines);
+			}
 		}
 	}, {
 		key: 'paint',
@@ -50515,6 +50677,7 @@ var DrawingCanvas = function (_React$Component) {
 				});
 				_this2._endDrawing();
 			});
+			this._mostRecentLines = lines;
 		}
 	}, {
 		key: '_startDrawing',
@@ -50555,146 +50718,10 @@ var DrawingCanvas = function (_React$Component) {
 		}
 	}]);
 
-	return DrawingCanvas;
+	return CanvasView;
 }(_react2.default.Component);
 
-var Canvas = function (_React$Component2) {
-	_inherits(Canvas, _React$Component2);
-
-	function Canvas(props, context) {
-		_classCallCheck(this, Canvas);
-
-		// Bind methods that we'll need to add/remove event listeners
-		var _this3 = _possibleConstructorReturn(this, (Canvas.__proto__ || Object.getPrototypeOf(Canvas)).call(this, props, context));
-
-		_this3.onChange = _this3.onChange.bind(_this3);
-		_this3.resizeCanvas = _this3.resizeCanvas.bind(_this3);
-		_this3.startLine = _this3.startLine.bind(_this3);
-		_this3.extendLine = _this3.extendLine.bind(_this3);
-
-		_this3.lines = new _LineCollection2.default();
-		_this3._curLine = null;
-		return _this3;
-	}
-
-	_createClass(Canvas, [{
-		key: 'componentDidMount',
-		value: function componentDidMount() {
-			window.addEventListener('resize', this.resizeCanvas, false);
-			this.resizeCanvas();
-			this.reparentMouseObserver();
-
-			this.lines.on('change', this.onChange);
-		}
-	}, {
-		key: 'componentWillUnmount',
-		value: function componentWillUnmount() {
-			window.removeEventListener('resize', this.resizeCanvas);
-			this.lines.off('change', this.onChange);
-			// We need to manually remove the mouse observer since we reparented it
-			this.removeMouseObserver();
-		}
-	}, {
-		key: 'reparentMouseObserver',
-		value: function reparentMouseObserver() {
-			// The mouse observer needs to be on top of the components in center of the page
-			var $mouseObserver = this.refs.mouseObserver.el;
-			var $gameMessages = document.querySelector('.game-messages');
-			var $parent = document.querySelector('.app');
-			$parent.insertBefore($mouseObserver, $gameMessages.nextSibling);
-		}
-	}, {
-		key: 'removeMouseObserver',
-		value: function removeMouseObserver() {
-			this.refs.mouseObserver.el.remove();
-		}
-	}, {
-		key: 'onChange',
-		value: function onChange() {
-			this.props.onChange({ value: this.lines });
-		}
-	}, {
-		key: 'clear',
-		value: function clear() {
-			this.lines.removeAll();
-			this.canvas.paint(this.lines);
-		}
-	}, {
-		key: 'undo',
-		value: function undo() {
-			this.lines.remove(this.lines.last());
-			this.canvas.paint(this.lines);
-		}
-	}, {
-		key: 'resizeCanvas',
-		value: function resizeCanvas() {
-			this.canvas.updateDimensions({
-				width: window.innerWidth,
-				height: window.innerHeight
-			});
-			this.canvas.paint(this.lines);
-		}
-	}, {
-		key: 'startLine',
-		value: function startLine(point) {
-			this._curLine = new _Line2.default({
-				brush: this.props.brush
-			});
-			this.lines.add(this._curLine);
-			this.addPointToLine(point);
-		}
-	}, {
-		key: 'extendLine',
-		value: function extendLine(point) {
-			this.addPointToLine(point);
-			this.canvas.paint(this.lines);
-		}
-	}, {
-		key: 'addPointToLine',
-		value: function addPointToLine(point) {
-			this._curLine.addPoint(point);
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var _this4 = this;
-
-			return _react2.default.createElement(
-				'div',
-				{ className: 'canvas-wrap' },
-				_react2.default.createElement(_CursorCanvas2.default, { ref: 'cursorCanvas', brush: this.props.brush }),
-				_react2.default.createElement(_MouseObserver2.default, {
-					ref: 'mouseObserver',
-					onMouseDown: this.startLine,
-					onMouseDownMove: this.extendLine,
-					onMouseMove: function onMouseMove(point) {
-						return _this4.refs.cursorCanvas.paint(point);
-					},
-					onMouseLeave: function onMouseLeave() {
-						return _this4.refs.cursorCanvas.paint();
-					} }),
-				_react2.default.createElement(DrawingCanvas, { ref: 'canvas' })
-			);
-		}
-	}, {
-		key: 'canvas',
-		get: function get() {
-			return this.refs.canvas;
-		}
-	}], [{
-		key: 'defaultProps',
-		get: function get() {
-			return {
-				brush: new _Brush2.default(),
-				onChange: function onChange() {}
-			};
-		}
-	}]);
-
-	return Canvas;
-}(_react2.default.Component);
-
-exports.default = Canvas;
+exports.default = CanvasView;
 });
 
 ;require.register("components/CursorCanvas.jsx", function(exports, require, module) {
@@ -51322,7 +51349,6 @@ var MouseObserver = function (_React$Component) {
 	}, {
 		key: 'componentWillUnmount',
 		value: function componentWillUnmount() {
-			console.log('will unmount');
 			this.el.removeEventListener('mousedown', this.onMouseDown);
 			this.el.removeEventListener('mousemove', this.onMouseMove);
 			this.el.removeEventListener('mouseup', this.onMouseUp);
@@ -53478,9 +53504,9 @@ var _Canvas = require('../components/Canvas');
 
 var _Canvas2 = _interopRequireDefault(_Canvas);
 
-var _ViewOnlyCanvas = require('../components/ViewOnlyCanvas');
+var _CanvasView = require('../components/CanvasView');
 
-var _ViewOnlyCanvas2 = _interopRequireDefault(_ViewOnlyCanvas);
+var _CanvasView2 = _interopRequireDefault(_CanvasView);
 
 var _BrushPalette = require('../components/BrushPalette');
 
@@ -53591,6 +53617,7 @@ var GamePage = function (_React$Component) {
 			showPreRoundModal: false
 		};
 
+		_this.onExternalCanvasChange = _this.onExternalCanvasChange.bind(_this);
 		_this.onRoundsChange = _this.onRoundsChange.bind(_this);
 		_this.endGame = _this.endGame.bind(_this);
 		_this.onGameChange = _this.onGameChange.bind(_this);
@@ -53616,6 +53643,7 @@ var GamePage = function (_React$Component) {
 					return _this2.updateGameUsers(g.get('users'));
 				});
 				_this2.canvasService = new _CanvasService2.default(game);
+				_this2.canvasService.on('change:canvas:' + game.id, _this2.onExternalCanvasChange);
 				_this2.activeRoundService = new _ActiveRoundService2.default(game);
 				_this2.activeRoundService.getRounds();
 				_this2.activeRoundService.on('endGame', _this2.endGame);
@@ -53645,6 +53673,14 @@ var GamePage = function (_React$Component) {
 			_GameService2.default.off('change:game', this.onGameChange);
 			_HotkeyService2.default.off('undo', this.onUndo);
 			this._mounted = false;
+		}
+	}, {
+		key: 'onExternalCanvasChange',
+		value: function onExternalCanvasChange(e) {
+			if (!this.drawerIsMe()) {
+				var lines = e.data;
+				this.refs.canvasView.paint(lines);
+			}
 		}
 	}, {
 		key: 'onRoundsChange',
@@ -53722,7 +53758,7 @@ var GamePage = function (_React$Component) {
 					{ className: (0, _classnames2.default)('app', { 'drawer-is-me': this.drawerIsMe() }) },
 					this.canvasService ? this.drawerIsMe() ? _react2.default.createElement(_Canvas2.default, { brush: this.state.brush, onChange: function onChange(e) {
 							return _this4.onCanvasChange(e.value);
-						}, ref: 'canvas' }) : _react2.default.createElement(_ViewOnlyCanvas2.default, { canvasService: this.canvasService, game: this.state.game }) : null,
+						}, ref: 'canvas' }) : _react2.default.createElement(_CanvasView2.default, { ref: 'canvasView' }) : null,
 					this.drawerIsMe() ? _react2.default.createElement(
 						'div',
 						{ className: 'round-word' },

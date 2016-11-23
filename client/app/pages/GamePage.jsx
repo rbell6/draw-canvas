@@ -1,6 +1,6 @@
 import React from 'react';
 import Canvas from '../components/Canvas';
-import ViewOnlyCanvas from '../components/ViewOnlyCanvas';
+import CanvasView from '../components/CanvasView';
 import BrushPalette from '../components/BrushPalette';
 import GamePanel from '../components/GamePanel';
 import GameTextField from '../components/GameTextField';
@@ -49,6 +49,7 @@ export default class GamePage extends React.Component {
 			showPreRoundModal: false
 		};
 
+		this.onExternalCanvasChange = this.onExternalCanvasChange.bind(this);
 		this.onRoundsChange = this.onRoundsChange.bind(this);
 		this.endGame = this.endGame.bind(this);
 		this.onGameChange = this.onGameChange.bind(this);
@@ -67,6 +68,7 @@ export default class GamePage extends React.Component {
 			window.game = game;
 			GameService.joinGame(game).then(g => this.updateGameUsers(g.get('users')));
 			this.canvasService = new CanvasService(game);
+			this.canvasService.on(`change:canvas:${game.id}`, this.onExternalCanvasChange);
 			this.activeRoundService = new ActiveRoundService(game);
 			this.activeRoundService.getRounds();
 			this.activeRoundService.on('endGame', this.endGame);
@@ -95,6 +97,13 @@ export default class GamePage extends React.Component {
 		GameService.off('change:game', this.onGameChange);
 		HotkeyService.off('undo', this.onUndo);
 		this._mounted = false;
+	}
+
+	onExternalCanvasChange(e) {
+		if (!this.drawerIsMe()) {
+			let lines = e.data;
+			this.refs.canvasView.paint(lines);
+		}
 	}
 
 	onRoundsChange() {
@@ -152,7 +161,7 @@ export default class GamePage extends React.Component {
 							this.drawerIsMe() ? 
 								<Canvas brush={this.state.brush} onChange={e => this.onCanvasChange(e.value)} ref="canvas" />
 								:
-								<ViewOnlyCanvas canvasService={this.canvasService} game={this.state.game} />
+								<CanvasView ref="canvasView" />
 							:
 							null
 						}
