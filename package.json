@@ -11,6 +11,9 @@
     "oldDeploy": "git subtree push --prefix server heroku master",
     "forceDeploy": "git push heroku `git subtree split --prefix server master`:master --force"
   },
+  "engines": {
+    "node": "4.2.2"
+  },
   "author": "",
   "license": "ISC",
   "devDependencies": {
