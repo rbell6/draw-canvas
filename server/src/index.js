@@ -1,10 +1,10 @@
 'use strict';
 
-let Game = require('./models/Game');
-let User = require('./models/User');
+let Game = require('../../models/Game');
+let User = require('../../models/User');
 let _ = require('lodash');
 let EventEmitter = require('events');
-let UserCollection = require('./models/UserCollection');
+let UserCollection = require('../../models/UserCollection');
 let Games = require('./Games');
 let UserSockets = require('./UserSockets');
 

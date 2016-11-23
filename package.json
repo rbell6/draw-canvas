@@ -4,10 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "git subtree push --prefix server heroku master",
+    "start": "node index.js",
+    "postinstall": "cd client; brunch build",
+    "nodemon": "nodemon index.js --ignore 'server/public/**/*'",
+    "deploy": "git push heroku master",
+    "oldDeploy": "git subtree push --prefix server heroku master",
     "forceDeploy": "git push heroku `git subtree split --prefix server master`:master --force"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "brunch": "^2.9.1"
+  }
 }
