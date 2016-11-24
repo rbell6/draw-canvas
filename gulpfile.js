@@ -38,8 +38,8 @@ gulp.task('js', () => {
 
 gulp.task('less', () => {
 	return gulp.src([
-			'client/app/**/*.less', 
-			'client/node_modules/font-awesome/css/font-awesome.min.css'
+			'client/node_modules/font-awesome/css/font-awesome.min.css',
+			'client/app/**/*.less'
 		])
 		.pipe(less())
 		.pipe(concat('app.css'))
