@@ -1,3 +1,4 @@
+import styles from '../less/timer.less';
 import React from 'react';
 import util from '../../../models/util';
 import classNames from 'classnames';

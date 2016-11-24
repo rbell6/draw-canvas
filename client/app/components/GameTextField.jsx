@@ -1,3 +1,4 @@
+import styles from '../less/game-text-field.less';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import TextField from './TextField';

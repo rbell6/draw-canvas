@@ -1,3 +1,4 @@
+import styles from '../less/user-icon.less';
 import React from 'react';
 import User from '../../../models/User';
 import classNames from 'classnames';

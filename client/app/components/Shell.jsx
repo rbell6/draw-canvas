@@ -1,3 +1,4 @@
+import styles from '../less/shell.less';
 import React from 'react';
 
 export default class Shell extends React.Component {

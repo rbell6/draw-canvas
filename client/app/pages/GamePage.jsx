@@ -1,3 +1,4 @@
+import styles from '../less/game-page.less';
 import React from 'react';
 import Canvas from '../components/Canvas';
 import CanvasView from '../components/CanvasView';

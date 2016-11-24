@@ -1,3 +1,4 @@
+import styles from '../less/game-list-page.less';
 import React from 'react';
 import UserService from '../services/UserService';
 import GameService from '../services/GameService';

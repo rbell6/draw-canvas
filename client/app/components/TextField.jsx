@@ -1,3 +1,4 @@
+import styles from '../less/text-field.less';
 import React from 'react';
 import classNames from 'classnames';
 

@@ -1,3 +1,4 @@
+import styles from '../less/pre-round-modal.less';
 import React from 'react';
 import UserService from '../services/UserService';
 

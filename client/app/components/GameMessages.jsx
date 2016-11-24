@@ -1,3 +1,4 @@
+import styles from '../less/game-messages.less';
 import React from 'react';
 import UserIcon from './UserIcon';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';

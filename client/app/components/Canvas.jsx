@@ -1,3 +1,4 @@
+import styles from '../less/canvas.less';
 import React from 'react';
 import Line from '../../../models/Line';
 import LineCollection from '../../../models/LineCollection';

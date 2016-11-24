@@ -1,3 +1,4 @@
+import styles from '../less/mouse-observer.less';
 import React from 'react';
 import ReactDOM from 'react-dom';
 

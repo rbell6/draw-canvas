@@ -1,3 +1,4 @@
+import styles from '../less/game-stage-page.less';
 import React from 'react';
 import {
 	Link,

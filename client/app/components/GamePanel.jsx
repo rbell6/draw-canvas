@@ -1,3 +1,4 @@
+import styles from '../less/game-panel.less';
 import React from 'react';
 import Timer from './Timer';
 import UserIcon from './UserIcon';

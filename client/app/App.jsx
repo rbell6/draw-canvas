@@ -1,3 +1,5 @@
+import styles from './less/app.less';
+import headerStyles from './less/headers.less';
 import React from 'react';
 import { 
 	Router, 

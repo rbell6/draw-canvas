@@ -1,3 +1,4 @@
+import styles from '../less/brush-palette.less';
 import React from 'react';
 import util from '../../../models/util';
 import Brush from '../../../models/Brush';

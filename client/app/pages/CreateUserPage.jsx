@@ -1,3 +1,4 @@
+import styles from '../less/create-user-page.less';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {

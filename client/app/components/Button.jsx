@@ -1,3 +1,4 @@
+import styles from '../less/button.less';
 import classNames from 'classnames';
 import React from 'react';
 import _ from 'lodash';
