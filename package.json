@@ -27,6 +27,7 @@
     "brunch": "^2.9.1",
     "classnames": "^2.2.5",
     "express": "^4.13.4",
+    "font-awesome": "^4.7.0",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
     "gulp-less": "^3.3.0",
