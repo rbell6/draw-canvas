@@ -1,6 +1,7 @@
 import styles from '../less/mouse-observer.less';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import _ from 'lodash';
 
 export default class MouseObserver extends React.Component {
 	constructor(props, context) {
@@ -45,10 +46,10 @@ export default class MouseObserver extends React.Component {
 	}
 
 	pointFromEvent(event) {
-		if (event.touches) {
+		if (event instanceof window.TouchEvent) {
 			return {
-				x: event.touches[0].clientX,
-				y: event.touches[0].clientY
+				x: _.get(event, 'touches[0].clientX'),
+				y: _.get(event, 'touches[0].clientY')
 			};
 		}
 		return {
@@ -79,6 +80,10 @@ export default class MouseObserver extends React.Component {
 		this.moveBack();
 		this.enableSelection();
 		this.props.onMouseUp(this.pointFromEvent(e));
+
+		if (e instanceof window.TouchEvent) {
+			this.onMouseLeave(e);
+		}
 	}
 
 	onMouseLeave(e) {
