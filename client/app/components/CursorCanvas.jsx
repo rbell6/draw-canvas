@@ -42,7 +42,7 @@ export default class CursorCanvas extends React.Component {
 
 		this._setBrushType(this.props.brush);
 		this.ctx.beginPath();
-		this.ctx.arc(point.x, point.y, this.props.brush.get('size')/2, 0, 2*Math.PI);
+		this.ctx.arc(point.x, point.y, this._brushSize(this.props.brush)/2, 0, 2*Math.PI);
 		this.ctx.fillStyle = this.props.brush.get('color');
 		this.ctx.fill();
 		this.ctx.globalCompositeOperation = 'source-over';
@@ -52,6 +52,11 @@ export default class CursorCanvas extends React.Component {
 			this.ctx.strokeStyle = '#222';
 		}
 		this.ctx.stroke();
+	}
+
+	_brushSize(brush) {
+		let sizePercent = brush.get('size').value;
+		return window.innerWidth*sizePercent;
 	}
 
 	_setBrushType(brush) {

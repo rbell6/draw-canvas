@@ -43,7 +43,7 @@ export default class GamePage extends React.Component {
 
 		this.state = {
 			brush: new Brush({
-				size: 20,
+				size: Brush.sizes.M,
 				color: util.colors()[0].value,
 				name: util.colors()[0].name
 			}),
@@ -102,8 +102,9 @@ export default class GamePage extends React.Component {
 
 	onExternalCanvasChange(e) {
 		if (!this.drawerIsMe()) {
-			let lines = e.data;
-			this.refs.canvasView.paint(lines);
+			let lines = e.data.lines;
+			let aspectRatio = e.data.aspectRatio;
+			this.refs.canvasView.paint(lines, {aspectRatio});
 		}
 	}
 
@@ -134,8 +135,8 @@ export default class GamePage extends React.Component {
 		this.refs.canvas.undo();
 	}
 
-	onCanvasChange(lines) {
-		this.canvasService.emitCanvasChange(lines);
+	onCanvasChange({lines, aspectRatio}) {
+		this.canvasService.emitCanvasChange(lines, aspectRatio);
 	}
 
 	onGameChange(e) {
@@ -160,7 +161,7 @@ export default class GamePage extends React.Component {
 					<div className={classNames('app', {'drawer-is-me': this.drawerIsMe()})}>
 						{ this.canvasService ?
 							this.drawerIsMe() ? 
-								<Canvas brush={this.state.brush} onChange={e => this.onCanvasChange(e.value)} ref="canvas" />
+								<Canvas brush={this.state.brush} onChange={e => this.onCanvasChange(e)} ref="canvas" />
 								:
 								<CanvasView ref="canvasView" />
 							:

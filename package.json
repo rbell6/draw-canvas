@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "postinstall": "gulp build",
-    "nodemon": "nodemon index.js --ignore 'server/public/**/*'",
+    "nodemon": "nodemon index.js --ignore 'server/public/**/*' --ignore 'models/**/*'",
     "deploy": "git push heroku master",
     "oldDeploy": "git subtree push --prefix server heroku master",
     "forceDeploy": "git push heroku `git subtree split --prefix server master`:master --force"

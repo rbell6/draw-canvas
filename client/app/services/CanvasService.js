@@ -15,16 +15,20 @@ export default class CanvasService extends EventEmitter {
 		SocketService.off(`change:canvas:${this.game.id}`, this._onCanvasChange);
 	}
 
-	emitCanvasChange(lines) {
+	emitCanvasChange(lines, aspectRatio) {
 		SocketService.emit('change:canvas', {
 			gameId: this.game.id,
 			userId: UserService.get().id,
-			lines: lines
+			lines: lines,
+			aspectRatio: aspectRatio
 		});
 	}
 
-	_onCanvasChange(lines) {
-		this.emit(`change:canvas:${this.game.id}`, LineCollection.fromJSON(lines));
+	_onCanvasChange(lines, aspectRatio) {
+		this.emit(`change:canvas:${this.game.id}`, {
+			lines: LineCollection.fromJSON(lines), 
+			aspectRatio: aspectRatio
+		});
 	}
 
 }

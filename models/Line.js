@@ -13,7 +13,6 @@ module.exports = class Line extends Model {
 
 	addPoint(point) {
 		this.get('points').push(point);
-		this.emit('change');
 	}
 
 	startingPoint() {

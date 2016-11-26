@@ -15,6 +15,7 @@ export default class Canvas extends React.Component {
 		this.onChange = this.onChange.bind(this);
 		this.startLine = this.startLine.bind(this);
 		this.extendLine = this.extendLine.bind(this);
+		this.updateLinesOnAspectRatioChange = _.debounce(this.updateLinesOnAspectRatioChange.bind(this), 200);
 
 		this.lines = new LineCollection();
 		this._curLine = null;
@@ -29,13 +30,43 @@ export default class Canvas extends React.Component {
 
 	componentDidMount() {
 		this.reparentMouseObserver();
-		this.lines.on('change', this.onChange);
+		this._mostRecentAspectRatio = this.refs.canvas.currentAspectRatio();
+		window.addEventListener('resize', this.updateLinesOnAspectRatioChange, false);
+
+		// TESTING
+		// this.lines.add(Line.fromJSON({
+		// 	points: [{
+		// 		x: 0.2,
+		// 		y: 0.2
+		// 	}, {
+		// 		x: 0.8,
+		// 		y: 0.2
+		// 	}, {
+		// 		x: 0.8,
+		// 		y: 0.8
+		// 	}, {
+		// 		x: 0.2,
+		// 		y: 0.8
+		// 	}, {
+		// 		x: 0.2,
+		// 		y: 0.2
+		// 	}],
+		// 	brush: {}
+		// }))
+		// this.refs.canvas.paint(this.lines);
 	}
 
 	componentWillUnmount() {
-		this.lines.off('change', this.onChange);
 		// We need to manually remove the mouse observer since we reparented it
 		this.removeMouseObserver();
+		window.removeEventListener('resize', this.updateLinesOnAspectRatioChange);
+	}
+
+	pixelPointToPercentagePoint(point) {
+		return {
+			x: point.x/window.innerWidth,
+			y: point.y/window.innerHeight
+		};
 	}
 
 	get canvas() {
@@ -56,17 +87,21 @@ export default class Canvas extends React.Component {
 	}
 
 	onChange() {
-		this.props.onChange({value: this.lines});
+		this.props.onChange({
+			lines: this.lines,
+			aspectRatio: this.refs.canvas.currentAspectRatio()
+		});
+		this.canvas.paint(this.lines);
 	}
 
 	clear() {
 		this.lines.removeAll();
-		this.canvas.paint(this.lines);
+		this.onChange();
 	}
 
 	undo() {
 		this.lines.remove(this.lines.last());
-		this.canvas.paint(this.lines);
+		this.onChange();
 	}
 
 	startLine(point) {
@@ -79,11 +114,34 @@ export default class Canvas extends React.Component {
 
 	extendLine(point) {
 		this.addPointToLine(point);
-		this.canvas.paint(this.lines);
 	}
 
 	addPointToLine(point) {
-		this._curLine.addPoint(point);
+		this._curLine.addPoint(this.pixelPointToPercentagePoint(point));
+		this.onChange();
+	}
+
+	updateLinesOnAspectRatioChange() {
+		let currentAspectRatio = this.refs.canvas.currentAspectRatio();
+		this.lines.forEach(line => {
+			line.get('points').forEach(point => this.convertPointToNewAspectRatio(point, currentAspectRatio, this._mostRecentAspectRatio));
+		});
+		this._mostRecentAspectRatio = this.refs.canvas.currentAspectRatio();
+		this.onChange();
+	}
+
+	convertPointToNewAspectRatio(point, newAspectRatio, oldAspectRatio) {
+		let x = point.x;
+		let y = point.y;
+		if (newAspectRatio > oldAspectRatio) {
+			// Adjust X
+			let xSquashFactor = oldAspectRatio/newAspectRatio;
+			point.x = ((1-xSquashFactor)/2)+(point.x*xSquashFactor);
+		} else if (oldAspectRatio > newAspectRatio) {
+			// Adjust Y
+			let ySquashFactor = newAspectRatio/oldAspectRatio;
+			point.y = ((1-ySquashFactor)/2)+(point.y*ySquashFactor);
+		}
 	}
 
 	render() {

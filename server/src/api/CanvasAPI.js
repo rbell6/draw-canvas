@@ -21,9 +21,12 @@ class CanvasAPI {
 		let activeRound = _.get(game, 'activeRound');
 		if (opts.userId && activeRound && opts.userId === activeRound.get('drawerId')) {
 			game.get('users').forEach(user => {
+				// We don't need to notify the user that made this change
+				if (user.id === opts.userId) { return; }
+				
 				let socket = UserSockets.get(user);
 				if (socket) {
-					socket.emit(`change:canvas:${game.id}`, opts.lines);
+					socket.emit(`change:canvas:${game.id}`, opts.lines, opts.aspectRatio);
 				}
 			});
 		}

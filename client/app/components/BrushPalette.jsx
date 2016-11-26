@@ -4,8 +4,6 @@ import util from '../../../models/util';
 import Brush from '../../../models/Brush';
 import classNames from 'classnames';
 
-const brushSizes = [12, 20, 28, 38];
-
 export default class BrushPalette extends React.Component {
 	setBrushColor(color) {
 		this.props.onBrushChange(new Brush({
@@ -53,15 +51,15 @@ export default class BrushPalette extends React.Component {
 					))}
 				</div>
 				<div className="brushes brush-sizes">
-					{brushSizes.map(size => (
+					{Brush.sizes.map(size => (
 						<div
-							key={size}
+							key={size.label}
 							className={classNames(
 								'brush', 
 								`brush-${this.props.brush.get('name')}`, 
 								'brush-size', 
-								`brush-size-${size}`, {
-									'active': this.props.brush.get('size') == size						
+								`brush-size-${size.label}`, {
+									'active': this.props.brush.get('size').label === size.label						
 								}
 							)}
 							onClick={e => this.setBrushSize(size)}>

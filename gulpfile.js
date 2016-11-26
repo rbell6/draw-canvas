@@ -8,13 +8,13 @@ let ExtractTextPlugin = require('extract-text-webpack-plugin');
 let _watch = false;
 
 // Set _watch to true before running the js task so it will "watch"
-gulp.task('watch', ['_setWatch', 'webpack', '_unsetWatch']);
+gulp.task('watch', ['_setWatch', 'build', '_unsetWatch']);
 
 gulp.task('_setWatch', () => _watch = true);
 
 gulp.task('_unsetWatch', () => _watch = false);
 
-gulp.task('build', ['index', 'fonts', 'vendorCss', 'webpack']);
+gulp.task('build', ['webpack', 'index', 'fonts', 'vendorCss']);
 
 gulp.task('webpack', () => {
 	return gulp.src('client/app/initialize.js')
