@@ -25,15 +25,21 @@ export default class MouseObserver extends React.Component {
 	componentDidMount(props) {
 		this.el = ReactDOM.findDOMNode(this);
 		this.el.addEventListener('mousedown', this.onMouseDown);
+		this.el.addEventListener('touchstart', this.onMouseDown);
 		this.el.addEventListener('mousemove', this.onMouseMove);
+		this.el.addEventListener('touchmove', this.onMouseMove);
 		this.el.addEventListener('mouseup', this.onMouseUp);
+		this.el.addEventListener('touchend', this.onMouseUp);
 		this.el.addEventListener('mouseleave', this.onMouseLeave);
 	}
 
 	componentWillUnmount() {
 		this.el.removeEventListener('mousedown', this.onMouseDown);
+		this.el.removeEventListener('touchstart', this.onMouseDown);
 		this.el.removeEventListener('mousemove', this.onMouseMove);
+		this.el.removeEventListener('touchmove', this.onMouseMove);
 		this.el.removeEventListener('mouseup', this.onMouseUp);
+		this.el.removeEventListener('touchend', this.onMouseUp);
 		this.el.removeEventListener('mouseleave', this.onMouseLeave);
 		this.moveBack();
 	}
