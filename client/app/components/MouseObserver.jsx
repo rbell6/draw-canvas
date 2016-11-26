@@ -44,26 +44,30 @@ export default class MouseObserver extends React.Component {
 		this.moveBack();
 	}
 
+	pointFromEvent(event) {
+		if (event.touches) {
+			return {
+				x: event.touches[0].clientX,
+				y: event.touches[0].clientY
+			};
+		}
+		return {
+			x: event.clientX,
+			y: event.clientY
+		};
+	}
+
 	onMouseDown(e) {
 		this.mouseIsDown = true;
 		this.moveToTop();
 		this.disableSelection();
-		this.props.onMouseDown({
-			x: e.offsetX,
-			y: e.offsetY
-		});
+		this.props.onMouseDown(this.pointFromEvent(e));
 	}
 
 	onMouseMove(e) {
-		this.props.onMouseMove({
-			x: e.offsetX,
-			y: e.offsetY
-		});
+		this.props.onMouseMove(this.pointFromEvent(e));
 		if (this.mouseIsDown) {
-			this.props.onMouseDownMove({
-				x: e.offsetX,
-				y: e.offsetY
-			});
+			this.props.onMouseDownMove(this.pointFromEvent(e));
 		}
 	}
 
@@ -71,10 +75,7 @@ export default class MouseObserver extends React.Component {
 		this.mouseIsDown = false;
 		this.moveBack();
 		this.enableSelection();
-		this.props.onMouseUp({
-			x: e.offsetX,
-			y: e.offsetY
-		});
+		this.props.onMouseUp(this.pointFromEvent(e));
 	}
 
 	onMouseLeave(e) {
