@@ -11,8 +11,10 @@
 	}
 }
 
-body {
-	overflow: hidden;
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
 }
 body, body input, body button {
 	font-family: 'Roboto Slab', sans-serif;
@@ -20,17 +22,13 @@ body, body input, body button {
 }
 .app {
 	display: flex;
-  background-image: linear-gradient(0deg, transparent 99%, @line-color 100%), linear-gradient(90deg, transparent 99%, @line-color 100%);
-  background-size:100px 100px;
 }
 .page {
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 100%;
-	height: 100%;
-	background: @background-color;
-	overflow: hidden;
+}
+.grid {
+  background-image: linear-gradient(0deg, transparent 99%, @line-color 100%), linear-gradient(90deg, transparent 99%, @line-color 100%);
+  background-size:100px 100px;
+	background-color: @background-color;
 }
 .page-enter {
 	opacity: 0.01;

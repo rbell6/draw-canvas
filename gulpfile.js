@@ -14,7 +14,7 @@ gulp.task('_setWatch', () => _watch = true);
 
 gulp.task('_unsetWatch', () => _watch = false);
 
-gulp.task('build', ['webpack', 'index', 'fonts', 'vendorCss']);
+gulp.task('build', ['webpack', 'index', 'img', 'fonts', 'vendorCss']);
 
 gulp.task('webpack', () => {
 	return gulp.src('client/app/initialize.js')
@@ -60,6 +60,11 @@ gulp.task('vendorCss', () => {
 gulp.task('index', () => {
 	gulp.src('client/app/index.html')
 		.pipe(gulp.dest('server/public/'));
+});
+
+gulp.task('img', () => {
+	gulp.src('client/app/img/**.*')
+		.pipe(gulp.dest('server/public/img/'));
 });
 
 gulp.task('fonts', () => {

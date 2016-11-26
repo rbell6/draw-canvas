@@ -24,14 +24,14 @@
 	&:hover {
 		background: rgba(255, 255, 255, 0.05);
 		.brush {
-			border-color: #7c7c7c;
+			border-color: lighten(@background-color, 2.4%);
 		}
 	}
 	.brushes {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
-		padding-top: 12px;
+		padding-top: 84px;
 		&:after {
 			content: '';
 			width: 30%;
@@ -43,7 +43,7 @@
 		height: @brush-size;
 		border-radius: @brush-size/2+3px;
 		margin: 1px;
-		border: solid 3px #777;
+		border: solid 3px @background-color;
 		&.brush-green {
 			.brush-color(@green);
 		}

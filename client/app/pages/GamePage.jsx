@@ -79,6 +79,7 @@ export default class GamePage extends React.Component {
 		GameService.on('change:game', this.onGameChange);
 		HotkeyService.on('undo', this.onUndo);
 		this._mounted = true;
+		document.querySelector('.game-logo-small').style.left = '6px';
 	}
 
 	componentWillUnmount() {
@@ -98,6 +99,7 @@ export default class GamePage extends React.Component {
 		GameService.off('change:game', this.onGameChange);
 		HotkeyService.off('undo', this.onUndo);
 		this._mounted = false;
+		document.querySelector('.game-logo-small').style.left = '';
 	}
 
 	onExternalCanvasChange(e) {

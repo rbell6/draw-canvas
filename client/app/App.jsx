@@ -6,12 +6,13 @@ import {
 	Route, 
 	Link, 
 	browserHistory,
-	IndexRedirect
+	IndexRoute
 } from 'react-router';
 import _ from 'lodash';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import Shell from './components/Shell';
 import GamePage from './pages/GamePage';
+import HomePage from './pages/HomePage';
 import CreateUserPage from './pages/CreateUserPage';
 import GameListPage from './pages/GameListPage';
 import GameStagePage from './pages/GameStagePage';
@@ -75,7 +76,7 @@ export default class App extends React.Component {
 				{this.state.userFetched ?
 					<Router history={browserHistory}>
 						<Route path="/" component={AppPages}>
-							<IndexRedirect to="/create-user" />
+							<IndexRoute component={HomePage} />
 							<Route path="/create-user" component={CreateUserPage} />
 							<Route path="/game" component={GamePage} onEnter={this.redirectIfUserDoesNotExist.bind(this)} />
 							<Route path="/game-list" component={GameListPage} onEnter={this.redirectIfUserDoesNotExist.bind(this)} />
