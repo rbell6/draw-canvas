@@ -65,6 +65,9 @@ export default class MouseObserver extends React.Component {
 	}
 
 	onMouseMove(e) {
+		if (e instanceof window.TouchEvent) {
+			e.preventDefault();
+		}
 		this.props.onMouseMove(this.pointFromEvent(e));
 		if (this.mouseIsDown) {
 			this.props.onMouseDownMove(this.pointFromEvent(e));
