@@ -43,8 +43,8 @@ export default class GamePage extends React.Component {
 		this.state = {
 			brush: new Brush({
 				size: Brush.sizes.M,
-				color: Brush.colors[0].value,
-				name: Brush.colors[0].label
+				color: Brush.colors[6].value,
+				name: Brush.colors[6].label
 			}),
 			showPreRoundModal: false
 		};

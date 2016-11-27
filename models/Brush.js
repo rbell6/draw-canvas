@@ -24,13 +24,13 @@ Brush.sizes.push(Brush.sizes.S);
 
 Brush.sizes.M = {
 	label: 'M',
-	value: '0.04'
+	value: '0.03'
 };
 Brush.sizes.push(Brush.sizes.M);
 
 Brush.sizes.L = {
 	label: 'L',
-	value: '0.1'
+	value: '0.07'
 };
 Brush.sizes.push(Brush.sizes.L);
 
