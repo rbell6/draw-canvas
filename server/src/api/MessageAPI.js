@@ -59,7 +59,7 @@ class MessageAPI {
 	}
 
 	wordIsCorrect(round, word) {
-		return round.get('word') === word;
+		return round.get('word').toLowerCase().replace(' ', '') === word.toLowerCase().replace(' ', '');
 	}
 
 	getPoints(game) {

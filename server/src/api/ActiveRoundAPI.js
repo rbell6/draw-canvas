@@ -80,7 +80,7 @@ class ActiveRoundAPI {
 		// let drawerId = users.getAtIndex(0).id;
 		return {
 			drawerId: drawerId,
-			word: _.sample(words),
+			word: _.sample(words).toLowerCase(),
 			percentOfTimeInitiallySpent: 0,
 			name: `Round ${newRoundIndex+1}`
 		};
