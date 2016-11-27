@@ -119,6 +119,12 @@ export default class GamePage extends React.Component {
 			showPreRoundModal: true,
 			userGuessedCorrectWord: false
 		});
+		if (this.refs.canvas) {
+			this.refs.canvas.paint();
+		}
+		if (this.refs.canvasView) {
+			this.refs.canvasView.paint();
+		}
 
 		// Hide the pre-round modal
 		setTimeout(() => {
