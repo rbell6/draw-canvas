@@ -1,10 +1,12 @@
 import Message from '../../../models/Message';
+import EventEmitter from '../../../models/EventEmitter';
 import UserService from './UserService';
 import SocketService from './SocketService';
 import _ from 'lodash';
 
-export default class MessageService {
+export default class MessageService extends EventEmitter {
 	constructor(game) {
+		super();
 		this.game = game;
 		this.onAddMessage = this.onAddMessage.bind(this);
 		SocketService.on(`gameMessage:${game.id}`, this.onAddMessage);
@@ -25,6 +27,9 @@ export default class MessageService {
 	onAddMessage(params) {
 		if (params.wordIsCorrect) {
 			this.game.emit('change:usersWithPoints');
+			if (params.userId === UserService.get().id) {
+				this.emit('userGuessedCorrectWord');
+			}
 		}
 		this.game.get('messages').add(new Message({
 			text: params.text,

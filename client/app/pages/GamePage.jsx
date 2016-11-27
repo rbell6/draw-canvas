@@ -46,7 +46,8 @@ export default class GamePage extends React.Component {
 				color: Brush.colors[6].value,
 				name: Brush.colors[6].label
 			}),
-			showPreRoundModal: false
+			showPreRoundModal: false,
+			userGuessedCorrectWord: false
 		};
 
 		this.onExternalCanvasChange = this.onExternalCanvasChange.bind(this);
@@ -54,6 +55,7 @@ export default class GamePage extends React.Component {
 		this.endGame = this.endGame.bind(this);
 		this.onGameChange = this.onGameChange.bind(this);
 		this.onUndo = this.onUndo.bind(this);
+		this.userGuessedCorrectWord = this.userGuessedCorrectWord.bind(this);
 	}
 
 	componentDidMount() {
@@ -73,6 +75,7 @@ export default class GamePage extends React.Component {
 			this.activeRoundService.getRounds();
 			this.activeRoundService.on('endGame', this.endGame);
 			this.messageService = new MessageService(game);
+			this.messageService.on('userGuessedCorrectWord', this.userGuessedCorrectWord);
 			game.on('change:rounds', this.onRoundsChange);
 		});
 		GameService.on('change:game', this.onGameChange);
@@ -93,6 +96,7 @@ export default class GamePage extends React.Component {
 			this.canvasService.destroy();
 		}
 		if (this.messageService) {
+			this.messageService.off('userGuessedCorrectWord', this.userGuessedCorrectWord);
 			this.messageService.destroy();
 		}
 		GameService.off('change:game', this.onGameChange);
@@ -111,7 +115,12 @@ export default class GamePage extends React.Component {
 
 	onRoundsChange() {
 		if (!this._mounted) { return; }
-		this.setState({showPreRoundModal: true});
+		this.setState({
+			showPreRoundModal: true,
+			userGuessedCorrectWord: false
+		});
+
+		// Hide the pre-round modal
 		setTimeout(() => {
 			if (!this._mounted) { return; }
 			this.setState({showPreRoundModal: false});
@@ -153,6 +162,12 @@ export default class GamePage extends React.Component {
 	drawerIsMe() {
 		if (!this.state.game.activeRound) { return false; }
 		return UserService.get().id === this.state.game.activeRound.get('drawerId');
+	}
+
+	userGuessedCorrectWord() {
+		this.setState({
+			userGuessedCorrectWord: true
+		});
 	}
 
 	render() {
@@ -210,7 +225,8 @@ export default class GamePage extends React.Component {
 								<GameTextField 
 									game={this.state.game}
 									messageService={this.messageService}
-									onChange={e => this.onTextFieldChange(e.value)} /> 
+									onChange={e => this.onTextFieldChange(e.value)}
+									userGuessedCorrectWord={this.state.userGuessedCorrectWord} /> 
 								: 
 								null 
 							}

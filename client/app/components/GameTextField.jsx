@@ -5,6 +5,7 @@ import TextField from './TextField';
 import HotkeyService from '../services/HotkeyService';
 import UserService from '../services/UserService';
 import UserIcon from './UserIcon';
+import classNames from 'classnames';
 
 export default class GameTextField extends React.Component {
 	constructor(props, context) {
@@ -40,7 +41,9 @@ export default class GameTextField extends React.Component {
 
 	render() {
 		return (
-			<div className="game-text-field">
+			<div className={classNames('game-text-field', {
+				'game-text-field-correct-word': this.props.userGuessedCorrectWord
+			})}>
 				<div className="game-text-field-container">
 					<TextField 
 						ref="textField"

@@ -1,4 +1,12 @@
 @import 'variables.less';
+@keyframes correct-word {
+	50% {
+		transform: scale(1.1);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
 
 .game-text-field {
 	position: absolute;
@@ -14,5 +22,9 @@
 	}
 	.game-text-field-container {
 		margin: 0 20px;
+	}
+	&.game-text-field-correct-word .text-field {
+		background: @green;
+		animation: correct-word 0.5s;
 	}
 }

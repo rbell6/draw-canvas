@@ -64,7 +64,7 @@ export default class CanvasView extends React.Component {
 		this.ctx.clearRect(0, 0, this.el.width, this.el.height);
 		opts.aspectRatio = opts.aspectRatio || this.currentAspectRatio();
 
-		lines.getAll().forEach((line, testIndex) => {
+		lines.forEach((line, testIndex) => {
 			this._startDrawing(line, opts.aspectRatio);
 			line.get('points').forEach((point, i) => {
 				this._drawLineToPoint(point, opts.aspectRatio);

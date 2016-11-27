@@ -53,7 +53,7 @@ export default class Canvas extends React.Component {
 		// 	}],
 		// 	brush: {}
 		// }))
-		// this.refs.canvas.paint(this.lines);
+		// this.paint(this.lines);
 	}
 
 	componentWillUnmount() {
@@ -91,7 +91,11 @@ export default class Canvas extends React.Component {
 			lines: this.lines,
 			aspectRatio: this.refs.canvas.currentAspectRatio()
 		});
-		this.canvas.paint(this.lines);
+		this.paint(this.lines);
+	}
+
+	paint(lines) {
+		this.canvas.paint(lines);
 	}
 
 	clear() {
