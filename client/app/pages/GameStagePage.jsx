@@ -38,7 +38,8 @@ export default class GameStagePage extends React.Component {
 				return;
 			}
 			this.setState({
-				game: game
+				game: game,
+				gameName: game.get('name')
 			});
 			if (game.activeRound) {
 				this.startGame();
@@ -69,8 +70,10 @@ export default class GameStagePage extends React.Component {
 	}
 
 	onGameChange(e) {
+		let game = e.data;
 		this.setState({
-			game: e.data
+			game: game,
+			gameName: game.get('name')
 		});
 	}
 
@@ -117,8 +120,9 @@ export default class GameStagePage extends React.Component {
 						{ this.userIsHost() ?
 							<TextField 
 								placeholder="Game Name"
-								value={this.state.game.get('name')} 
-								onChange={e => this.onNameChange(e.target.value)} />
+								value={this.state.gameName} 
+								onChange={e => this.setState({gameName: e.target.value})}
+								onBlur={e => this.onNameChange(e.target.value)} />
 							:
 							<H1 className="game-stage-header">{this.state.game.get('name')}</H1>
 						}
