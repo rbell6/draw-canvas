@@ -16,36 +16,42 @@
     </div>
     <script>
       (function() {
-        var req = new XMLHttpRequest();
-        var $percentLoaded = document.querySelector('.app-percent-loaded');
         var $script = document.createElement('script');
         var $homePage = document.querySelector('.home-page');
-        req.addEventListener('progress', function(e) {
-          if (e.lengthComputable) {
-            var percentLoadedText = Math.round(e.loaded*100/e.total) + '%';
-            $percentLoaded.textContent = percentLoadedText;
-          }
-        }, false);
-        req.addEventListener('load', function(e) {
-          $script.textContent = e.target.responseText;
-          document.documentElement.appendChild($script);
-          setTimeout(function() {
-            $homePage.classList.add('hide');
+        if (document.location.hostname === 'localhost') {
+          $script.src = '/static/js/app.js';
+          document.body.appendChild($script);
+          $homePage.remove();
+        } else {
+          var req = new XMLHttpRequest();
+          var $percentLoaded = document.querySelector('.app-percent-loaded');
+          req.addEventListener('progress', function(e) {
+            if (e.lengthComputable) {
+              var percentLoadedText = Math.round(e.loaded*100/e.total) + '%';
+              $percentLoaded.textContent = percentLoadedText;
+            }
+          }, false);
+          req.addEventListener('load', function(e) {
+            $script.textContent = e.target.responseText;
+            document.documentElement.appendChild($script);
             setTimeout(function() {
-              $homePage.remove();
-            }, 500);
-          }, 1100);
-        }, false);
-        req.open('GET', '/static/js/app.js');
-        req.send();
+              $homePage.classList.add('hide');
+              setTimeout(function() {
+                $homePage.remove();
+              }, 500);
+            }, 1100);
+          }, false);
+          req.open('GET', '/static/js/app.js');
+          req.send();
 
-        var logoReq = new XMLHttpRequest();
-        var $logo = $homePage.querySelector('.home-page-logo');
-        logoReq.addEventListener('load', function(e) {
-          $logo.classList.add('show');
-        });
-        logoReq.open('GET', '/static/img/logo.png');
-        logoReq.send();
+          var logoReq = new XMLHttpRequest();
+          var $logo = $homePage.querySelector('.home-page-logo');
+          logoReq.addEventListener('load', function(e) {
+            $logo.classList.add('show');
+          });
+          logoReq.open('GET', '/static/img/logo.png');
+          logoReq.send();
+        }
       })();
     </script>
   </body>
