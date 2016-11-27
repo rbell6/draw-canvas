@@ -11,7 +11,6 @@ import Brush from '../../../models/Brush';
 import classNames from 'classnames';
 import io from 'socket.io-client';
 import GameService from '../services/GameService';
-import util from '../../../models/util';
 import Message from '../../../models/Message';
 import HotkeyService from '../services/HotkeyService';
 import UserService from '../services/UserService';
@@ -44,8 +43,8 @@ export default class GamePage extends React.Component {
 		this.state = {
 			brush: new Brush({
 				size: Brush.sizes.M,
-				color: util.colors()[0].value,
-				name: util.colors()[0].name
+				color: Brush.colors[0].value,
+				name: Brush.colors[0].label
 			}),
 			showPreRoundModal: false
 		};

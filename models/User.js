@@ -1,6 +1,5 @@
 'use strict';
 
-let util = require('./util');
 let _ = require('lodash');
 let Model = require('./Model');
 

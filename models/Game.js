@@ -1,7 +1,6 @@
 'use strict';
 
 let Round = require('./Round');
-let util = require('./util');
 let _ = require('lodash');
 let Model = require('./Model');
 let Collection = require('./Collection');

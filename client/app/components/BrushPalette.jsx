@@ -1,6 +1,5 @@
 import styles from '../less/brush-palette.less';
 import React from 'react';
-import util from '../../../models/util';
 import Brush from '../../../models/Brush';
 import classNames from 'classnames';
 
@@ -9,7 +8,7 @@ export default class BrushPalette extends React.Component {
 		this.props.onBrushChange(new Brush({
 			size: this.props.brush.get('size'),
 			color: color.value,
-			name: color.name
+			name: color.label
 		}));
 	}
 
@@ -40,10 +39,10 @@ export default class BrushPalette extends React.Component {
 		return (
 			<div className="brush-palette">
 				<div className="brushes">
-					{util.colors().map(color => (
+					{Brush.colors.map(color => (
 						<div 
-							key={color.name} 
-							className={classNames('brush', 'brush-' + color.name, {
+							key={color.label} 
+							className={classNames('brush', 'brush-' + color.label, {
 								'active': this.props.brush.get('color') == color.value
 							})} 
 							onClick={e => this.setBrushColor(color)}>

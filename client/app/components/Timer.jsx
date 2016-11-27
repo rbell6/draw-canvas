@@ -1,6 +1,6 @@
 import styles from '../less/timer.less';
 import React from 'react';
-import util from '../../../models/util';
+import Brush from '../../../models/Brush';
 import classNames from 'classnames';
 
 export default class Timer extends React.Component {
@@ -74,7 +74,7 @@ export default class Timer extends React.Component {
 		this.ctx.beginPath();
 		this.ctx.arc(this.size/2,this.size/2,this.size/2,radians,0, false); // outer (filled)
 		this.ctx.arc(this.size/2,this.size/2,this.size/3,0,radians, true); // inner (unfills it)
-		this.ctx.fillStyle = util.colors.BLUE;
+		this.ctx.fillStyle = Brush.colors.blue.value;
 		this.ctx.fill();
 	}
 
