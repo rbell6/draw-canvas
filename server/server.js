@@ -34,6 +34,7 @@ require('./src')({
 	io: io
 });
 
+app.get('/favicon.ico', (req, res) => res.sendFile('img/favicon.ico', {root: buildDir}));
 app.use('/static/', express.static(buildDir));
 app.all('/*', (req, res) => res.sendFile('index.html', {root: buildDir}));
 
