@@ -7,6 +7,7 @@ import GamePanel from '../components/GamePanel';
 import GameTextField from '../components/GameTextField';
 import GameMessages from '../components/GameMessages';
 import PreRoundModal from '../components/PreRoundModal';
+import MouseObserver from '../components/MouseObserver';
 import Brush from '../../../models/Brush';
 import classNames from 'classnames';
 import io from 'socket.io-client';
@@ -200,6 +201,15 @@ export default class GamePage extends React.Component {
 							{this.state.showPreRoundModal ? <PreRoundModal game={this.state.game} /> : null}
 						</ReactCSSTransitionGroup>
 						<GameMessages game={this.state.game} />
+						{ this.drawerIsMe() ?
+							<MouseObserver 
+								onMouseDown={point => this.refs.canvas.startLine(point)} 
+								onMouseDownMove={point => this.refs.canvas.extendLine(point)} 
+								onMouseMove={point => this.refs.canvas.refs.cursorCanvas.paint(point)}
+								onMouseLeave={() => this.refs.canvas.refs.cursorCanvas.paint()} />
+							:
+							null
+						}
 						<ReactCSSTransitionGroup
 							component={FirstChild}
 							transitionName="brush-palette"

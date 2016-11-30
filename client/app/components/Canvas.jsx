@@ -3,7 +3,6 @@ import React from 'react';
 import Line from '../../../models/Line';
 import LineCollection from '../../../models/LineCollection';
 import Brush from '../../../models/Brush';
-import MouseObserver from './MouseObserver';
 import CursorCanvas from './CursorCanvas';
 import CanvasView from './CanvasView';
 
@@ -29,7 +28,6 @@ export default class Canvas extends React.Component {
 	}
 
 	componentDidMount() {
-		this.reparentMouseObserver();
 		this._mostRecentAspectRatio = this.refs.canvas.currentAspectRatio();
 		window.addEventListener('resize', this.updateLinesOnAspectRatioChange, false);
 
@@ -58,7 +56,6 @@ export default class Canvas extends React.Component {
 
 	componentWillUnmount() {
 		// We need to manually remove the mouse observer since we reparented it
-		this.removeMouseObserver();
 		window.removeEventListener('resize', this.updateLinesOnAspectRatioChange);
 	}
 
@@ -71,19 +68,6 @@ export default class Canvas extends React.Component {
 
 	get canvas() {
 		return this.refs.canvas;
-	}
-
-	// TODO put the mouse observer in the right spot so we don't have to reparent it
-	reparentMouseObserver() {
-		// The mouse observer needs to be on top of the components in center of the page
-		let $mouseObserver = this.refs.mouseObserver.el;
-		let $gameMessages = document.querySelector('.game-messages');
-		let $parent = document.querySelector('.app');
-		$parent.insertBefore($mouseObserver, $gameMessages.nextSibling);
-	}
-
-	removeMouseObserver() {
-		this.refs.mouseObserver.el.remove();
 	}
 
 	onChange() {
@@ -152,13 +136,6 @@ export default class Canvas extends React.Component {
 		return (
 			<div className="canvas-wrap">
 				<CursorCanvas ref="cursorCanvas" brush={this.props.brush} />
-				{/* This will get reparented */}
-				<MouseObserver 
-					ref="mouseObserver"
-					onMouseDown={this.startLine} 
-					onMouseDownMove={this.extendLine} 
-					onMouseMove={point => this.refs.cursorCanvas.paint(point)}
-					onMouseLeave={() => this.refs.cursorCanvas.paint()} />
 				<CanvasView ref="canvas" />
 			</div>
 		);
