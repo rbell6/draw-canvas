@@ -15,7 +15,7 @@ export default class CreateUserPage extends React.Component {
 	constructor(props, context) {
 		super(props, context);
 		this.state = {
-			user: UserService.get() || new User({name: 'bobo'})
+			user: UserService.get() || new User()
 		};
 	}
 
