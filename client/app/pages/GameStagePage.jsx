@@ -1,5 +1,6 @@
 import styles from '../less/game-stage-page.less';
 import React from 'react';
+import ReactDOM from 'react-dom';
 import {
 	Link,
 	browserHistory
@@ -16,6 +17,34 @@ import UserService from '../services/UserService';
 import GameService from '../services/GameService';
 import ActiveRoundService from '../services/ActiveRoundService';
 import LocationService from '../services/LocationService';
+import QRious from '../services/QRCodeService';
+
+class QRCode extends React.Component {
+	componentDidMount() {
+		this.el = ReactDOM.findDOMNode(this);
+		this.createQRCode();
+	}
+
+	createQRCode() {
+		this._qr = new QRious({
+			element: this.el,
+			value: this.props.text,
+			background: '#e4e4e4',
+			size: 75,
+			foreground: '#a76da7'
+		});
+	}
+
+	shouldComponentUpdate() {
+		return false;
+	}
+
+	render() {
+		return (
+			<canvas className="qr-code"></canvas>
+		);
+	}
+}
 
 export default class GameStagePage extends React.Component {
 	constructor(props, context) {
@@ -112,6 +141,10 @@ export default class GameStagePage extends React.Component {
 		return this.state.game.userIsHost(UserService.get());
 	}
 
+	get mobileUrl() {
+		return `https://www.draw.guru/m/${UserService.get().id}`;
+	}
+	
 	render() {
 		return (
 			<div className="game-stage-page">
@@ -132,8 +165,14 @@ export default class GameStagePage extends React.Component {
 								{this.state.game.get('users').map(user => <UserIcon user={user} key={user.id} />) }
 							</div>
 						</div>
-						{/*<TextField 
-							placeholder="Say something ..." />*/}
+						<div className="mobile-link">
+							<i className="fa fa-mobile mobile-icon" />
+							<div className="mobile-link-text">
+								<h3>Draw using your mobile device!</h3>
+								<p>{this.mobileUrl}</p>
+							</div>
+							<QRCode text={this.mobileUrl} />
+						</div>
 						<div className="buttons">
 							<Button onClick={() => this.cancel()} variant="quiet">Cancel</Button>
 							{this.userIsHost() ? <Button onClick={() => this.start()} variant="success">Start game</Button> : null}
