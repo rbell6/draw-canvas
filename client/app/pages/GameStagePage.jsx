@@ -127,10 +127,13 @@ export default class GameStagePage extends React.Component {
 	}
 
 	cancel() {
-		if (this.state.game.userIsHost(UserService.get())) {
-			GameService.delete(this.state.game);
-		}
-		GameService.leaveGame(this.state.game).then(() => this.leaveGame());
+		GameService.leaveGame(this.state.game)
+			.then(() => {
+				if (this.state.game.userIsHost(UserService.get())) {
+					return GameService.delete(this.state.game);
+				}
+			})
+			.then(() => this.leaveGame());
 	}
 
 	start() {

@@ -1,22 +1,24 @@
 'use strict';
 
 let UserSockets = require('../UserSockets');
+let MobileUserSockets = require('../MobileUserSockets');
 let RoundStartTimes = require('../RoundStartTimes');
 let WordService = require('../WordService');
 let Games = require('../Games');
 let words = WordService.get();
 let Round = require('../../../models/Round');
 let _ = require('lodash');
+let express = require('express');
+let router = express.Router();
 const initialDelayTime = 1000;
 
 class ActiveRoundAPI {
 
-	constructor(opts) {
-		this.app = opts.app;
-		this.io = opts.io;
+	constructor(router) {
+		this.router = router;
 	
 		// Get all rounds
-		this.app.get('/api/rounds/:gameId/:userId', (req, res) => {
+		router.get('/:gameId/:userId', (req, res) => {
 			let gameId = req.params.gameId;
 			let userId = req.params.userId;
 			let game = Games.find(game => game.id === gameId);
@@ -88,6 +90,6 @@ class ActiveRoundAPI {
 
 }
 
-module.exports = opts => {
-	return new ActiveRoundAPI(opts);
+module.exports = () => {
+	return new ActiveRoundAPI(router);
 }

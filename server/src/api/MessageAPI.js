@@ -2,13 +2,15 @@
 
 let Games = require('../Games');
 let _ = require('lodash');
+let express = require('express');
+let router = express.Router();
 let UserSockets = require('../UserSockets');
 let RoundStartTimes = require('../RoundStartTimes');
 
 class MessageAPI {
-	constructor(opts) {
-		this.app = opts.app;
-		this.io = opts.io;
+	constructor(router, io) {
+		this.router = router;
+		this.io = io;
 
 		this.onMessageReceived = this.onMessageReceived.bind(this);
 
@@ -68,6 +70,6 @@ class MessageAPI {
 	}	
 }
 
-module.exports = opts => {
-	return new MessageAPI(opts);
+module.exports = io => {
+	return new MessageAPI(router, io);
 }

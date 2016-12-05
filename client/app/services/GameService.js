@@ -9,6 +9,11 @@ import SocketService from './SocketService';
 class GameService extends EventEmitter {
 	constructor() {
 		super();
+		this._registerSocketListeners = this._registerSocketListeners.bind(this);
+		SocketService.onInitialize(this._registerSocketListeners);
+	}
+
+	_registerSocketListeners() {
 		SocketService.on('change:gameList', gameList => this._onGameListChange(gameList));
 		SocketService.on('change:game', game => this._onGameChange(game));
 		SocketService.on('leaveGame', () => this._onLeaveGame());
@@ -37,7 +42,16 @@ class GameService extends EventEmitter {
 
 	getById(id) {
 		return axios.get(`/api/game/${id}`).then(res => {
-			if (res.data) {
+			if (res.data && res.data !== '') {
+				return Game.fromJSON(res.data)
+			}
+			return null;
+		});
+	}
+
+	getFromUserId(userId) {
+		return axios.get(`/api/game/userId/${userId}`).then(res => {
+			if (res.data && res.data !== '') {
 				return Game.fromJSON(res.data)
 			}
 			return null;
@@ -61,14 +75,13 @@ class GameService extends EventEmitter {
 	}
 
 	updateGameName(game, name) {
-		return axios.post('/api/game/name', {
-			gameId: game.id,
+		return axios.post(`/api/game/${game.id}/name`, {
 			gameName: name
 		});
 	}
 
 	startGame(game) {
-		return axios.post('/api/game/start', {
+		return axios.post(`/api/game/${game.id}/start`, {
 			gameId: game.id
 		});
 	}

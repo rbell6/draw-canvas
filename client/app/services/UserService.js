@@ -4,38 +4,28 @@ import axios from 'axios';
 
 let UserService = {
 	save: function(user) {
-		return new Promise((resolve, reject) => {
-			SocketService.emit('saveUser', user.toJSON(), userData => {
-				this._user = new User(userData);
-				window.localStorage.setItem('user', JSON.stringify(this._user.toJSON()));
-				resolve(this._user);
-			});
-		});
+		return axios.post('/api/user', {username: user.get('name')})
+			.then(res => this._setUser(res.data))
+			.then(() => SocketService.initialize())
+			.then(() => this._user);
 	},
 	_user: null,
 	get: function() {
 		return this._user;
 	},
 	fetch: function() {
-		let userId = _.get(this.localUserJSON, 'id');
-		if (userId) {
-			return new Promise((resolve, reject) => {
-				SocketService.emit('getUserById', userId, userData => {
-					if (userData.id) {
-						this._user = new User(userData);
-					}
-					resolve(this._user);
-				});
-			});
+		if (this._user) {
+			return Promise.resolve(this._user);
 		}
-		return Promise.resolve();
+		return axios.get('/api/user')
+			.then(res => this._setUser(res.data))
+			.then(() => SocketService.initialize())
+			.then(() => this._user);
 	},
-	get localUserJSON() {
-		let userString = window.localStorage.getItem('user');
-		if (userString) {
-			return JSON.parse(userString);
-		}
-		return null;
+	_setUser(userData) {
+		if (!userData) { throw 'No user found'; }
+		this._user = new User(userData);
+		return this._user;
 	}
 };
 

@@ -1,8 +1,21 @@
 import io from 'socket.io-client';
+import _ from 'lodash';
 
 class SocketService {
 	constructor() {
-		this.socket = io();
+		this._onInitialize = [];
+	}
+
+	initialize() {
+		return new Promise((resolve, reject) => {
+			this.socket = io();
+			this._onInitialize.forEach(fn => fn());
+			this.on('saveUserSocket', () => resolve());
+		});
+	}
+
+	onInitialize(cb) {
+		this._onInitialize.push(cb);
 	}
 
 	emit(msg, data, cb) {

@@ -22,16 +22,6 @@ import LocationService from './services/LocationService';
 
 window._ = _;
 
-// Add user to all saving methods
-axios.interceptors.request.use(function (config) {
-	config.headers['Content-Type'] = 'application/json;charset=utf-8';
-	if (['POST', 'PUT', 'PATCH', 'DELETE'].indexOf(config.method.toUpperCase()) > -1) {
-		config.data = config.data || {};
-		config.data.user = UserService.get();
-	}
-	return config;
-});
-
 function AppPages({children, location}) {
 	const transitionTime = 400;
 	return (
@@ -57,9 +47,14 @@ export default class App extends React.Component {
 	}
 
 	componentDidMount() {
-		UserService.fetch().then(user => {
-			this.setState({userFetched: true});
-		});
+		UserService.fetch()
+			.then(user => {
+				this.setState({userFetched: true});
+			})
+			.catch(err => {
+				// User was not found
+				this.setState({userFetched: true});
+			});
 	}
 
 	redirectIfUserDoesNotExist(nextState, replace) {

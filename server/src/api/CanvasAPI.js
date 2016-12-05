@@ -2,12 +2,14 @@
 
 let Games = require('../Games');
 let _ = require('lodash');
+let express = require('express');
+let router = express.Router();
 let UserSockets = require('../UserSockets');
 
 class CanvasAPI {
-	constructor(opts) {
-		this.app = opts.app;
-		this.io = opts.io;
+	constructor(router, io) {
+		this.router = router;
+		this.io = io;
 
 		this.onCanvasChange = this.onCanvasChange.bind(this);
 
@@ -33,6 +35,6 @@ class CanvasAPI {
 	}
 }
 
-module.exports = opts => {
-	return new CanvasAPI(opts);
+module.exports = io => {
+	return new CanvasAPI(router, io);
 }

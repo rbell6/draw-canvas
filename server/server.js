@@ -3,7 +3,7 @@
 let express = require('express');
 let socketIO = require('socket.io');
 let path = require('path');
-
+let _ = require('lodash');
 let PORT = process.env.PORT || 3007;
 let ENV = process.env.NODE_ENV || 'development';
 let buildDir  = path.resolve(__dirname, './public');
@@ -12,27 +12,27 @@ let app = express();
 let http = require('http');
 let server = http.createServer(app);
 let bodyParser = require('body-parser');
+let cookieParser = require('cookie-parser');
+let io = socketIO(server);
+let sessionMiddleware = require('./src/middleware/sessionMiddleware');
+let forceSSLMiddleware = require('./src/middleware/forceSSLMiddleware');
 
-let forceSSL = (req, res, next) => {
-	if (req.headers['x-forwarded-proto'] !== 'https') {
-		return res.redirect(['https://', req.get('Host'), req.url].join(''));
-	}
-	return next();
-};
+app.use(cookieParser());
+app.use(sessionMiddleware);
+io.use((socket, next) => sessionMiddleware(socket.request, socket.request.res, next));
+
 if (ENV === 'production') {
-	app.use(forceSSL);
+	app.use(forceSSLMiddleware);
 }
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-let io = socketIO(server);
-
-// Bootstrap the game
-require('./src')({
-	app: app,
-	io: io
-});
+let activeRoundAPI = require('./src/api/ActiveRoundAPI')();
+app.use('/api/rounds', activeRoundAPI.router);
+app.use('/api/canvas', require('./src/api/CanvasAPI')(io).router);
+app.use('/api/message', require('./src/api/MessageAPI')(io).router);
+app.use('/api/user', require('./src/api/UserAPI')(io).router);
+app.use('/api/game', require('./src/api/GameAPI')(activeRoundAPI).router);
 
 app.get('/favicon.ico', (req, res) => res.sendFile('img/favicon.ico', {root: buildDir}));
 app.use('/static/', express.static(buildDir));
