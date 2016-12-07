@@ -56,6 +56,7 @@ export default class GamePage extends React.Component {
 		this.onGameChange = this.onGameChange.bind(this);
 		this.onUndo = this.onUndo.bind(this);
 		this.userGuessedCorrectWord = this.userGuessedCorrectWord.bind(this);
+		this.confirmLeave = this.confirmLeave.bind(this);
 	}
 
 	componentDidMount() {
@@ -83,6 +84,8 @@ export default class GamePage extends React.Component {
 		this.user.on('change:mobileUserConnected', e => {
 			this.forceUpdate();
 		});
+		this.$appLogo = document.querySelector('.game-logo-small');
+		this.$appLogo.addEventListener('click', this.confirmLeave);
 		this._mounted = true;
 	}
 
@@ -103,7 +106,14 @@ export default class GamePage extends React.Component {
 		}
 		GameService.off('change:game', this.onGameChange);
 		HotkeyService.off('undo', this.onUndo);
+		this.$appLogo.removeEventListener('click', this.confirmLeave);
 		this._mounted = false;
+	}
+
+	confirmLeave(e) {
+		if (!window.confirm('Are you sure you want to leave this game?')) {
+			e.stopPropagation();
+		}
 	}
 
 	onExternalCanvasChange(e) {
