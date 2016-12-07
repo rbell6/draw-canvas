@@ -43,7 +43,8 @@ export default class MobileCanvasPage extends React.Component {
 	}
 
 	componentDidMount() {
-		UserService.fetchMobile(this.props.params.userId)
+		UserService.fetchMobile(this.props.params.mobileLinkId)
+			.then(user => this.user = user)
 			.then(() => this.getGame())
 			.catch(err => {
 				if (err.response.status === 404) {
@@ -66,7 +67,7 @@ export default class MobileCanvasPage extends React.Component {
 	}
 
 	getGame() {
-		return GameService.getFromUserId(this.props.params.userId).then(game => {
+		return GameService.getFromUserId(this.user.id).then(game => {
 			if (!game) {
 				this.setState({view: 'waiting'});
 				return;
@@ -117,7 +118,7 @@ export default class MobileCanvasPage extends React.Component {
 
 	drawerIsMe() {
 		if (!_.get(this, 'state.game.activeRound')) { return false; }
-		return this.props.params.userId === this.state.game.activeRound.get('drawerId');
+		return _.get(this, 'user.id') === this.state.game.activeRound.get('drawerId');
 	}
 
 	render() {

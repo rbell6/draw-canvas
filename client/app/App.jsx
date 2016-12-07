@@ -78,7 +78,7 @@ export default class App extends React.Component {
 							<Route path="/game-list" component={GameListPage} onEnter={this.redirectIfUserDoesNotExist.bind(this)} />
 							<Route path="/game/:id" component={GamePage} onEnter={this.redirectIfUserDoesNotExist.bind(this)} />
 							<Route path="/game-stage/:id" component={GameStagePage} onEnter={this.redirectIfUserDoesNotExist.bind(this)} />
-							<Route path="/m/:userId" component={MobileCanvasPage} />
+							<Route path="/m/:mobileLinkId" component={MobileCanvasPage} />
 						</Route>
 					</Router>
 					:

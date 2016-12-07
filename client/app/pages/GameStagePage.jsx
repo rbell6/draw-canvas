@@ -57,6 +57,32 @@ export default class GameStagePage extends React.Component {
 	}
 
 	componentDidMount() {
+		this.getMobileLinkId()
+			.then(() => this.getGame());
+		
+		GameService.on('change:game', this.onGameChange);
+		GameService.on('leaveGame', this.leaveGame);
+		GameService.on('startGame', this.startGame);
+	}
+
+	componentWillUnmount() {
+		if (this.state.game) {
+			this.state.game.off('change:rounds', this.onRoundsChange);
+		}
+		if (this.activeRoundService) {
+			this.activeRoundService.off('endGame', this.leaveGame);
+			this.activeRoundService.destroy();
+		}
+		GameService.off('change:game', this.onGameChange);
+		GameService.off('leaveGame', this.leaveGame);
+		GameService.off('startGame', this.startGame);
+	}
+
+	getMobileLinkId() {
+		return UserService.getMobileLinkId().then(mobileLinkId => this.mobileLinkId = mobileLinkId);
+	}
+
+	getGame() {
 		GameService.getById(this.props.params.id).then(game => {
 			if (!game) {
 				this.leaveGame();
@@ -80,22 +106,6 @@ export default class GameStagePage extends React.Component {
 			this.activeRoundService.on('endGame', this.leaveGame);
 			game.on('change:rounds', this.onRoundsChange);
 		});
-		GameService.on('change:game', this.onGameChange);
-		GameService.on('leaveGame', this.leaveGame);
-		GameService.on('startGame', this.startGame);
-	}
-
-	componentWillUnmount() {
-		if (this.state.game) {
-			this.state.game.off('change:rounds', this.onRoundsChange);
-		}
-		if (this.activeRoundService) {
-			this.activeRoundService.off('endGame', this.leaveGame);
-			this.activeRoundService.destroy();
-		}
-		GameService.off('change:game', this.onGameChange);
-		GameService.off('leaveGame', this.leaveGame);
-		GameService.off('startGame', this.startGame);
 	}
 
 	onGameChange(e) {
@@ -145,7 +155,7 @@ export default class GameStagePage extends React.Component {
 	}
 
 	get mobileUrl() {
-		return `https://www.draw.guru/m/${UserService.get().id}`;
+		return `${window.location.origin}/m/${this.mobileLinkId}`;
 	}
 	
 	render() {

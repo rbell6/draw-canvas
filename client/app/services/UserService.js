@@ -41,6 +41,11 @@ class UserService {
 			.then(() => this._user);
 	}
 
+	getMobileLinkId() {
+		return axios.get('/api/mobile-user/link')
+			.then(res => res.data);
+	}
+
 	forceDisconnectMobileUser() {
 		SocketService.emit('forceDisconnectMobileUser');
 	}
