@@ -46,7 +46,7 @@ export default class MouseObserver extends React.Component {
 	}
 
 	pointFromEvent(event) {
-		if (event instanceof window.TouchEvent) {
+		if (window.TouchEvent && event instanceof window.TouchEvent) {
 			return {
 				x: _.get(event, 'touches[0].clientX'),
 				y: _.get(event, 'touches[0].clientY')
@@ -66,7 +66,7 @@ export default class MouseObserver extends React.Component {
 	}
 
 	onMouseMove(e) {
-		if (e instanceof window.TouchEvent) {
+		if (window.TouchEvent && e instanceof window.TouchEvent) {
 			e.preventDefault();
 		}
 		this.props.onMouseMove(this.pointFromEvent(e));
@@ -81,7 +81,7 @@ export default class MouseObserver extends React.Component {
 		this.enableSelection();
 		this.props.onMouseUp(this.pointFromEvent(e));
 
-		if (e instanceof window.TouchEvent) {
+		if (window.TouchEvent && e instanceof window.TouchEvent) {
 			this.onMouseLeave(e);
 		}
 	}

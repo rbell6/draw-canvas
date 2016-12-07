@@ -1,5 +1,6 @@
 @import 'variables.less';
 @brush-size: 38px;
+@shrink-width: 600px;
 
 .brush-color(@color) {
 	background: @color;
@@ -21,6 +22,10 @@
 	height: 100%;
 	background: transparent;
 	transition: background 0.2s;
+	overflow-y: scroll;
+	@media screen and (max-width: @shrink-width) {
+		width: @brush-palette-half-width;
+	}
 	&:hover {
 		background: rgba(255, 255, 255, 0.05);
 		.brush {
@@ -36,6 +41,14 @@
 			content: '';
 			width: 30%;
 			height: 18px;
+		}
+	}
+	.brush-colors {
+		flex-direction: column;
+		max-height: 300px;
+		@media screen and (max-width: @shrink-width) {
+			max-height: inherit;
+			align-items: center;
 		}
 	}
 	.brush {
@@ -109,6 +122,10 @@
 		padding-top: 12px;
 		display: flex;
 		justify-content: center;
+		@media screen and (max-width: @shrink-width) {
+			flex-direction: column;
+			align-items: center;
+		}
 		i {
 			color: #494949;
 			padding-bottom: 6px;

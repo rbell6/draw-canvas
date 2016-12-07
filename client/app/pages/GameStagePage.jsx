@@ -31,7 +31,7 @@ class QRCode extends React.Component {
 			value: this.props.text,
 			background: '#e4e4e4',
 			size: 75,
-			foreground: '#a76da7'
+			foreground: '#222'
 		});
 	}
 
@@ -162,12 +162,6 @@ export default class GameStagePage extends React.Component {
 							:
 							<H1 className="game-stage-header">{this.state.game.get('name')}</H1>
 						}
-						<div className="game-users-container">
-							<H3>Players</H3>
-							<div className="game-users">
-								{this.state.game.get('users').map(user => <UserIcon user={user} key={user.id} />) }
-							</div>
-						</div>
 						<div className="mobile-link">
 							<i className="fa fa-mobile mobile-icon" />
 							<div className="mobile-link-text">
@@ -175,6 +169,12 @@ export default class GameStagePage extends React.Component {
 								<p>{this.mobileUrl}</p>
 							</div>
 							<QRCode text={this.mobileUrl} />
+						</div>
+						<div className="game-users-container">
+							<H3>Players</H3>
+							<div className="game-users">
+								{this.state.game.get('users').map(user => <UserIcon user={user} key={user.id} />) }
+							</div>
 						</div>
 						<div className="buttons">
 							<Button onClick={() => this.cancel()} variant="quiet">Cancel</Button>

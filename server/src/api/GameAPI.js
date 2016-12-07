@@ -31,6 +31,7 @@ class GameAPI {
 
 		this.getAllGames = this.getAllGames.bind(this);
 		this.getGameById = this.getGameById.bind(this);
+		this.getGameByUserId = this.getGameByUserId.bind(this);
 		this.createGame = this.createGame.bind(this);
 		this.joinGame = this.joinGame.bind(this);
 		this.updateGameName = this.updateGameName.bind(this);
@@ -40,6 +41,7 @@ class GameAPI {
 
 		router.get('/', this.getAllGames);
 		router.get('/:gameId', gameMiddleware, this.getGameById);
+		router.get('/userId/:userId', this.getGameByUserId);
 		router.post('/', userMiddleware, this.createGame); 
 		router.post('/:gameId', userMiddleware, gameMiddleware, this.joinGame);
 		router.post('/:gameId/name', userMiddleware, gameMiddleware, this.updateGameName);
@@ -57,6 +59,18 @@ class GameAPI {
 		res.send(game.toJSON());
 	}
 
+	getGameByUserId(req, res) {
+		let userId = req.params.userId;
+		let game = Games.find(game => {
+			return game.get('users').get({id: userId});
+		});
+		if (game) {
+			res.send(game.toJSON());
+			return;
+		}
+		res.status(404).send('Game not found for user with id: ' + userId);
+	}
+
 	createGame(req, res) {
 		let user = req.user;
 		let game = new Game({
@@ -71,11 +85,13 @@ class GameAPI {
 	joinGame(req, res) {
 		let user = req.user;
 		let game = req.game;
-		if (!_.find(game.get('users'), {id: user.id})) {
-			game.addUser(user);
-			UserSockets.notifyUsers(game.get('users'), 'change:game', game);
-			UserSockets.notifyAll('change:gameList', Games.toJSON());
-		}
+		// Remove the user from any other game
+		Games.forEach(_game => {
+			this._removeUserFromGame(user, _game);
+		});
+		game.addUser(user);
+		UserSockets.notifyUsers(game.get('users'), 'change:game', game);
+		UserSockets.notifyAll('change:gameList', Games.toJSON());
 		res.send(game.toJSON());
 	}
 
@@ -124,11 +140,15 @@ class GameAPI {
 	removeUserFromGame(req, res) {
 		let game = req.game;
 		let user = req.user;
+		this._removeUserFromGame(user, game);
+		res.send();
+	}
+
+	_removeUserFromGame(user, game) {
 		if (game.get('users').find({id: user.id})) {
 			game.removeUser(user);
 			UserSockets.notifyUsers(game.get('users'), 'change:game', game);
 		}
-		res.send();
 	}
 }
 

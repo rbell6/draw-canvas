@@ -23,9 +23,6 @@ import {
 	browserHistory
 } from 'react-router';
 
-// TODO move
-// let socket = io();
-
 function FirstChild(props) {
 	var childrenArray = React.Children.toArray(props.children);
 	return childrenArray[0] || null;
@@ -36,6 +33,7 @@ const modalTransitionEnterTime = 600;
 const modalTransitionLeaveTime = 1000;
 const brushPaletteTransitionTime = 300;
 const gameTextFieldTransitionTime = 1000;
+const mobileUserConnectedTransitionTime = 500;
 
 export default class GamePage extends React.Component {
 	constructor(props, context) {
@@ -50,6 +48,7 @@ export default class GamePage extends React.Component {
 			showPreRoundModal: false,
 			userGuessedCorrectWord: false
 		};
+		this.user = UserService.get();
 
 		this.onExternalCanvasChange = this.onExternalCanvasChange.bind(this);
 		this.onRoundsChange = this.onRoundsChange.bind(this);
@@ -81,6 +80,9 @@ export default class GamePage extends React.Component {
 		});
 		GameService.on('change:game', this.onGameChange);
 		HotkeyService.on('undo', this.onUndo);
+		this.user.on('change:mobileUserConnected', e => {
+			this.forceUpdate();
+		});
 		this._mounted = true;
 	}
 
@@ -105,7 +107,7 @@ export default class GamePage extends React.Component {
 	}
 
 	onExternalCanvasChange(e) {
-		if (!this.drawerIsMe()) {
+		if (!this.showDrawingCanvas()) {
 			let lines = e.data.lines;
 			let aspectRatio = e.data.aspectRatio;
 			this.refs.canvasView.paint(lines, {aspectRatio});
@@ -164,9 +166,13 @@ export default class GamePage extends React.Component {
 		this.forceUpdate();
 	}
 
+	showDrawingCanvas() {
+		return this.drawerIsMe() && !this.user.get('mobileUserConnected');
+	}
+
 	drawerIsMe() {
 		if (!this.state.game.activeRound) { return false; }
-		return UserService.get().id === this.state.game.activeRound.get('drawerId');
+		return this.user.id === this.state.game.activeRound.get('drawerId');
 	}
 
 	userGuessedCorrectWord() {
@@ -179,16 +185,16 @@ export default class GamePage extends React.Component {
 		return (
 			<div className="game-page">
 				{this.state.game ?
-					<div className={classNames('app', {'drawer-is-me': this.drawerIsMe()})}>
+					<div className={classNames('app', {'drawer-is-me': this.showDrawingCanvas()})}>
 						{ this.canvasService ?
-							this.drawerIsMe() ? 
+							this.showDrawingCanvas() ? 
 								<Canvas brush={this.state.brush} onChange={e => this.onCanvasChange(e)} ref="canvas" />
 								:
 								<CanvasView ref="canvasView" />
 							:
 							null
 						}
-						{ this.drawerIsMe() ?
+						{ this.showDrawingCanvas() ?
 							<div className="round-word">{this.state.game.activeRound ? this.state.game.activeRound.get('word') : null}</div>
 							:
 							null
@@ -201,7 +207,7 @@ export default class GamePage extends React.Component {
 							{this.state.showPreRoundModal ? <PreRoundModal game={this.state.game} /> : null}
 						</ReactCSSTransitionGroup>
 						<GameMessages game={this.state.game} />
-						{ this.drawerIsMe() ?
+						{ this.showDrawingCanvas() ?
 							<MouseObserver 
 								onMouseDown={point => this.refs.canvas.startLine(point)} 
 								onMouseDownMove={point => this.refs.canvas.extendLine(point)} 
@@ -212,10 +218,27 @@ export default class GamePage extends React.Component {
 						}
 						<ReactCSSTransitionGroup
 							component={FirstChild}
+							transitionName="mobile-user-connected"
+							transitionEnterTimeout={mobileUserConnectedTransitionTime}
+							transitionLeaveTimeout={mobileUserConnectedTransitionTime}>
+							{ this.drawerIsMe() && this.user.get('mobileUserConnected') ?
+								<div className="mobile-user-connected-message-wrap">
+									<div className="mobile-user-connected-message">
+										<i className="fa fa-mobile big-mobile-icon" />
+										<h3>Draw using your mobile device!</h3>
+										<span className="disconnect-link" onClick={() => UserService.forceDisconnectMobileUser()}>disconnect</span>
+									</div>
+								</div>
+								:
+								null
+							}
+						</ReactCSSTransitionGroup>
+						<ReactCSSTransitionGroup
+							component={FirstChild}
 							transitionName="brush-palette"
 							transitionEnterTimeout={brushPaletteTransitionTime}
 							transitionLeaveTimeout={brushPaletteTransitionTime}>
-							{ this.drawerIsMe() ?
+							{ this.showDrawingCanvas() ?
 								<BrushPalette 
 									brush={this.state.brush} 
 									onBrushChange={brush => this.onBrushChange(brush)} 

@@ -4,6 +4,7 @@
 @modal-transition-enter-time: 400ms;
 @modal-transition-leave-time: 1000ms;
 @brush-palette-transition-time: 300ms;
+@mobile-user-connected-transition-time: 500ms;
 @game-text-field-transition-time: 300ms;
 @game-text-field-delay-time: 700ms;
 @keyframes bounce {
@@ -28,6 +29,36 @@
 	font-weight: 800;
 	text-align: center;
 	color: #444;
+}
+.mobile-user-connected-message-wrap {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: @game-panel-width;
+	bottom: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.mobile-user-connected-message {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	border-radius: 2px;
+	color: @black;
+	.big-mobile-icon {
+		font-size: 100px;
+	}
+	.disconnect-link {
+		font-size: 13px;
+		color: @purple;
+		cursor: pointer;
+		&:hover {
+			color: lighten(@purple, 10%);
+		}
+	}
 }
 .pre-round-modal-enter {
 	transform: translateY(-120%);
@@ -59,6 +90,24 @@
 		opacity: 0;
 		transform: translateX(-20%);
 		transition: opacity @brush-palette-transition-time, transform @brush-palette-transition-time;
+	}
+}
+.mobile-user-connected-enter {
+	transform: scale(0.8);
+	opacity: 0.1;
+	&.mobile-user-connected-enter-active {
+		transform: scale(1);
+		opacity: 1;
+		transition: opacity @mobile-user-connected-transition-time, transform @mobile-user-connected-transition-time;
+	}
+}
+.mobile-user-connected-leave {
+	opacity: 1;
+	transform: scale(1);
+	&.mobile-user-connected-leave-active {
+		opacity: 0;
+		transform: scale(1.2);
+		transition: opacity @mobile-user-connected-transition-time, transform @mobile-user-connected-transition-time;
 	}
 }
 .game-text-field-enter {

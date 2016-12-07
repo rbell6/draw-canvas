@@ -7,7 +7,8 @@ module.exports = class User extends Model {
 	static defaults() {
 		return {
 			connected: true,
-			name: ''
+			name: '',
+			mobileUserConnected: false
 		};
 	}
 

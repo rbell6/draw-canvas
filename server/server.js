@@ -32,6 +32,7 @@ app.use('/api/rounds', activeRoundAPI.router);
 app.use('/api/canvas', require('./src/api/CanvasAPI')(io).router);
 app.use('/api/message', require('./src/api/MessageAPI')(io).router);
 app.use('/api/user', require('./src/api/UserAPI')(io).router);
+app.use('/api/mobile-user', require('./src/api/MobileUserAPI')(io).router);
 app.use('/api/game', require('./src/api/GameAPI')(activeRoundAPI).router);
 
 app.get('/favicon.ico', (req, res) => res.sendFile('img/favicon.ico', {root: buildDir}));

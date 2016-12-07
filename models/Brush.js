@@ -51,23 +51,11 @@ Brush.colors.red = {
 };
 Brush.colors.push(Brush.colors.red);
 
-Brush.colors.black = {
-	label: 'black',
-	value: '#383838'
-};
-Brush.colors.push(Brush.colors.black);
-
 Brush.colors.orange = {
 	label: 'orange',
 	value: '#dd783b'
 };
 Brush.colors.push(Brush.colors.orange);
-
-Brush.colors.gray = {
-	label: 'gray',
-	value: '#555'
-};
-Brush.colors.push(Brush.colors.gray);
 
 Brush.colors.yellow = {
 	label: 'yellow',
@@ -75,23 +63,11 @@ Brush.colors.yellow = {
 };
 Brush.colors.push(Brush.colors.yellow);
 
-Brush.colors.lightGray = {
-	label: 'lightGray',
-	value: '#999'
-};
-Brush.colors.push(Brush.colors.lightGray);
-
 Brush.colors.green = {
 	label: 'green',
 	value: '#499d72'
 };
 Brush.colors.push(Brush.colors.green);
-
-Brush.colors.white = {
-	label: 'white',
-	value: '#e4e4e4'
-};
-Brush.colors.push(Brush.colors.white);
 
 Brush.colors.blue = {
 	label: 'blue',
@@ -99,17 +75,41 @@ Brush.colors.blue = {
 };
 Brush.colors.push(Brush.colors.blue);
 
-Brush.colors.tan = {
-	label: 'tan',
-	value: '#cbb394'
-};
-Brush.colors.push(Brush.colors.tan);
-
 Brush.colors.purple = {
 	label: 'purple',
 	value: '#a76da7'
 };
 Brush.colors.push(Brush.colors.purple);
+
+Brush.colors.black = {
+	label: 'black',
+	value: '#383838'
+};
+Brush.colors.push(Brush.colors.black);
+
+Brush.colors.gray = {
+	label: 'gray',
+	value: '#555'
+};
+Brush.colors.push(Brush.colors.gray);
+
+Brush.colors.lightGray = {
+	label: 'lightGray',
+	value: '#999'
+};
+Brush.colors.push(Brush.colors.lightGray);
+
+Brush.colors.white = {
+	label: 'white',
+	value: '#e4e4e4'
+};
+Brush.colors.push(Brush.colors.white);
+
+Brush.colors.tan = {
+	label: 'tan',
+	value: '#cbb394'
+};
+Brush.colors.push(Brush.colors.tan);
 
 Brush.colors.brown = {
 	label: 'brown',

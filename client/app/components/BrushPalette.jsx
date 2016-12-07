@@ -38,7 +38,7 @@ export default class BrushPalette extends React.Component {
 	render() {
 		return (
 			<div className="brush-palette">
-				<div className="brushes">
+				<div className="brushes brush-colors">
 					{Brush.colors.map(color => (
 						<div 
 							key={color.label} 

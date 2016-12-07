@@ -57,6 +57,11 @@ class ActiveRoundAPI {
 				if (socket) {
 					socket.emit(`change:rounds:${game.id}`, this._roundsJSON(game, user.id));
 				}
+				let mobileSocket = MobileUserSockets.get(user);
+				if (mobileSocket) {
+					mobileSocket.emit(`change:rounds:${game.id}`, this._roundsJSON(game, user.id));
+					mobileSocket.emit(`this is mobile`);
+				}
 			});
 			setTimeout(() => {
 				this.createNextRound(game);
@@ -66,6 +71,10 @@ class ActiveRoundAPI {
 				let socket = UserSockets.get(user);
 				if (socket) {
 					socket.emit(`endGame:${game.id}`);
+				}
+				let mobileSocket = MobileUserSockets.get(user);
+				if (mobileSocket) {
+					mobileSocket.emit(`endGame:${game.id}`);
 				}
 			});	
 			Games.remove(game);
@@ -78,7 +87,8 @@ class ActiveRoundAPI {
 	createNextRoundParams(game) {
 		let newRoundIndex = game.get('rounds').length;
 		let users = game.get('users');
-		let drawerId = users.getAtIndex(newRoundIndex%users.length).id;
+		let drawer = users.getAtIndex(newRoundIndex%users.length);
+		let drawerId = _.get(drawer, 'id');
 		// let drawerId = users.getAtIndex(0).id;
 		return {
 			drawerId: drawerId,
