@@ -48,6 +48,7 @@ export default class App extends React.Component {
 	}
 
 	componentDidMount() {
+		this.hideMobileAddressBar();
 		UserService.fetch()
 			.then(user => {
 				this.setState({userFetched: true});
@@ -56,6 +57,10 @@ export default class App extends React.Component {
 				// User was not found
 				this.setState({userFetched: true});
 			});
+	}
+
+	hideMobileAddressBar() {
+		window.scrollTo(0, 1);
 	}
 
 	redirectIfUserDoesNotExist(nextState, replace) {
