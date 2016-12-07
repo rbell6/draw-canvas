@@ -31,7 +31,7 @@ let activeRoundAPI = require('./src/api/ActiveRoundAPI')();
 let userAPI = require('./src/api/UserAPI')(io);
 app.use('/api/rounds', activeRoundAPI.router);
 app.use('/api/canvas', require('./src/api/CanvasAPI')(io).router);
-app.use('/api/message', require('./src/api/MessageAPI')(io, userAPI).router);
+app.use('/api/message', require('./src/api/MessageAPI')(io, userAPI, activeRoundAPI).router);
 app.use('/api/user', userAPI.router);
 app.use('/api/mobile-user', require('./src/api/MobileUserAPI')(io).router);
 app.use('/api/game', require('./src/api/GameAPI')(activeRoundAPI).router);
