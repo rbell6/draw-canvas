@@ -19,7 +19,6 @@ export default class MessageService extends EventEmitter {
 	addMessage(message) {
 		SocketService.emit('gameMessage', {
 			gameId: this.game.id,
-			userId: UserService.get().id,
 			message: message
 		});
 	}

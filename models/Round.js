@@ -16,4 +16,16 @@ module.exports = class Round extends Model {
 		};
 	}
 
+	wordIsCorrect(word) {
+		return this.get('word').toLowerCase().replace(' ', '') === word.toLowerCase().replace(' ', '');
+	}
+
+	addUserPoints(user, points) {
+		this.get('userPoints')[user.id] = points;
+	}
+
+	numUsersWithPoints() {
+		return Object.keys(this.get('userPoints')).length;
+	}
+
 }
