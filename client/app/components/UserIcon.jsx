@@ -12,13 +12,20 @@ export default class UserIcon extends React.Component {
 			showName: true,
 			status: 'normal',
 			points: 0,
-			showPoints: false
+			showPoints: false,
+			onClick: () => {}
 		};
 	}
 
 	render() {
 		return (
-			<div className={classNames('user-icon', `user-icon-${this.props.size}`, `user-icon-status-${this.props.status}`, this.props.className)}>
+			<div 
+				className={classNames(
+					'user-icon', 
+					`user-icon-${this.props.size}`, 
+					`user-icon-status-${this.props.status}`, 
+					this.props.className)}
+				onClick={this.props.onClick}>
 				<i className="user-avatar fa fa-user" />
 				{this.props.showName ? 
 					<div className="user-name-wrap">

@@ -5,6 +5,10 @@
 	&:not(:disabled):hover {
 		background: lighten(@color, 5%);
 	}
+	&:disabled {
+		background: lighten(@color, 10%);
+		color: lighten(@color, 30%);
+	}
 }
 
 .button {
@@ -18,8 +22,8 @@
 	margin: 0 @gutter/2;
 	flex-grow: 1;
 	min-width: 100px;
-	font-weight: 300px;
-	transition: background 0.2s, color 0.2s;
+	font-weight: 300;
+	transition: background 0.2s, color 0.2s, transform 0.2s;
 	max-width: 50%;
 	&:disabled {
 		color: #999;
@@ -28,6 +32,7 @@
 	}
 	&:not(:disabled):hover {
 		background: #eee;
+		transform: scale(1.03);
 	}
 	&.button-success {
 		.button-background-color(@green);

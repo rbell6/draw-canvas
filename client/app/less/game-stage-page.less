@@ -22,7 +22,7 @@
 		height: 100%;
 		display: flex;
 		flex-direction: column;
-		margin-top: 84px;
+		margin-top: @header-height;
 	}
 	.game-users-container {
 		flex-grow: 1;
@@ -33,6 +33,10 @@
 		display: flex;
 		margin: 0 -@gutter/2;
 		flex-wrap: wrap;
+		.user-icon {
+			margin-left: 11px;
+			margin-right: 11px;
+		}
 	}
 	.buttons {
 		display: flex;

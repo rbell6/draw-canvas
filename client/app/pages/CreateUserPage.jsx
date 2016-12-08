@@ -47,8 +47,7 @@ export default class CreateUserPage extends React.Component {
 						ref="textField" 
 						onChange={e => this.onNicknameChange(e.target.value)} />
 					<div className="launch-buttons">
-						<Button onClick={() => browserHistory.push('/game')} className="launch-button" disabled={true /*this.userName.length === 0*/}>Play</Button>
-						<Button onClick={() => this.onContinue()} className="launch-button" disabled={this.userName.length === 0}>Find a game</Button>
+						<Button onClick={() => this.onContinue()} className="launch-button" disabled={this.userName.length === 0} variant="success">Find a game <i className="fa fa-chevron-right" /></Button>
 					</div>
 				</div>
 			</div>

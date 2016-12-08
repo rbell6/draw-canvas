@@ -86,6 +86,8 @@ export default class GamePage extends React.Component {
 		});
 		this.$appLogo = document.querySelector('.game-logo-small');
 		this.$appLogo.addEventListener('click', this.confirmLeave);
+		this.$userIcon = document.querySelector('.game-user-icon .user-icon');
+		this.$userIcon.addEventListener('click', this.confirmLeave);
 		this._mounted = true;
 	}
 
@@ -107,6 +109,7 @@ export default class GamePage extends React.Component {
 		GameService.off('change:game', this.onGameChange);
 		HotkeyService.off('undo', this.onUndo);
 		this.$appLogo.removeEventListener('click', this.confirmLeave);
+		this.$userIcon.removeEventListener('click', this.confirmLeave);
 		this._mounted = false;
 	}
 
