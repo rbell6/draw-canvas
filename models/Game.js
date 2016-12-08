@@ -52,11 +52,14 @@ module.exports = class Game extends Model {
 		return this.activeRound ? this.activeRound.get('name') : '';
 	}
 
-	get activeRoundDrawerName() {
-		let drawer;
+	get activeRoundDrawer() {
 		if (this.activeRound) {
-			drawer = this.get('users').find(user => user.id === this.activeRound.get('drawerId'));
+			return this.get('users').find(user => user.id === this.activeRound.get('drawerId'));
 		}
+	}
+
+	get activeRoundDrawerName() {
+		let drawer = this.activeRoundDrawer;
 		if (drawer) {
 			return drawer.get('name');
 		}

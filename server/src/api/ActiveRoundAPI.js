@@ -10,7 +10,7 @@ let Round = require('../../../models/Round');
 let _ = require('lodash');
 let express = require('express');
 let router = express.Router();
-const initialDelayTime = 1000;
+const interRoundDelayTime = 2000;
 
 class ActiveRoundAPI {
 
@@ -32,15 +32,12 @@ class ActiveRoundAPI {
 		if (game.activeRound.get('userPoints')[user.id]) { return; }
 		if (game.activeRound.get('drawerId') === user.id) { return; }
 
-		let points = this.getPoints(game);
+		let points = this.getGuesserPoints(game);
 		game.activeRound.addUserPoints(user, points);
 		UserSockets.notifyUsers(game.get('users'), `change:activeRoundPoints:${game.activeRound.id}`, game.activeRound.get('userPoints'));
-		if (game.activeRound.numUsersWithPoints() === game.get('users').length-1) {
+		if (game.activeRound.numUsersWithPoints() === game.get('users').length-1 && this.timeLeftInActiveRound(game) > 0) {
 			clearTimeout(this._roundTimeoutIds.get(game.activeRound));
-			// Give it a couple seconds before sending everyone to the next round
-			setTimeout(() => {
-				this.createNextRound(game);
-			}, 2000);
+			this.createNextRound(game);
 		}
 		return points;
 	}
@@ -60,16 +57,23 @@ class ActiveRoundAPI {
 	}
 
 	startGame(game) {
-		// Give everyone a second before beginning
-		setTimeout(() => {
-			this.createNextRound(game);
-		}, initialDelayTime);
+		this.createNextRound(game);
 	}
 
 	createNextRound(game) {
+		// First we want to give the drawer points for the round that is about to end
+		this.awardDrawerPoints(game);
 		if (game.get('rounds').length === game.get('numRounds')) {
 			this.endGame(game);
+			return;
 		}
+		// Give it a couple seconds before sending everyone to the next round
+		setTimeout(() => {
+			this._createNextRound(game);
+		}, interRoundDelayTime);
+	}
+
+	_createNextRound(game) {
 		RoundStartTimes.set(game, Date.now());
 		let params = this.createNextRoundParams(game);
 		if (game.activeRound) {
@@ -91,6 +95,15 @@ class ActiveRoundAPI {
 			this.createNextRound(game);
 		}, game.get('gameTime'));
 		this._roundTimeoutIds.set(game.activeRound, timeoutId);
+	}
+
+	awardDrawerPoints(game) {
+		let drawer = game.activeRoundDrawer;
+		if (drawer) {
+			let points = this.getDrawerPoints(game);
+			game.activeRound.addUserPoints(drawer, points);
+			UserSockets.notifyUsers(game.get('users'), `change:activeRoundPoints:${game.activeRound.id}`, game.activeRound.get('userPoints'));
+		}
 	}
 
 	endGame(game) {
@@ -121,7 +134,12 @@ class ActiveRoundAPI {
 		};
 	}
 
-	getPoints(game) {
+	timeLeftInActiveRound(game) {
+		let timeElapsed = Date.now()-RoundStartTimes.get(game);
+		return game.get('gameTime')-timeElapsed;
+	}
+
+	getGuesserPoints(game) {
 		// You always get at least 25
 		let points = 25;
 
@@ -141,6 +159,23 @@ class ActiveRoundAPI {
 			points += 60*(numOtherGuessingUsers-numUsersWithPointsInActiveRound)/numOtherGuessingUsers;
 		}
 
+		return points;
+	}
+
+	getDrawerPoints(game) {
+		let points = 0;
+		let numCorrectGuessers = game.activeRound.numUsersWithPoints();
+		let numTotalGuessers = game.get('users').length-1;
+		let percentCorrectGuessers = numCorrectGuessers/numTotalGuessers;
+		if (percentCorrectGuessers > 0.9) {
+			points = 100;
+		} else if (percentCorrectGuessers > 0.6) {
+			points = 85;
+		} else if (percentCorrectGuessers > 0) {
+			points = 75;
+		} else if (percentCorrectGuessers > 0) {
+			points = 65;
+		}
 		return points;
 	}
 
