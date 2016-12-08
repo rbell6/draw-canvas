@@ -62,6 +62,7 @@ export default class GamePanel extends React.Component {
 									user={userWithPoints.user} 
 									status={this.getStatusForUser(userWithPoints.user)} 
 									totalPoints={userWithPoints.points}
+									showPoints={true}
 									points={this.activeRoundPointsForUser(userWithPoints.user)} />
 							</div>
 						))}

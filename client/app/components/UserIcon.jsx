@@ -11,7 +11,8 @@ export default class UserIcon extends React.Component {
 			size: 'regular',
 			showName: true,
 			status: 'normal',
-			points: 0
+			points: 0,
+			showPoints: false
 		};
 	}
 
@@ -20,7 +21,18 @@ export default class UserIcon extends React.Component {
 			<div className={classNames('user-icon', `user-icon-${this.props.size}`, `user-icon-status-${this.props.status}`, this.props.className)}>
 				<i className="user-avatar fa fa-user" />
 				{this.props.showName ? 
-					<span className="user-name-wrap"><span className="user-name" title={this.props.user.get('name')}>{this.props.user.get('name')}</span>{this.props.totalPoints > 0 ? <span className="total-user-points">&nbsp;({this.props.totalPoints})</span> : null }{this.props.points ? <span className="user-points">&nbsp;+{this.props.points}</span> : null }</span> 
+					<div className="user-name-wrap">
+						<div className="user-name" title={this.props.user.get('name')}>{this.props.user.get('name')}</div>
+						{
+							this.props.showPoints ?
+								<div className="user-points-wrap">
+									<div className="total-user-points">{this.props.totalPoints}</div>
+									{this.props.points ? <div className="user-points">&nbsp;+{this.props.points}</div> : null }
+								</div>
+							:
+							null
+						}
+					</div>
 					: 
 					null 
 				}
