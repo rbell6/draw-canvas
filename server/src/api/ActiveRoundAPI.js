@@ -156,7 +156,7 @@ class ActiveRoundAPI {
 			// If there is only one guesser, then just use 60
 			points += 60;
 		} else {
-			points += 60*(numOtherGuessingUsers-numUsersWithPointsInActiveRound)/numOtherGuessingUsers;
+			points += Math.round(60*(numOtherGuessingUsers-numUsersWithPointsInActiveRound)/numOtherGuessingUsers);
 		}
 
 		return points;
