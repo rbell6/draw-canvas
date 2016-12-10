@@ -121,7 +121,7 @@ export default class GamePage extends React.Component {
 			userGuessedCorrectWord: false
 		});
 		if (this.refs.canvas) {
-			this.refs.canvas.paint();
+			this.refs.canvas.clear();
 		}
 		if (this.refs.canvasView) {
 			this.refs.canvasView.paint();
