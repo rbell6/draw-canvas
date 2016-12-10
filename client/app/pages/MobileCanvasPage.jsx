@@ -4,6 +4,7 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import Canvas from '../components/Canvas';
 import MouseObserver from '../components/MouseObserver';
 import BrushPalette from '../components/BrushPalette';
+import FirstChild from '../components/FirstChild';
 import GameService from '../services/GameService';
 import ActiveRoundService from '../services/ActiveRoundService';
 import UserService from '../services/UserService';
@@ -18,11 +19,6 @@ import {
 
 const brushPaletteTransitionTime = 300;
 
-function FirstChild(props) {
-	var childrenArray = React.Children.toArray(props.children);
-	return childrenArray[0] || null;
-}
-
 export default class MobileCanvasPage extends React.Component {
 	constructor(props, context) {
 		super(props, context);
@@ -30,8 +26,8 @@ export default class MobileCanvasPage extends React.Component {
 		this.state = {
 			brush: new Brush({
 				size: Brush.sizes.M,
-				color: Brush.colors[6].value,
-				name: Brush.colors[6].label
+				color: Brush.colors[3].value,
+				name: Brush.colors[3].label
 			}),
 			view: 'waiting',
 			game: null

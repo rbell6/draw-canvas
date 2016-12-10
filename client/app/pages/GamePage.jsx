@@ -8,6 +8,7 @@ import GameTextField from '../components/GameTextField';
 import GameMessages from '../components/GameMessages';
 import PreRoundModal from '../components/PreRoundModal';
 import MouseObserver from '../components/MouseObserver';
+import FirstChild from '../components/FirstChild';
 import Brush from '../../../models/Brush';
 import classNames from 'classnames';
 import io from 'socket.io-client';
@@ -22,11 +23,6 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import {
 	browserHistory
 } from 'react-router';
-
-function FirstChild(props) {
-	var childrenArray = React.Children.toArray(props.children);
-	return childrenArray[0] || null;
-}
 
 const modalViewableTime = 3000;
 const modalTransitionEnterTime = 600;
@@ -56,7 +52,6 @@ export default class GamePage extends React.Component {
 		this.onGameChange = this.onGameChange.bind(this);
 		this.onUndo = this.onUndo.bind(this);
 		this.userGuessedCorrectWord = this.userGuessedCorrectWord.bind(this);
-		this.confirmLeave = this.confirmLeave.bind(this);
 	}
 
 	componentDidMount() {
@@ -82,12 +77,11 @@ export default class GamePage extends React.Component {
 		GameService.on('change:game', this.onGameChange);
 		HotkeyService.on('undo', this.onUndo);
 		this.user.on('change:mobileUserConnected', e => {
-			this.forceUpdate();
+			if (this._mounted) {
+				this.forceUpdate();
+			}
 		});
-		this.$appLogo = document.querySelector('.game-logo-small');
-		this.$appLogo.addEventListener('click', this.confirmLeave);
-		this.$userIcon = document.querySelector('.game-user-icon .user-icon');
-		this.$userIcon.addEventListener('click', this.confirmLeave);
+		document.body.classList.add('game-page');
 		this._mounted = true;
 	}
 
@@ -108,15 +102,8 @@ export default class GamePage extends React.Component {
 		}
 		GameService.off('change:game', this.onGameChange);
 		HotkeyService.off('undo', this.onUndo);
-		this.$appLogo.removeEventListener('click', this.confirmLeave);
-		this.$userIcon.removeEventListener('click', this.confirmLeave);
+		document.body.classList.remove('game-page');
 		this._mounted = false;
-	}
-
-	confirmLeave(e) {
-		if (!window.confirm('Are you sure you want to leave this game?')) {
-			e.stopPropagation();
-		}
 	}
 
 	onExternalCanvasChange(e) {
@@ -214,23 +201,6 @@ export default class GamePage extends React.Component {
 						}
 						<ReactCSSTransitionGroup
 							component={FirstChild}
-							transitionName="pre-round-modal"
-							transitionEnterTimeout={modalTransitionEnterTime}
-							transitionLeaveTimeout={modalTransitionLeaveTime}>
-							{this.state.showPreRoundModal ? <PreRoundModal game={this.state.game} /> : null}
-						</ReactCSSTransitionGroup>
-						<GameMessages game={this.state.game} />
-						{ this.showDrawingCanvas() ?
-							<MouseObserver 
-								onMouseDown={point => this.refs.canvas.startLine(point)} 
-								onMouseDownMove={point => this.refs.canvas.extendLine(point)} 
-								onMouseMove={point => this.refs.canvas.refs.cursorCanvas.paint(point)}
-								onMouseLeave={() => this.refs.canvas.refs.cursorCanvas.paint()} />
-							:
-							null
-						}
-						<ReactCSSTransitionGroup
-							component={FirstChild}
 							transitionName="mobile-user-connected"
 							transitionEnterTimeout={mobileUserConnectedTransitionTime}
 							transitionLeaveTimeout={mobileUserConnectedTransitionTime}>
@@ -246,6 +216,23 @@ export default class GamePage extends React.Component {
 								null
 							}
 						</ReactCSSTransitionGroup>
+						<ReactCSSTransitionGroup
+							component={FirstChild}
+							transitionName="pre-round-modal"
+							transitionEnterTimeout={modalTransitionEnterTime}
+							transitionLeaveTimeout={modalTransitionLeaveTime}>
+							{this.state.showPreRoundModal ? <PreRoundModal game={this.state.game} /> : null}
+						</ReactCSSTransitionGroup>
+						<GameMessages game={this.state.game} />
+						{ this.showDrawingCanvas() ?
+							<MouseObserver 
+								onMouseDown={point => this.refs.canvas.startLine(point)} 
+								onMouseDownMove={point => this.refs.canvas.extendLine(point)} 
+								onMouseMove={point => this.refs.canvas.refs.cursorCanvas.paint(point)}
+								onMouseLeave={() => this.refs.canvas.refs.cursorCanvas.paint()} />
+							:
+							null
+						}
 						<ReactCSSTransitionGroup
 							component={FirstChild}
 							transitionName="brush-palette"
