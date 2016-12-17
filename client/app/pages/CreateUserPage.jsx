@@ -10,12 +10,31 @@ import Button from '../components/Button';
 import User from '../../../models/User';
 import UserService from '../services/UserService';
 import _ from 'lodash';
+import {
+	saveUserName
+} from '../actions/UserActions';
+import {
+	connect
+} from 'react-redux';
 
-export default class CreateUserPage extends React.Component {
+
+class CreateUserPage extends React.Component {
+	static mapStateToProps(state) {
+		return {
+			user: state.user
+		};
+	}
+
+	static mapDispatchToProps(dispatch) {
+		return {
+			saveUserName: name => dispatch(saveUserName(name))
+		};
+	}
+
 	constructor(props, context) {
 		super(props, context);
 		this.state = {
-			user: UserService.get() || new User()
+			tempName: props.user.name
 		};
 	}
 
@@ -24,17 +43,13 @@ export default class CreateUserPage extends React.Component {
 		this.textField.focus();
 	}
 
-	get userName() {
-		return this.state.user.get('name');
-	}
-
-	onNicknameChange(name) {
-		this.state.user.set('name', name);
-		this.forceUpdate();
+	onTempNameChange(name) {
+		this.setState({tempName: name});
 	}
 
 	onContinue() {
-		UserService.save(this.state.user).then(user => browserHistory.push('/game-list'));
+		this.props.saveUserName(this.state.tempName)
+			.then(() => browserHistory.push('/game-list'));
 	}
 
 	render() {
@@ -43,14 +58,16 @@ export default class CreateUserPage extends React.Component {
 				<div className="create-user-container">
 					<TextField 
 						placeholder="Nickname"
-						value={this.userName}
+						value={this.state.tempName}
 						ref="textField" 
-						onChange={e => this.onNicknameChange(e.target.value)} />
+						onChange={e => this.onTempNameChange(e.target.value)} />
 					<div className="launch-buttons">
-						<Button onClick={() => this.onContinue()} className="launch-button" disabled={this.userName.length === 0} variant="success">Find a game <i className="fa fa-chevron-right" /></Button>
+						<Button onClick={() => this.onContinue()} className="launch-button" disabled={this.state.tempName.length === 0} variant="success">Find a game <i className="fa fa-chevron-right" /></Button>
 					</div>
 				</div>
 			</div>
 		);
 	}
 }
+
+export default connect(CreateUserPage.mapStateToProps, CreateUserPage.mapDispatchToProps)(CreateUserPage);

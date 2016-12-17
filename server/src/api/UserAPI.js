@@ -7,6 +7,7 @@ let User = require('../../../models/User');
 let Users = require('../Users');
 let UserSockets = require('../UserSockets');
 let MobileUserSockets = require('../MobileUserSockets');
+let userMiddleware = require('../middleware/userMiddleware');
 
 class UserAPI {
 	constructor(router, io) {
@@ -15,25 +16,27 @@ class UserAPI {
 
 		this.onGetUser = this.onGetUser.bind(this);
 		this.onGetMobileUserConnected = this.onGetMobileUserConnected.bind(this);
-		this.onSaveUser = this.onSaveUser.bind(this);
+		this.onSaveUserName = this.onSaveUserName.bind(this);
 		this.onSocketConnection = this.onSocketConnection.bind(this);
 
 		router.get('/', this.onGetUser);
 		router.get('/mobile-user-connected', this.onGetMobileUserConnected);
-		router.post('/', this.onSaveUser);
+		router.post('/name', userMiddleware, this.onSaveUserName);
 		this.io.on('connection', this.onSocketConnection);
 	}
 
 	onGetUser(req, res) {
 		let userId = _.get(req, 'session.user.id');
+		let user;
 		if (userId) {
-			let user = Users.get({id: userId});
-			if (user) {
-				res.send(user.toJSON());
-				return;
-			}
+			user = Users.get({id: userId});
 		}
-		res.send();
+		if (!user) {
+			user = new User();
+			Users.add(user);
+			req.session.user = user.toJSON();
+		}
+		res.send(user.toJSON());
 	}
 
 	onGetMobileUserConnected(req, res) {
@@ -49,14 +52,11 @@ class UserAPI {
 		res.status(404).send('Mobile user connected not found.');
 	}
 
-	onSaveUser(req, res) {
+	onSaveUserName(req, res) {
+		let user = req.user;
 		let username = _.get(req, 'body.username');
-		let newUser = new User({
-			name: username
-		});
-		Users.add(newUser);
-		req.session.user = newUser.toJSON();
-		res.send(newUser.toJSON());
+		user.set('name', username);
+		res.send();
 	}
 
 	getUserForSocket(socket) {

@@ -20,6 +20,26 @@ import MobileCanvasPage from './pages/MobileCanvasPage';
 import UserService from './services/UserService';
 import axios from 'axios';
 import LocationService from './services/LocationService';
+import {
+	Provider,
+	connect
+} from 'react-redux';
+import {
+	createStore,
+	applyMiddleware
+} from 'redux';
+import reducers from './reducers';
+import thunkMiddleware from 'redux-thunk';
+import createLogger from 'redux-logger';
+import {
+	fetchUser
+} from './actions/UserActions';
+
+let store = createStore(reducers, applyMiddleware(
+	thunkMiddleware,
+	createLogger()
+));
+window.store = store;
 
 window._ = _;
 
@@ -39,47 +59,52 @@ function AppPages({children, location}) {
 	);
 }
 
-export default class App extends React.Component {
-	constructor(props, context) {
-		super(props, context);
-		this.state = {
-			userFetched: false
+function redirectIfUserDoesNotExist(nextState, replace) {
+	let userName = _.get(store.getState(), 'user.name', '');
+	if (userName === '') {
+		replace({
+			pathname: '/create-user'
+		});
+	}
+}
+
+// For some reason we have to pull out the routes 
+// https://github.com/reactjs/react-router-redux/issues/179
+const routes = (
+	<Route path="/" component={AppPages}>
+		<IndexRoute component={HomePage} />
+		<Route path="/create-user" component={CreateUserPage} />
+		<Route path="/game" component={GamePage} onEnter={redirectIfUserDoesNotExist} />
+		<Route path="/game-list" component={GameListPage} onEnter={redirectIfUserDoesNotExist} />
+		<Route path="/game/:id" component={GamePage} onEnter={redirectIfUserDoesNotExist} />
+		<Route path="/game-stage/:id" component={GameStagePage} onEnter={redirectIfUserDoesNotExist} />
+		<Route path="/m/:mobileLinkId" component={MobileCanvasPage} />
+	</Route>
+);
+
+class App extends React.Component {
+	static mapStateToProps(state) {
+		return {
+			user: state.user
 		};
 	}
 
-	componentDidMount() {
-		UserService.fetch()
-			.then(user => {
-				this.setState({userFetched: true});
-			})
-			.catch(err => {
-				// User was not found
-				this.setState({userFetched: true});
-			});
-	}
+	static mapDispatchToProps(dispatch) {
+		return {
+			fetchUser: name => dispatch(fetchUser())
+		};
+	};
 
-	redirectIfUserDoesNotExist(nextState, replace) {
-		if (!UserService.get()) {
-			replace({
-				pathname: '/create-user'
-			});
-		}
+	componentDidMount() {
+		this.props.fetchUser();
 	}
 
 	render() {
 		return (
 			<Shell>
-				{this.state.userFetched ?
+				{this.props.user && this.props.user.lastUpdated && !this.props.user.isFetching ?
 					<Router history={browserHistory}>
-						<Route path="/" component={AppPages}>
-							<IndexRoute component={HomePage} />
-							<Route path="/create-user" component={CreateUserPage} />
-							<Route path="/game" component={GamePage} onEnter={this.redirectIfUserDoesNotExist.bind(this)} />
-							<Route path="/game-list" component={GameListPage} onEnter={this.redirectIfUserDoesNotExist.bind(this)} />
-							<Route path="/game/:id" component={GamePage} onEnter={this.redirectIfUserDoesNotExist.bind(this)} />
-							<Route path="/game-stage/:id" component={GameStagePage} onEnter={this.redirectIfUserDoesNotExist.bind(this)} />
-							<Route path="/m/:mobileLinkId" component={MobileCanvasPage} />
-						</Route>
+						{routes}
 					</Router>
 					:
 					<div className="app-loading"><div className="spinner"><i className="fa fa-cog fa-spin" /></div></div>
@@ -88,3 +113,13 @@ export default class App extends React.Component {
 		);
 	}
 }
+
+let ConnectedApp = connect(App.mapStateToProps, App.mapDispatchToProps)(App);
+
+const ProviderApp = props => (
+	<Provider store={store}>
+		<ConnectedApp />
+	</Provider>
+);
+
+export default ProviderApp;
