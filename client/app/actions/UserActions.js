@@ -32,7 +32,7 @@ export function fetchUser() {
 
 export function saveUserName(name) {
   return dispatch => {
-    dispatch(_requestUser())
+    // dispatch(_requestUser())
     return axios.post('/api/user/name', {username: name})
       .then(res => res.data)
       .then(() => dispatch(_setUserName(name)));
