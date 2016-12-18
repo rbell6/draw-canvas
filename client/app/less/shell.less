@@ -1,7 +1,6 @@
 @import 'variables.less';
 @logo-width: 820px/8;
 @logo-height: 456px/8;
-@menu-transition-time: 200ms;
 
 .game-logo-small {
 	width: @logo-width;
@@ -10,6 +9,7 @@
 	left: calc(~"50% -" @logo-width / 2);
 	top: 20px;
 	transition: transform 0.2s, left 0.2s;
+	-webkit-backface-visibility: hidden; // Fixes a css transform issue in chrome http://stackoverflow.com/questions/17242922/css3-hover-effects-make-weird-impact-on-other-elements-in-chrome
 	&.game-logo-clickable {
 		cursor: pointer;
 		&:hover {
@@ -24,81 +24,4 @@
 }
 .game-page .game-logo-small {
 	left: calc(~"50% -" (@logo-width / 2) + (@game-panel-width - @brush-palette-width) / 2);
-}
-.menu {
-	position: fixed;
-	left: 0;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	background: rgba(50, 50, 50, 0.95);
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-}
-.menu-buttons {
-	width: 500px;
-	max-width: 100%;
-	box-sizing: border-box;
-	padding: 100px 30px 30px 30px;
-	overflow-y: scroll;
-	@media screen and (max-height: 400px) {
-		padding-top: 30px;
-	}
-	.button {
-		width: 100%;
-		max-width: 100%;
-		margin: 0 0 25px 0;
-	}
-}
-.menu-enter {
-	transform: translateY(-10%) scale(1.2);
-	opacity: 0;
-	&.menu-enter-active {
-		opacity: 1;
-		transform: translateY(0) scale(1);
-		transition: opacity @menu-transition-time, transform @menu-transition-time; 
-	}
-}
-.menu-leave {
-	opacity: 1;
-	&.menu-leave-active {
-		opacity: 0;
-		transform: translateY(-10%) scale(1.2);
-		transition: opacity @menu-transition-time, transform @menu-transition-time; 
-	}
-}
-.menu-close-icon {
-	position: absolute;
-	right: 25px;
-	top: 30px;
-	color: #fff;
-	cursor: pointer;
-	width: 30px;
-	height: 30px;
-	&:hover {
-		&:before, &:after {
-			background: #fff;
-		}
-	}
-	&:before {
-		content: '';
-		width: 30px;
-		height: 2px;
-		background: #ccc;
-		display: block;
-		transform: translateY(11px) rotate(45deg);
-	}
-	&:after {
-		content: '';
-		width: 30px;
-		height: 2px;
-		background: #ccc;
-		display: block;
-		transform: translateY(9px) rotate(-45deg);
-	}
-	@media screen and (max-height: 400px) {
-		display: none;
-	}
 }

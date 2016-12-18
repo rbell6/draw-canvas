@@ -1,0 +1,59 @@
+.menu {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+.menu-buttons {
+	width: 500px;
+	max-width: 100%;
+	box-sizing: border-box;
+	padding: 100px 30px 30px 30px;
+	overflow-y: scroll;
+	@media screen and (max-height: 400px) {
+		padding-top: 30px;
+	}
+	.button {
+		width: 100%;
+		max-width: 100%;
+		margin: 0 0 25px 0;
+	}
+}
+.menu-close-icon {
+	position: absolute;
+	right: 25px;
+	top: 30px;
+	color: #fff;
+	cursor: pointer;
+	width: 30px;
+	height: 30px;
+	&:hover {
+		&:before, &:after {
+			background: #fff;
+		}
+	}
+	&:before {
+		content: '';
+		width: 30px;
+		height: 2px;
+		background: #ccc;
+		display: block;
+		transform: translateY(11px) rotate(45deg);
+	}
+	&:after {
+		content: '';
+		width: 30px;
+		height: 2px;
+		background: #ccc;
+		display: block;
+		transform: translateY(9px) rotate(-45deg);
+	}
+	@media screen and (max-height: 400px) {
+		display: none;
+	}
+}

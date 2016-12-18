@@ -1,70 +1,56 @@
 import styles from '../less/shell.less';
 import React from 'react';
 import classNames from 'classnames';
-import {
-	browserHistory
-} from 'react-router';
 import UserIcon from './UserIcon';
 import FirstChild from './FirstChild';
-import Button from './Button';
-import UserService from '../services/UserService';
+import Modal from './Modal';
+import Menu from './Menu';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
-const menuTransitionTime = 200;
-
-function CloseIcon(props) {
-	return (
-		<div className="menu-close-icon" onClick={() => props.onClose()}></div>
-	);
-}
-
-function Menu(props) {
-	function onButtonClick(redirect) {
-		props.onClose();
-		if (redirect) {
-			browserHistory.push(redirect);
-		}
-	}
-
-	return (
-		<div className="menu">
-			<CloseIcon onClose={() => onButtonClick()} />
-			<div className="menu-buttons">
-				<Button variant="success" onClick={() => onButtonClick('/game-list')}>Find a game</Button>
-				<Button onClick={() => onButtonClick('/create-user')}>Edit profile</Button>
-				<Button onClick={() => onButtonClick()} variant="quiet">Back</Button>
-			</div>
-		</div>
-	);
-}
+const modalTransitionTime = 200;
 
 export default class Shell extends React.Component {
 	constructor(props, context) {
 		super(props, context);
-		this.state = {showMenu: false};
+		this.state = {showMenu: false, modal: null};
+		this.showModal = this.showModal.bind(this);
+		this.closeModal = this.closeModal.bind(this);
+	}
+
+	componentDidMount() {
+		document.body.addEventListener('showModal', this.showModal);
+		document.body.addEventListener('closeModal', this.closeModal);
+	}
+
+	componentWillUnmount() {
+		document.body.removeEventListener('showModal', this.showModal);
+		document.body.removeEventListener('closeModal', this.closeModal);
+	}
+
+	showModal(e) {
+		this.setState({modal: e.detail});
+	}
+
+	closeModal() {
+		this.setState({modal: null});
 	}
 
 	onLogoClick() {
-		this.setState({showMenu: true});
-	}
-
-	onMenuClose() {
-		this.setState({showMenu: false});
+		Modal.show(<Menu />);
 	}
 
 	render() {
-		let user = UserService.get();
 		return (
 			<div className="shell">
 				{this.props.children}
 				<ReactCSSTransitionGroup
 					component={FirstChild}
-					transitionName="menu"
-					transitionEnterTimeout={menuTransitionTime}
-					transitionLeaveTimeout={menuTransitionTime}>
-					{ this.state.showMenu ? <Menu onClose={() => this.onMenuClose()} /> : null }
+					transitionName="modal"
+					transitionEnterTimeout={modalTransitionTime}
+					transitionLeaveTimeout={modalTransitionTime}>
+					{ this.state.modal ? <Modal onClose={() => this.onModalClose()}>{this.state.modal}</Modal> : null }
 				</ReactCSSTransitionGroup>
-				<img src="/static/img/logo.png" className={classNames('game-logo-small', {'game-logo-clickable': !this.state.showMenu})} onClick={() => this.onLogoClick()} />
+				<img src="/static/img/logo.png" className={classNames('game-logo-small', {'game-logo-clickable': !this.state.modal})} onClick={() => this.onLogoClick()} />
 			</div>
 		);
 	}

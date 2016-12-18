@@ -29,7 +29,7 @@ export default class UserIcon extends React.Component {
 				<i className="user-avatar fa fa-user" />
 				{this.props.showName ? 
 					<div className="user-name-wrap">
-						<div className="user-name" title={this.props.user.get('name')}>{this.props.user.get('name')}</div>
+						<div className="user-name" title={this.props.user.name}>{this.props.user.name}</div>
 						{
 							this.props.showPoints ?
 								<div className="user-points-wrap">

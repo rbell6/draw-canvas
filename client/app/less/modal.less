@@ -1,0 +1,27 @@
+@modal-transition-time: 200ms;
+
+.modal {
+	position: fixed;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(50, 50, 50, 0.95);
+}
+.modal-enter {
+	transform: translateY(-10%) scale(1.2);
+	opacity: 0;
+	&.modal-enter-active {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+		transition: opacity @modal-transition-time, transform @modal-transition-time; 
+	}
+}
+.modal-leave {
+	opacity: 1;
+	&.modal-leave-active {
+		opacity: 0;
+		transform: translateY(-10%) scale(1.2);
+		transition: opacity @modal-transition-time, transform @modal-transition-time; 
+	}
+}

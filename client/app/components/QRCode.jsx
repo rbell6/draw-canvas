@@ -1,7 +1,8 @@
 import React from 'react';
 import QRious from '../services/QRCodeService';
+import ReactDOM from 'react-dom';
 
-class QRCode extends React.Component {
+export default class QRCode extends React.Component {
 	componentDidMount() {
 		this.el = ReactDOM.findDOMNode(this);
 		this.createQRCode();

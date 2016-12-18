@@ -9,6 +9,8 @@ import GameMessages from '../components/GameMessages';
 import PreRoundModal from '../components/PreRoundModal';
 import MouseObserver from '../components/MouseObserver';
 import FirstChild from '../components/FirstChild';
+import Modal from '../components/Modal';
+import EndGameModal from '../components/EndGameModal';
 import Brush from '../../../models/Brush';
 import classNames from 'classnames';
 import io from 'socket.io-client';
@@ -55,11 +57,8 @@ export default class GamePage extends React.Component {
 	}
 
 	componentDidMount() {
+		// Modal.show(<EndGameModal />);
 		GameService.getById(this.props.params.id).then(game => {
-			if (!game) {
-				this.endGame();
-				return;
-			}
 			this.setState({
 				game: game
 			});
@@ -73,6 +72,9 @@ export default class GamePage extends React.Component {
 			this.messageService = new MessageService(game);
 			this.messageService.on('userGuessedCorrectWord', this.userGuessedCorrectWord);
 			game.on('change:rounds', this.onRoundsChange);
+		}).catch(err => {
+			console.error(err);
+			this.endGame();
 		});
 		GameService.on('change:game', this.onGameChange);
 		HotkeyService.on('undo', this.onUndo);
@@ -81,7 +83,7 @@ export default class GamePage extends React.Component {
 				this.forceUpdate();
 			}
 		});
-		document.body.classList.add('game-page');
+		// document.body.classList.add('game-page');
 		this._mounted = true;
 	}
 
@@ -102,7 +104,7 @@ export default class GamePage extends React.Component {
 		}
 		GameService.off('change:game', this.onGameChange);
 		HotkeyService.off('undo', this.onUndo);
-		document.body.classList.remove('game-page');
+		// document.body.classList.remove('game-page');
 		this._mounted = false;
 	}
 
@@ -135,7 +137,8 @@ export default class GamePage extends React.Component {
 	}
 
 	endGame() {
-		browserHistory.push('/game-list');
+
+		// browserHistory.push('/game-list');
 	}
 
 	onBrushChange(brush) {

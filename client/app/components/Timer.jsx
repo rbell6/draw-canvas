@@ -70,11 +70,11 @@ export default class Timer extends React.Component {
 		this.ctx.fill();
 	}
 
-	drawForegroundRing(radians) {
+	drawForegroundRing(radians, color) {
 		this.ctx.beginPath();
 		this.ctx.arc(this.size/2,this.size/2,this.size/2,radians,0, false); // outer (filled)
 		this.ctx.arc(this.size/2,this.size/2,this.size/3,0,radians, true); // inner (unfills it)
-		this.ctx.fillStyle = Brush.colors.blue.value;
+		this.ctx.fillStyle = color;
 		this.ctx.fill();
 	}
 
@@ -86,12 +86,18 @@ export default class Timer extends React.Component {
 			let percentComplete = Math.min((deltaTime/this.time)+this._percentOfTimeInitiallySpent, 1);
 			let startingDegrees = this.percentToDegrees(percentComplete);
 			let startingRadians = this.degreesToRadians(startingDegrees);
-			
+			let ringColor = Brush.colors.blue.value;
+			if (percentComplete > 0.8) {
+				ringColor = Brush.colors.red.value;
+			} else if (percentComplete > 0.6) {
+				ringColor = Brush.colors.yellow.value;
+			}
+
 			// Clear the canvas
 			this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 			this.drawBackgroundRing();
 			if (percentComplete < 1) {
-				this.drawForegroundRing(startingRadians);
+				this.drawForegroundRing(startingRadians, ringColor);
 				// Call paint again
 				this.paint();
 			}
