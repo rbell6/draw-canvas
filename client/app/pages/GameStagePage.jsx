@@ -197,6 +197,7 @@ class GameStagePage extends React.Component {
 							:
 							<H1 className="game-stage-header">{this.props.game.name}</H1>
 						}
+						{/*}
 						<div className="mobile-link">
 							<i className="fa fa-mobile mobile-icon" />
 							<div className="mobile-link-text">
@@ -205,6 +206,7 @@ class GameStagePage extends React.Component {
 							</div>
 							<QRCode text={this.mobileUrl} />
 						</div>
+					*/}
 						<div className="game-users-container">
 							<H3>Players</H3>
 							<div className="game-users">
