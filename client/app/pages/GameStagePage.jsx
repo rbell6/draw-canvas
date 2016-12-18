@@ -27,7 +27,8 @@ import {
 	cancelGame,
 	unstreamGame,
 	startGame,
-	leaveGame
+	leaveGame,
+	saveGameName
 } from '../actions/GameActions';
 import _ from 'lodash';
 
@@ -48,7 +49,8 @@ class GameStagePage extends React.Component {
 			joinGame: id => dispatch(joinGame(id)),
 			cancelGame: id => dispatch(cancelGame(id)),
 			startGame: id => dispatch(startGame(id)),
-			leaveGame: id => dispatch(leaveGame(id))
+			leaveGame: id => dispatch(leaveGame(id)),
+			saveGameName: (id, name) => dispatch(saveGameName(id, name))
 		};
 	}
 
@@ -64,6 +66,7 @@ class GameStagePage extends React.Component {
 	componentDidMount() {
 		this.getMobileLinkId()
 			.then(() => this.props.streamGame(this.props.socket, this.props.params.id))
+			.then(() => this.setState({tempGameName: this.props.game.name}))
 			.then(() => this.props.joinGame(this.props.params.id))
 			.catch(err => {
 				console.error(err);
@@ -146,9 +149,9 @@ class GameStagePage extends React.Component {
 		}
 	}
 
-	// onNameChange(name) {
-	// 	GameService.updateGameName(this.state.game, name);
-	// }
+	onNameChange(name) {
+		this.props.saveGameName(this.props.game.id, name);
+	}
 
 	cancel() {
 		if (this.userIsHost()) {
@@ -189,8 +192,7 @@ class GameStagePage extends React.Component {
 						{ this.userIsHost() ?
 							<TextField 
 								placeholder="Game Name"
-								value={this.props.game.name} 
-								onChange={e => this.setState({gameName: e.target.value})}
+								defaultValue={this.props.game.name} 
 								onBlur={e => this.onNameChange(e.target.value)} />
 							:
 							<H1 className="game-stage-header">{this.props.game.name}</H1>

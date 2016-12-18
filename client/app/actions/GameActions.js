@@ -67,3 +67,12 @@ export function leaveGame(id) {
 		axios.delete(`/api/game/${id}/user`);
 	};
 }
+
+export function saveGameName(id, name) {
+	return dispatch => {
+		return axios.post(`/api/game/${id}/name`, {
+			gameName: name
+		});
+	};
+}
+
