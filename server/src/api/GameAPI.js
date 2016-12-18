@@ -151,6 +151,7 @@ class GameAPI {
 		let game = req.game;
 		let user = req.user;
 		this._removeUserFromGame(user, game);
+		UserSockets.notifyAll('change:gameList', Games.toJSON())
 		res.send();
 	}
 

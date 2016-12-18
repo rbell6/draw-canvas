@@ -3,7 +3,9 @@ export default function gameList(state=[], action) {
 		case 'RECEIVE_GAME_LIST':
 			return action.gameList.map(game => ({
 				id: game.id,
-				name: game.name
+				name: game.name,
+				hostId: game.hostId,
+				userIds: game.userIds
 			}));
 		default:
 			return state;

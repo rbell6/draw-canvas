@@ -36,10 +36,10 @@ export function startGame(id) {
 
 export function streamGame(socket, id) {
 	return dispatch => {
-		axios.get(`/api/game/${id}`)
+		socket.on(`change:game:${id}`, game => dispatch(_receiveGame(game)));
+		return axios.get(`/api/game/${id}`)
 			.then(res => res.data)
 			.then(game => dispatch(_receiveGame(game)));
-		socket.on(`change:game:${id}`, game => dispatch(_receiveGame(game)));
 	};
 }
 
@@ -59,5 +59,11 @@ export function joinGame(id) {
 export function cancelGame(id) {
 	return dispatch => {
 		axios.delete(`/api/game/${id}`);
+	};
+}
+
+export function leaveGame(id) {
+	return dispatch => {
+		axios.delete(`/api/game/${id}/user`);
 	};
 }

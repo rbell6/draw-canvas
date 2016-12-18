@@ -17,7 +17,8 @@ import {
 class GameListPage extends React.Component {
 	static mapStateToProps(state) {
 		return {
-			gameList: state.gameList
+			gameList: state.gameList,
+			userList: state.userList
 		};
 	}
 
@@ -27,41 +28,23 @@ class GameListPage extends React.Component {
 		};
 	}
 
-	constructor(props, context) {
-		super(props, context);
-		this.state = {
-			gameList: []
-		};
-		this._onGameListChange = this._onGameListChange.bind(this);
-	}
-
-	componentDidMount() {
-		GameService.on('change:gameList', this._onGameListChange);
-		GameService.getAll().then(gameList => {
-			this.setState({
-				gameList: gameList
-			});
-		});
-	}
-
-	componentWillUnmount() {
-		GameService.off('change:gameList', this._onGameListChange);
-	}
-
-	_onGameListChange(e) {
-		this.setState({
-			gameList: e.data
-		});
-	}
-
 	createGame() {
 		this.props.createGame()
 			.then(game => browserHistory.push(`/game-stage/${game.id}`));
 	}
 
 	joinGame(game) {
-		let page = game.activeRound ? 'game' : 'game-stage';
+		let page = game.isStarted ? 'game' : 'game-stage';
 		browserHistory.push(`/${page}/${game.id}`);
+	}
+
+	hostName(game) {
+		let {hostId} = game;
+		let host = this.props.userList.find(u => u.id === hostId);
+		if (host) {
+			return host.name;
+		}
+		return '';
 	}
 
 	render() {
@@ -77,10 +60,10 @@ class GameListPage extends React.Component {
 						transitionEnterTimeout={transitionTime}
 						transitionLeaveTimeout={transitionTime}
 					>
-						{this.state.gameList.map(game => (
+						{this.props.gameList.map(game => (
 							<div key={game.id} className="join-game-button" onClick={() => this.joinGame(game)}>
-								<h2>{game.get('name')}</h2>
-								<h3><i className="fa fa-user" /> {game.hostName()} &nbsp; <i className="fa fa-users" /> {game.numUsers()}</h3>
+								<h2>{game.name}</h2>
+								<h3><i className="fa fa-user" /> {this.hostName(game)} &nbsp; <i className="fa fa-users" /> {game.userIds.length}</h3>
 							</div>
 						))}
 					</ReactCSSTransitionGroup>

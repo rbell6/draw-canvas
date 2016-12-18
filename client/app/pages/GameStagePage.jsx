@@ -26,7 +26,8 @@ import {
 	joinGame,
 	cancelGame,
 	unstreamGame,
-	startGame
+	startGame,
+	leaveGame
 } from '../actions/GameActions';
 import _ from 'lodash';
 
@@ -46,7 +47,8 @@ class GameStagePage extends React.Component {
 			unstreamGame: (socket, id) => dispatch(unstreamGame(socket, id)),
 			joinGame: id => dispatch(joinGame(id)),
 			cancelGame: id => dispatch(cancelGame(id)),
-			startGame: id => dispatch(startGame(id))
+			startGame: id => dispatch(startGame(id)),
+			leaveGame: id => dispatch(leaveGame(id))
 		};
 	}
 
@@ -62,7 +64,11 @@ class GameStagePage extends React.Component {
 	componentDidMount() {
 		this.getMobileLinkId()
 			.then(() => this.props.streamGame(this.props.socket, this.props.params.id))
-			.then(() => this.props.joinGame(this.props.params.id));
+			.then(() => this.props.joinGame(this.props.params.id))
+			.catch(err => {
+				console.error(err);
+				this.leaveGame();
+			});
 	}
 
 	componentWillUnmount() {
@@ -148,6 +154,7 @@ class GameStagePage extends React.Component {
 		if (this.userIsHost()) {
 			this.props.cancelGame(this.props.game.id);
 		} else {
+			this.props.leaveGame(this.props.game.id);
 			this.leaveGame();
 		}
 
