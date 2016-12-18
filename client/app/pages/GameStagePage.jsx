@@ -13,40 +13,34 @@ import {
 	H3 
 } from '../components/Headers';
 import UserIcon from '../components/UserIcon';
+import QRCode from '../components/QRCode';
 import UserService from '../services/UserService';
 import GameService from '../services/GameService';
 import ActiveRoundService from '../services/ActiveRoundService';
 import LocationService from '../services/LocationService';
-import QRious from '../services/QRCodeService';
+import {
+	connect
+} from 'react-redux';
+import {
+	fetchGame
+} from '../actions/GameActions';
 
-class QRCode extends React.Component {
-	componentDidMount() {
-		this.el = ReactDOM.findDOMNode(this);
-		this.createQRCode();
+class GameStagePage extends React.Component {
+	static mapStateToProps(state) {
+		return {
+			game: state.game,
+			user: state.user,
+			userList: state.userList
+		};
 	}
 
-	createQRCode() {
-		this._qr = new QRious({
-			element: this.el,
-			value: this.props.text,
-			background: '#e4e4e4',
-			size: 75,
-			foreground: '#222'
-		});
+	static mapDispatchToProps(dispatch) {
+		return {
+			fetchGame: id => dispatch(fetchGame(id)),
+			startGame: () => dispatch(startGame())
+		};
 	}
 
-	shouldComponentUpdate() {
-		return false;
-	}
-
-	render() {
-		return (
-			<canvas className="qr-code"></canvas>
-		);
-	}
-}
-
-export default class GameStagePage extends React.Component {
 	constructor(props, context) {
 		super(props, context);
 		this.state = {};
@@ -58,7 +52,7 @@ export default class GameStagePage extends React.Component {
 
 	componentDidMount() {
 		this.getMobileLinkId()
-			.then(() => this.getGame());
+			.then(() => this.props.fetchGame(this.props.params.id));
 		
 		GameService.on('change:game', this.onGameChange);
 		GameService.on('leaveGame', this.leaveGame);
@@ -151,7 +145,7 @@ export default class GameStagePage extends React.Component {
 	}
 
 	userIsHost() {
-		return this.state.game.userIsHost(UserService.get());
+		return this.props.user.id === this.props.game.hostId;
 	}
 
 	get mobileUrl() {
@@ -161,16 +155,16 @@ export default class GameStagePage extends React.Component {
 	render() {
 		return (
 			<div className="game-stage-page">
-				{this.state.game ?
+				{this.props.game.id ?
 					<div className="game-stage-container">
 						{ this.userIsHost() ?
 							<TextField 
 								placeholder="Game Name"
-								value={this.state.gameName} 
+								value={this.props.game.name} 
 								onChange={e => this.setState({gameName: e.target.value})}
 								onBlur={e => this.onNameChange(e.target.value)} />
 							:
-							<H1 className="game-stage-header">{this.state.game.get('name')}</H1>
+							<H1 className="game-stage-header">{this.props.game.name}</H1>
 						}
 						<div className="mobile-link">
 							<i className="fa fa-mobile mobile-icon" />
@@ -183,13 +177,20 @@ export default class GameStagePage extends React.Component {
 						<div className="game-users-container">
 							<H3>Players</H3>
 							<div className="game-users">
-								{this.state.game.get('users').map(user => <UserIcon user={user} key={user.id} />) }
+								{this.props.game.userIds.map(userId => {
+									let user = this.props.userList.find(u => u.id === userId);
+									if (user) {
+										return <UserIcon user={user} key={userId} />
+									}
+									return null;
+								}) }
 							</div>
 						</div>
 						<div className="buttons">
 							<Button onClick={() => this.cancel()} variant="quiet">Cancel</Button>
 							{this.userIsHost() ? <Button onClick={() => this.start()} variant="success">Start game</Button> : null}
 						</div>
+
 					</div>
 					:
 					<div className="app-loading"><div className="spinner"><i className="fa fa-cog fa-spin" /></div></div>
@@ -198,3 +199,5 @@ export default class GameStagePage extends React.Component {
 		);
 	}
 }
+
+export default connect(GameStagePage.mapStateToProps, GameStagePage.mapDispatchToProps)(GameStagePage);

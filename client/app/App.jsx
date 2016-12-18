@@ -38,6 +38,9 @@ import {
 	streamUserList
 } from './actions/UserListActions';
 import {
+	streamGameList
+} from './actions/GameListActions';
+import {
 	createSocket
 } from './actions/SocketActions';
 
@@ -92,7 +95,9 @@ class App extends React.Component {
 	static mapStateToProps(state) {
 		return {
 			user: state.user,
-			socket: state.socket
+			socket: state.socket,
+			userList: state.userList,
+			gameList: state.gameList
 		};
 	}
 
@@ -100,7 +105,8 @@ class App extends React.Component {
 		return {
 			fetchUser: () => dispatch(fetchUser()),
 			createSocket: () => dispatch(createSocket()),
-			streamUserList: socket => dispatch(streamUserList(socket))
+			streamUserList: socket => dispatch(streamUserList(socket)),
+			streamGameList: socket => dispatch(streamGameList(socket))
 		};
 	};
 
@@ -108,6 +114,7 @@ class App extends React.Component {
 		this.props.fetchUser().then(user => {
 			this.props.createSocket();
 			this.props.streamUserList(this.props.socket);
+			this.props.streamGameList(this.props.socket);
 		});
 	}
 
@@ -116,7 +123,9 @@ class App extends React.Component {
 		this.props.user.lastUpdated && 
 		!this.props.user.isFetching &&
 		this.props.socket &&
-		this.props.socket.io;
+		this.props.socket.io && // Make sure that the socket has been created
+		this.props.userList &&
+		this.props.userList.length; // Should have at least yourself in userList
 	}
 
 	render() {

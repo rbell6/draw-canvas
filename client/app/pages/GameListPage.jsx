@@ -7,8 +7,26 @@ import {
 	browserHistory
 } from 'react-router';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import {
+	createGame
+} from '../actions/GameActions';
+import {
+	connect
+} from 'react-redux';
 
-export default class GameListPage extends React.Component {
+class GameListPage extends React.Component {
+	static mapStateToProps(state) {
+		return {
+			gameList: state.gameList
+		};
+	}
+
+	static mapDispatchToProps(dispatch) {
+		return {
+			createGame: name => dispatch(createGame(name))
+		};
+	}
+
 	constructor(props, context) {
 		super(props, context);
 		this.state = {
@@ -37,12 +55,8 @@ export default class GameListPage extends React.Component {
 	}
 
 	createGame() {
-		let game = new Game({
-			host: UserService.get()
-		});
-		GameService.save(game).then(savedGame => {
-			browserHistory.push(`/game-stage/${savedGame.id}`);
-		});
+		this.props.createGame()
+			.then(game => browserHistory.push(`/game-stage/${game.id}`));
 	}
 
 	joinGame(game) {
@@ -75,3 +89,5 @@ export default class GameListPage extends React.Component {
 		);
 	}
 }
+
+export default connect(GameListPage.mapStateToProps, GameListPage.mapDispatchToProps)(GameListPage);

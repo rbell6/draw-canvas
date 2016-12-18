@@ -56,7 +56,11 @@ class GameAPI {
 
 	getGameById(req, res) {
 		let game = req.game;
-		res.send(game.toJSON());
+		let gameJSON = Object.assign({}, game.toJSON(), {
+			hostId: game.get('host').id,
+			userIds: game.get('users').map(u => u.id)
+		});
+		res.send(gameJSON);
 	}
 
 	getGameByUserId(req, res) {
@@ -74,12 +78,16 @@ class GameAPI {
 	createGame(req, res) {
 		let user = req.user;
 		let game = new Game({
-			name: req.body.name,
+			name: req.body.name || 'Untitled Game',
 			host: user
 		});
 		Games.add(game);
 		UserSockets.notifyAll('change:gameList', Games.toJSON());
-		res.send(game.toJSON());
+		let gameJSON = Object.assign({}, game.toJSON(), {
+			hostId: user.id,
+			userIds: [user.id]
+		});
+		res.send(gameJSON);
 	}
 
 	joinGame(req, res) {
