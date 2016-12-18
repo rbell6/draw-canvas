@@ -23,8 +23,12 @@ import {
 } from 'react-redux';
 import {
 	streamGame,
-	joinGame
+	joinGame,
+	cancelGame,
+	unstreamGame,
+	startGame
 } from '../actions/GameActions';
+import _ from 'lodash';
 
 class GameStagePage extends React.Component {
 	static mapStateToProps(state) {
@@ -39,8 +43,10 @@ class GameStagePage extends React.Component {
 	static mapDispatchToProps(dispatch) {
 		return {
 			streamGame: (socket, id) => dispatch(streamGame(socket, id)),
+			unstreamGame: (socket, id) => dispatch(unstreamGame(socket, id)),
 			joinGame: id => dispatch(joinGame(id)),
-			startGame: () => dispatch(startGame())
+			cancelGame: id => dispatch(cancelGame(id)),
+			startGame: id => dispatch(startGame(id))
 		};
 	}
 
@@ -49,21 +55,19 @@ class GameStagePage extends React.Component {
 		this.state = {};
 		this.leaveGame = this.leaveGame.bind(this);
 		this.startGame = this.startGame.bind(this);
-		this.onGameChange = this.onGameChange.bind(this);
-		this.onRoundsChange = this.onRoundsChange.bind(this);
+		// this.onGameChange = this.onGameChange.bind(this);
+		// this.onRoundsChange = this.onRoundsChange.bind(this);
 	}
 
 	componentDidMount() {
 		this.getMobileLinkId()
 			.then(() => this.props.streamGame(this.props.socket, this.props.params.id))
 			.then(() => this.props.joinGame(this.props.params.id));
-		
-		GameService.on('change:game', this.onGameChange);
-		GameService.on('leaveGame', this.leaveGame);
-		GameService.on('startGame', this.startGame);
 	}
 
 	componentWillUnmount() {
+		this.props.unstreamGame(this.props.socket, this.props.game.id);
+
 		if (this.state.game) {
 			this.state.game.off('change:rounds', this.onRoundsChange);
 		}
@@ -71,81 +75,95 @@ class GameStagePage extends React.Component {
 			this.activeRoundService.off('endGame', this.leaveGame);
 			this.activeRoundService.destroy();
 		}
-		GameService.off('change:game', this.onGameChange);
-		GameService.off('leaveGame', this.leaveGame);
-		GameService.off('startGame', this.startGame);
+	}
+
+	componentWillReceiveProps(props) {
+		if (_.get(props.game, 'isCanceled')) {
+			this.leaveGame();
+		}
+		if (_.get(props.game, 'isStarted')) {
+			this.startGame();
+		}
 	}
 
 	getMobileLinkId() {
 		return UserService.getMobileLinkId().then(mobileLinkId => this.mobileLinkId = mobileLinkId);
 	}
 
-	getGame() {
-		GameService.getById(this.props.params.id).then(game => {
-			if (!game) {
-				this.leaveGame();
-				return;
-			}
-			if (LocationService.previousPath === `/game/${game.id}`) {
-				this.leaveGame();
-				return;
-			}
-			this.setState({
-				game: game,
-				gameName: game.get('name')
-			});
-			if (game.activeRound) {
-				this.startGame();
-				return;
-			}
-			GameService.joinGame(game);
-			this.activeRoundService = new ActiveRoundService(game);
-			this.activeRoundService.getRounds();
-			this.activeRoundService.on('endGame', this.leaveGame);
-			game.on('change:rounds', this.onRoundsChange);
-		});
-	}
+	// getGame() {
+	// 	GameService.getById(this.props.params.id).then(game => {
+	// 		if (!game) {
+	// 			this.leaveGame();
+	// 			return;
+	// 		}
+	// 		if (LocationService.previousPath === `/game/${game.id}`) {
+	// 			this.leaveGame();
+	// 			return;
+	// 		}
+	// 		this.setState({
+	// 			game: game,
+	// 			gameName: game.get('name')
+	// 		});
+	// 		if (game.activeRound) {
+	// 			this.startGame();
+	// 			return;
+	// 		}
+	// 		GameService.joinGame(game);
+	// 		this.activeRoundService = new ActiveRoundService(game);
+	// 		this.activeRoundService.getRounds();
+	// 		this.activeRoundService.on('endGame', this.leaveGame);
+	// 		game.on('change:rounds', this.onRoundsChange);
+	// 	});
+	// }
 
-	onGameChange(e) {
-		let game = e.data;
-		this.setState({
-			game: game,
-			gameName: game.get('name')
-		});
-	}
+	// onGameChange(e) {
+	// 	let game = e.data;
+	// 	this.setState({
+	// 		game: game,
+	// 		gameName: game.get('name')
+	// 	});
+	// }
 
-	onRoundsChange(e) {
-		if (this.state.game && this.state.game.activeRound) {
-			this.startGame();
-		}
-	}
+	// onRoundsChange(e) {
+	// 	if (this.state.game && this.state.game.activeRound) {
+	// 		this.startGame();
+	// 	}
+	// }
 
 	leaveGame() {
 		browserHistory.push('/game-list');
 	}
 
 	startGame() {
-		if (this.state.game) {
-			browserHistory.push(`/game/${this.state.game.id}`);
+		if (this.props.game) {
+			browserHistory.push(`/game/${this.props.game.id}`);
 		}
 	}
 
-	onNameChange(name) {
-		GameService.updateGameName(this.state.game, name);
-	}
+	// onNameChange(name) {
+	// 	GameService.updateGameName(this.state.game, name);
+	// }
 
 	cancel() {
-		GameService.leaveGame(this.state.game)
-			.then(() => {
-				if (this.state.game.userIsHost(UserService.get())) {
-					return GameService.delete(this.state.game);
-				}
-			})
-			.then(() => this.leaveGame());
+		if (this.userIsHost()) {
+			this.props.cancelGame(this.props.game.id);
+		} else {
+			this.leaveGame();
+		}
+
+
+		// GameService.leaveGame(this.state.game)
+		// 	.then(() => {
+		// 		if (this.state.game.userIsHost(UserService.get())) {
+		// 			return GameService.delete(this.state.game);
+		// 		}
+		// 	})
+		// 	.then(() => this.leaveGame());
 	}
 
 	start() {
-		GameService.startGame(this.state.game);
+		this.props.startGame(this.props.game.id);
+		// GameService.startGame(this.state.game);
 	}
 
 	userIsHost() {

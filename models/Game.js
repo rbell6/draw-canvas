@@ -40,7 +40,9 @@ module.exports = class Game extends Model {
 			numRounds: 10,
 			name: 'Untitled Game',
 			messages: new Collection(),
-			gameTime: 60000
+			gameTime: 60000,
+			isStarted: false,
+			isCanceled: false
 		};
 	}
 
@@ -116,6 +118,15 @@ module.exports = class Game extends Model {
 
 	userIsHost(user) {
 		return this.get('host').id === user.id;
+	}
+
+	toJSON() {
+		let json = super.toJSON();
+		Object.assign(json, {
+			hostId: json.host.id,
+			userIds: json.users.map(u => u.id)
+		});
+		return json;
 	}
 
 	static fromJSON(json) {
