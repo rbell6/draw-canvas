@@ -7,9 +7,9 @@ export function setGameName(name) {
 	};
 }
 
-function _setGame(game) {
+function _receiveGame(game) {
 	return {
-		type: 'SET_GAME',
+		type: 'RECEIVE_GAME',
 		game
 	};
 }
@@ -17,21 +17,21 @@ function _setGame(game) {
 export function createGame(name) {
 	return dispatch => {
 		return axios.post('/api/game')
-			.then(res => res.data)
-			// .then(game => {
-			// 	dispatch(_setGame(game));
-			// 	return game;
-			// });
-	}
+			.then(res => res.data);
+	};
 }
 
-export function fetchGame(id) {
+export function streamGame(socket, id) {
 	return dispatch => {
-		return axios.get(`/api/game/${id}`)
+		axios.get(`/api/game/${id}`)
 			.then(res => res.data)
-			.then(game => {
-				dispatch(_setGame(game));
-				return game;
-			});
-	}
+			.then(game => dispatch(_receiveGame(game)));
+		socket.on(`change:game${id}`, game => dispatch(_receiveGame(game)));
+	};
+}
+
+export function joinGame(id) {
+	return dispatch => {
+		axios.post(`/api/game/${id}`);
+	};
 }

@@ -1,6 +1,6 @@
 export default function game(state={}, action) {
 	switch(action.type) {
-		case 'SET_GAME':
+		case 'RECEIVE_GAME':
 			let {
 				id,
 				name,

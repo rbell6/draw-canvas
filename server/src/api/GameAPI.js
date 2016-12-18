@@ -98,7 +98,7 @@ class GameAPI {
 			this._removeUserFromGame(user, _game);
 		});
 		game.addUser(user);
-		UserSockets.notifyUsers(game.get('users'), 'change:game', game);
+		UserSockets.notifyUsers(game.get('users'), `change:game:${game.id}`, game);
 		UserSockets.notifyAll('change:gameList', Games.toJSON());
 		res.send(game.toJSON());
 	}
@@ -113,7 +113,7 @@ class GameAPI {
 			return;
 		}
 		game.set('name', gameName);
-		UserSockets.notifyUsers(game.get('users'), 'change:game', game.toJSON());
+		UserSockets.notifyUsers(game.get('users'), `change:game:${game.id}`, game.toJSON());
 		UserSockets.notifyAll('change:gameList', Games.toJSON())
 		res.send(game.toJSON());
 	}
@@ -155,7 +155,7 @@ class GameAPI {
 	_removeUserFromGame(user, game) {
 		if (game.get('users').find({id: user.id})) {
 			game.removeUser(user);
-			UserSockets.notifyUsers(game.get('users'), 'change:game', game);
+			UserSockets.notifyUsers(game.get('users'), `change:game:${game.id}`, game);
 		}
 	}
 }

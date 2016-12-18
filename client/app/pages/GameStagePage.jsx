@@ -22,7 +22,8 @@ import {
 	connect
 } from 'react-redux';
 import {
-	fetchGame
+	streamGame,
+	joinGame
 } from '../actions/GameActions';
 
 class GameStagePage extends React.Component {
@@ -30,13 +31,15 @@ class GameStagePage extends React.Component {
 		return {
 			game: state.game,
 			user: state.user,
-			userList: state.userList
+			userList: state.userList,
+			socket: state.socket
 		};
 	}
 
 	static mapDispatchToProps(dispatch) {
 		return {
-			fetchGame: id => dispatch(fetchGame(id)),
+			streamGame: (socket, id) => dispatch(streamGame(socket, id)),
+			joinGame: id => dispatch(joinGame(id)),
 			startGame: () => dispatch(startGame())
 		};
 	}
@@ -52,7 +55,8 @@ class GameStagePage extends React.Component {
 
 	componentDidMount() {
 		this.getMobileLinkId()
-			.then(() => this.props.fetchGame(this.props.params.id));
+			.then(() => this.props.streamGame(this.props.socket, this.props.params.id))
+			.then(() => this.props.joinGame(this.props.params.id));
 		
 		GameService.on('change:game', this.onGameChange);
 		GameService.on('leaveGame', this.leaveGame);
