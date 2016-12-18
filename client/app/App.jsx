@@ -34,6 +34,12 @@ import createLogger from 'redux-logger';
 import {
 	fetchUser
 } from './actions/UserActions';
+import {
+	streamUserList
+} from './actions/UserListActions';
+import {
+	createSocket
+} from './actions/SocketActions';
 
 let store = createStore(reducers, applyMiddleware(
 	thunkMiddleware,
@@ -85,24 +91,38 @@ const routes = (
 class App extends React.Component {
 	static mapStateToProps(state) {
 		return {
-			user: state.user
+			user: state.user,
+			socket: state.socket
 		};
 	}
 
 	static mapDispatchToProps(dispatch) {
 		return {
-			fetchUser: name => dispatch(fetchUser())
+			fetchUser: () => dispatch(fetchUser()),
+			createSocket: () => dispatch(createSocket()),
+			streamUserList: socket => dispatch(streamUserList(socket))
 		};
 	};
 
 	componentDidMount() {
-		this.props.fetchUser();
+		this.props.fetchUser().then(user => {
+			this.props.createSocket();
+			this.props.streamUserList(this.props.socket);
+		});
+	}
+
+	isDoneLoading() {
+		return this.props.user && 
+		this.props.user.lastUpdated && 
+		!this.props.user.isFetching &&
+		this.props.socket &&
+		this.props.socket.io;
 	}
 
 	render() {
 		return (
 			<Shell>
-				{this.props.user && this.props.user.lastUpdated && !this.props.user.isFetching ?
+				{this.isDoneLoading() ?
 					<Router history={browserHistory}>
 						{routes}
 					</Router>

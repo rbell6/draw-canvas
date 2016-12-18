@@ -24,7 +24,10 @@
 	min-width: 100px;
 	font-weight: 300;
 	transition: background 0.2s, color 0.2s, transform 0.2s;
-	max-width: 50%;
+	-webkit-backface-visibility: hidden;
+	-moz-backface-visibility: hidden;
+	-ms-backface-visibility: hidden;
+	outline: none;
 	&:disabled {
 		color: #999;
 		background: #ccc;

@@ -22,19 +22,24 @@ function _receiveUser(user) {
 }
 
 export function fetchUser() {
-  return dispatch => {
-    dispatch(_requestUser())
-    return axios.get('/api/user')
-      .then(res => res.data)
-      .then(user => dispatch(_receiveUser(user)))
-  }
+	return dispatch => {
+		dispatch(_requestUser())
+		return axios.get('/api/user')
+			.then(res => res.data)
+			.then(user => {
+				dispatch(_receiveUser(user))
+				return user;
+			});
+	}
 }
 
 export function saveUserName(name) {
-  return dispatch => {
-    // dispatch(_requestUser())
-    return axios.post('/api/user/name', {username: name})
-      .then(res => res.data)
-      .then(() => dispatch(_setUserName(name)));
-  }
+	return dispatch => {
+		// dispatch(_requestUser())
+		return axios.post('/api/user/name', {
+				username: name
+			})
+			.then(res => res.data)
+			.then(() => dispatch(_setUserName(name)));
+	}
 }

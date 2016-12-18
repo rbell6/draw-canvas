@@ -15,6 +15,14 @@ class UserSockets extends Map {
 			socket.emit(message, data);
 		});
 	}
+
+	allUsers() {
+		let users = [];
+		this.forEach((socket, user) => {
+			users.push(user);
+		});
+		return users;
+	}
 }
 
 module.exports = new UserSockets();

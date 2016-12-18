@@ -15,11 +15,13 @@ class UserAPI {
 		this.io = io;
 
 		this.onGetUser = this.onGetUser.bind(this);
+		this.onGetAll = this.onGetAll.bind(this);
 		this.onGetMobileUserConnected = this.onGetMobileUserConnected.bind(this);
 		this.onSaveUserName = this.onSaveUserName.bind(this);
 		this.onSocketConnection = this.onSocketConnection.bind(this);
 
 		router.get('/', this.onGetUser);
+		router.get('/all', this.onGetAll);
 		router.get('/mobile-user-connected', this.onGetMobileUserConnected);
 		router.post('/name', userMiddleware, this.onSaveUserName);
 		this.io.on('connection', this.onSocketConnection);
@@ -37,6 +39,11 @@ class UserAPI {
 			req.session.user = user.toJSON();
 		}
 		res.send(user.toJSON());
+	}
+
+	onGetAll(req, res) {
+		let allUsers = Users.map(u => u.toJSON());
+		res.send(allUsers);
 	}
 
 	onGetMobileUserConnected(req, res) {
@@ -57,6 +64,7 @@ class UserAPI {
 		let username = _.get(req, 'body.username');
 		user.set('name', username);
 		res.send();
+		UserSockets.notifyAll('change:userList', UserSockets.allUsers().map(u => u.toJSON()));
 	}
 
 	getUserForSocket(socket) {
@@ -93,6 +101,7 @@ class UserAPI {
 		}
 		socket.on('disconnect', this.onSocketDisconnect.bind(this, socket));
 		socket.on('forceDisconnectMobileUser', this.forceDisconnectMobileUser.bind(this, socket));
+		UserSockets.notifyAll('change:userList', UserSockets.allUsers().map(u => u.toJSON()));
 	}
 
 	onSocketDisconnect(socket) {
@@ -108,6 +117,7 @@ class UserAPI {
 				UserSockets.delete(user);
 			}
 		}
+		UserSockets.notifyAll('change:userList', UserSockets.allUsers().map(u => u.toJSON()));
 	}
 
 	forceDisconnectMobileUser(socket) {
