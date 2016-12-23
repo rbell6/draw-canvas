@@ -66,7 +66,7 @@ export default class CanvasView extends React.Component {
 
 		lines.forEach((line, testIndex) => {
 			this._startDrawing(line, opts.aspectRatio);
-			line.get('points').forEach((point, i) => {
+			line.points.forEach((point, i) => {
 				this._drawLineToPoint(point, opts.aspectRatio);
 			});
 			this._endDrawing();
@@ -76,8 +76,8 @@ export default class CanvasView extends React.Component {
 	}
 
 	_startDrawing(line, aspectRatio) {
-		let point = this.percentagePointToPixelPoint(line.startingPoint(), this.currentAspectRatio(), aspectRatio);
-		let brush = line.get('brush');
+		let point = this.percentagePointToPixelPoint(line.points[0], this.currentAspectRatio(), aspectRatio);
+		let brush = line.brush;
 		this._setBrushType(brush);
 		this.ctx.beginPath();
 		this.ctx.lineWidth = this._brushSize(brush, aspectRatio);

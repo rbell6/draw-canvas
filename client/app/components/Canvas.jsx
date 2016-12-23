@@ -1,8 +1,5 @@
 import styles from '../less/canvas.less';
 import React from 'react';
-import Line from '../../../models/Line';
-import LineCollection from '../../../models/LineCollection';
-import Brush from '../../../models/Brush';
 import CursorCanvas from './CursorCanvas';
 import CanvasView from './CanvasView';
 
@@ -16,13 +13,13 @@ export default class Canvas extends React.Component {
 		this.extendLine = this.extendLine.bind(this);
 		this.updateLinesOnAspectRatioChange = _.debounce(this.updateLinesOnAspectRatioChange.bind(this), 200);
 
-		this.lines = new LineCollection();
+		this.lines = [];
 		this._curLine = null;
 	}
 
 	static get defaultProps() {
 		return {
-			brush: new Brush(),
+			brush: null,
 			onChange: function(){}
 		};
 	}
@@ -93,10 +90,11 @@ export default class Canvas extends React.Component {
 	}
 
 	startLine(point) {
-		this._curLine = new Line({
-			brush: this.props.brush
-		});
-		this.lines.add(this._curLine);
+		this._curLine = {
+			brush: this.props.brush,
+			points: []
+		};
+		this.lines.push(this._curLine);
 		this.addPointToLine(point);
 	}
 
@@ -105,7 +103,7 @@ export default class Canvas extends React.Component {
 	}
 
 	addPointToLine(point) {
-		this._curLine.addPoint(this.pixelPointToPercentagePoint(point));
+		this._curLine.points.push(this.pixelPointToPercentagePoint(point));
 		this.onChange();
 	}
 

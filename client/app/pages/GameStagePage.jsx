@@ -192,7 +192,7 @@ class GameStagePage extends React.Component {
 	}
 
 	start() {
-		this.props.startGame();
+		this.props.startGame(this.props.params.id);
 		// GameService.startGame(this.state.game);
 	}
 

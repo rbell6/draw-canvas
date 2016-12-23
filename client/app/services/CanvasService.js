@@ -1,5 +1,4 @@
 import EventEmitter from '../../../models/EventEmitter';
-import LineCollection from '../../../models/LineCollection';
 
 export default class CanvasService extends EventEmitter {
 	constructor(game, socket) {
@@ -24,7 +23,7 @@ export default class CanvasService extends EventEmitter {
 
 	_onCanvasChange(lines, aspectRatio) {
 		this.emit(`change:canvas:${this.game.id}`, {
-			lines: LineCollection.fromJSON(lines), 
+			lines: lines, 
 			aspectRatio: aspectRatio
 		});
 	}
