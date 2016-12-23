@@ -35,6 +35,7 @@ export default class GameTextField extends React.Component {
 	}
 
 	onSubmit() {
+		if (this.state.value === '') { return; }
 		this.props.messageService.addMessage(this.state.value);
 		this.setState({value: ''});
 	}

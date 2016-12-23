@@ -36,7 +36,8 @@ import {
 	startGame,
 	leaveGame,
 	resetGame,
-	saveGameName
+	saveGameName,
+	addMessage
 } from '../actions/GameActions';
 import GameUtil from '../util/GameUtil';
 
@@ -67,7 +68,8 @@ class GamePage extends React.Component {
 			startGame: id => dispatch(startGame(id)),
 			leaveGame: id => dispatch(leaveGame(id)),
 			resetGame: () => dispatch(resetGame()),
-			saveGameName: (id, name) => dispatch(saveGameName(id, name))
+			saveGameName: (id, name) => dispatch(saveGameName(id, name)),
+			addMessage: message => dispatch(addMessage(message))
 		};
 	}
 
@@ -114,6 +116,8 @@ class GamePage extends React.Component {
 			.then(() => {
 				this.canvasService = new CanvasService(this.props.game, this.props.socket);
 				this.canvasService.on(`change:canvas:${this.props.game.id}`, this.onExternalCanvasChange);
+				this.messageService = new MessageService(this.props.game, this.props.socket, this.props.addMessage);
+				this.messageService.on('userGuessedCorrectWord', this.userGuessedCorrectWord);
 			})
 			.catch(err => {
 				console.error(err);
@@ -133,8 +137,6 @@ class GamePage extends React.Component {
 			this.activeRoundService = new ActiveRoundService(game);
 			this.activeRoundService.getRounds();
 			this.activeRoundService.on('endGame', this.endGame);
-			this.messageService = new MessageService(game);
-			this.messageService.on('userGuessedCorrectWord', this.userGuessedCorrectWord);
 			game.on('change:rounds', this.onRoundsChange);
 		}).catch(err => {
 			console.error(err);
@@ -284,7 +286,7 @@ class GamePage extends React.Component {
 							null
 						}
 						{ this.showDrawingCanvas() ?
-							<div className="round-word">{this.props.game.activeRound ? this.props.game.activeRound.word : null}</div>
+							<div className="round-word">{this.activeRound ? this.activeRound.word : null}</div>
 							:
 							null
 						}
@@ -351,7 +353,7 @@ class GamePage extends React.Component {
 							transitionName="game-text-field"
 							transitionEnterTimeout={gameTextFieldTransitionTime}
 							transitionLeaveTimeout={gameTextFieldTransitionTime}>
-							{ this.props.game.activeRound && !this.drawerIsMe() ? 
+							{ this.activeRound && !this.drawerIsMe() ? 
 								<GameTextField 
 									game={this.props.game}
 									messageService={this.messageService}

@@ -111,3 +111,10 @@ export function saveGameName(id, name) {
 	};
 }
 
+export function addMessage(message) {
+	return {
+		type: 'ADD_MESSAGE',
+		message
+	};
+}
+

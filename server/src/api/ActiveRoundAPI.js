@@ -142,14 +142,14 @@ class ActiveRoundAPI {
 	}
 
 	getGuesserPoints(game) {
-		// You always get at least 25
-		let points = 25;
+		// You always get at least 40
+		let points = 40;
 
 		// +15 if you guess the correct word in the first half of the round
-		let percentTimeLeftInRound = 1-((Date.now()-RoundStartTimes.get(game))/game.get('gameTime'));
-		if (percentTimeLeftInRound > 0.5) {
-			points += 15;
-		}
+		// let percentTimeLeftInRound = 1-((Date.now()-RoundStartTimes.get(game))/game.get('gameTime'));
+		// if (percentTimeLeftInRound > 0.5) {
+		// 	points += 15;
+		// }
 
 		// +up to 60 depending on how many guessed correctly before you
 		let numUsersWithPointsInActiveRound = game.activeRound.numUsersWithPoints();
@@ -169,11 +169,11 @@ class ActiveRoundAPI {
 		let numCorrectGuessers = game.activeRound.numUsersWithPoints();
 		let numTotalGuessers = game.get('users').length-1;
 		let percentCorrectGuessers = numCorrectGuessers/numTotalGuessers;
-		if (percentCorrectGuessers > 0.9) {
+		if (percentCorrectGuessers > 0.8) {
 			points = 100;
 		} else if (percentCorrectGuessers > 0.6) {
 			points = 85;
-		} else if (percentCorrectGuessers > 0) {
+		} else if (percentCorrectGuessers > 0.35) {
 			points = 75;
 		} else if (percentCorrectGuessers > 0) {
 			points = 65;

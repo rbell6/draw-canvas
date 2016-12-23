@@ -23,6 +23,7 @@ class MessageAPI {
 		let game = Games.find(game => game.id === opts.gameId);
 		let activeRound = _.get(game, 'activeRound');
 		let message = opts.message;
+		let messageId = user.id + Date.now();
 		let res;
 		if (user.id && activeRound) {
 			let wordIsCorrect = game.activeRound.wordIsCorrect(message);
@@ -32,13 +33,15 @@ class MessageAPI {
 					text: '',
 					wordIsCorrect: true,
 					points: points,
-					userId: user.id
+					userId: user.id,
+					id: messageId
 				};
 			} else {
 				res = {
 					text: message,
 					wordIsCorrect: false,
-					userId: user.id
+					userId: user.id,
+					id: messageId
 				};
 			}
 			UserSockets.notifyUsers(game.get('users'), `gameMessage:${game.id}`, res);
