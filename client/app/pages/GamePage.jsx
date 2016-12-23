@@ -25,6 +25,20 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import {
 	browserHistory
 } from 'react-router';
+import {
+	connect
+} from 'react-redux';
+import {
+	streamGame,
+	streamRounds,
+	joinGame,
+	cancelGame,
+	startGame,
+	leaveGame,
+	resetGame,
+	saveGameName
+} from '../actions/GameActions';
+import GameUtil from '../util/GameUtil';
 
 const modalViewableTime = 3000;
 const modalTransitionEnterTime = 600;
@@ -33,20 +47,47 @@ const brushPaletteTransitionTime = 300;
 const gameTextFieldTransitionTime = 1000;
 const mobileUserConnectedTransitionTime = 500;
 
-export default class GamePage extends React.Component {
+
+class GamePage extends React.Component {
+	static mapStateToProps(state) {
+		return {
+			game: state.game,
+			user: state.user,
+			userList: state.userList,
+			socket: state.socket
+		};
+	}
+
+	static mapDispatchToProps(dispatch) {
+		return {
+			streamGame: (socket, id) => dispatch(streamGame(socket, id)),
+			streamRounds: (socket, id) => dispatch(streamRounds(socket, id)),
+			joinGame: id => dispatch(joinGame(id)),
+			cancelGame: id => dispatch(cancelGame(id)),
+			startGame: id => dispatch(startGame(id)),
+			leaveGame: id => dispatch(leaveGame(id)),
+			resetGame: () => dispatch(resetGame()),
+			saveGameName: (id, name) => dispatch(saveGameName(id, name))
+		};
+	}
+
 	constructor(props, context) {
 		super(props, context);
 
 		this.state = {
-			brush: new Brush({
-				size: Brush.sizes.M,
-				color: Brush.colors[3].value,
-				name: Brush.colors[3].label
-			}),
-			showPreRoundModal: false,
-			userGuessedCorrectWord: false
+			gameReady: false
 		};
-		this.user = UserService.get();
+
+		// this.state = {
+		// 	brush: new Brush({
+		// 		size: Brush.sizes.M,
+		// 		color: Brush.colors[3].value,
+		// 		name: Brush.colors[3].label
+		// 	}),
+		// 	showPreRoundModal: false,
+		// 	userGuessedCorrectWord: false
+		// };
+		// this.user = UserService.get();
 
 		this.onExternalCanvasChange = this.onExternalCanvasChange.bind(this);
 		this.onRoundsChange = this.onRoundsChange.bind(this);
@@ -54,9 +95,32 @@ export default class GamePage extends React.Component {
 		this.onGameChange = this.onGameChange.bind(this);
 		this.onUndo = this.onUndo.bind(this);
 		this.userGuessedCorrectWord = this.userGuessedCorrectWord.bind(this);
+		this._unstreamGame = null;
+		this._unstreamRounds = null;
+	}
+
+	shouldComponentUpdate() {
+		return this.isGamePage();
 	}
 
 	componentDidMount() {
+		this.props.resetGame();
+		this.props.streamGame(this.props.socket, this.props.params.id)
+			.then(unstreamGame => this._unstreamGame = unstreamGame)
+			.then(() => this.props.streamRounds(this.props.socket, this.props.params.id))
+			.then(unstreamRounds => this._unstreamRounds = unstreamRounds)
+			.then(() => this.props.joinGame(this.props.params.id))
+			.then(() => this.setState({gameReady: true}))
+			.then(() => {
+				this.canvasService = new CanvasService(this.props.game, this.props.socket);
+				this.canvasService.on(`change:canvas:${this.props.game.id}`, this.onExternalCanvasChange);
+			})
+			.catch(err => {
+				console.error(err);
+				// this.leaveGame();
+			});
+		return;
+
 		// Modal.show(<EndGameModal />);
 		GameService.getById(this.props.params.id).then(game => {
 			this.setState({
@@ -88,8 +152,17 @@ export default class GamePage extends React.Component {
 	}
 
 	componentWillUnmount() {
-		if (this.state.game) {
-			this.state.game.off('change:rounds', this.onRoundsChange);
+		if (this._unstreamGame) {
+			this._unstreamGame();
+		}
+		if (this._unstreamRounds) {
+			this._unstreamRounds();
+		}
+		return;
+
+
+		if (this.props.game) {
+			this.props.game.off('change:rounds', this.onRoundsChange);
 		}
 		if (this.activeRoundService) {
 			this.activeRoundService.off('endGame', this.endGame);
@@ -108,12 +181,24 @@ export default class GamePage extends React.Component {
 		this._mounted = false;
 	}
 
+	get activeRound() {
+		return GameUtil.activeRound(this.props.game);
+	}
+
+	leaveGame() {
+		browserHistory.push('/game-list');
+	}
+
 	onExternalCanvasChange(e) {
 		if (!this.showDrawingCanvas()) {
 			let lines = e.data.lines;
 			let aspectRatio = e.data.aspectRatio;
 			this.refs.canvasView.paint(lines, {aspectRatio});
 		}
+	}
+
+	isGamePage() {
+		return window.location.pathname.indexOf('/game/') === 0;
 	}
 
 	onRoundsChange() {
@@ -165,17 +250,18 @@ export default class GamePage extends React.Component {
 	}
 
 	updateGameUsers(newUsers) {
-		this.state.game.set('users', newUsers);
+		this.props.game.set('users', newUsers);
 		this.forceUpdate();
 	}
 
 	showDrawingCanvas() {
-		return this.drawerIsMe() && !this.user.get('mobileUserConnected');
+		return this.drawerIsMe();
+		// return this.drawerIsMe() && !this.user.get('mobileUserConnected');
 	}
 
 	drawerIsMe() {
-		if (!this.state.game.activeRound) { return false; }
-		return this.user.id === this.state.game.activeRound.get('drawerId');
+		if (!this.activeRound) { return false; }
+		return this.props.user.id === this.activeRound.drawerId;
 	}
 
 	userGuessedCorrectWord() {
@@ -187,21 +273,22 @@ export default class GamePage extends React.Component {
 	render() {
 		return (
 			<div className="game-page">
-				{this.state.game ?
+				{this.state.gameReady ?
 					<div className={classNames('app', {'drawer-is-me': this.showDrawingCanvas()})}>
 						{ this.canvasService ?
 							this.showDrawingCanvas() ? 
-								<Canvas brush={this.state.brush} onChange={e => this.onCanvasChange(e)} ref="canvas" />
+								<Canvas brush={this.props.game.brush} onChange={e => this.onCanvasChange(e)} ref="canvas" />
 								:
 								<CanvasView ref="canvasView" />
 							:
 							null
 						}
 						{ this.showDrawingCanvas() ?
-							<div className="round-word">{this.state.game.activeRound ? this.state.game.activeRound.get('word') : null}</div>
+							<div className="round-word">{this.props.game.activeRound ? this.props.game.activeRound.word : null}</div>
 							:
 							null
 						}
+						{/*}
 						<ReactCSSTransitionGroup
 							component={FirstChild}
 							transitionName="mobile-user-connected"
@@ -219,19 +306,24 @@ export default class GamePage extends React.Component {
 								null
 							}
 						</ReactCSSTransitionGroup>
+					*/}
+						{/*}
 						<ReactCSSTransitionGroup
 							component={FirstChild}
 							transitionName="pre-round-modal"
 							transitionEnterTimeout={modalTransitionEnterTime}
 							transitionLeaveTimeout={modalTransitionLeaveTime}>
-							{this.state.showPreRoundModal ? <PreRoundModal game={this.state.game} /> : null}
+							{this.state.showPreRoundModal ? <PreRoundModal game={this.props.game} /> : null}
 						</ReactCSSTransitionGroup>
-						<GameMessages game={this.state.game} />
+					*/}
+						<GameMessages messages={this.props.game.messages} />
 						{ this.showDrawingCanvas() ?
 							<MouseObserver 
 								onMouseDown={point => this.refs.canvas.startLine(point)} 
 								onMouseDownMove={point => this.refs.canvas.extendLine(point)} 
-								onMouseMove={point => this.refs.canvas.refs.cursorCanvas.paint(point)}
+								onMouseMove={point => {
+									this.refs.canvas.refs.cursorCanvas.paint(point)
+								}}
 								onMouseLeave={() => this.refs.canvas.refs.cursorCanvas.paint()} />
 							:
 							null
@@ -243,16 +335,14 @@ export default class GamePage extends React.Component {
 							transitionLeaveTimeout={brushPaletteTransitionTime}>
 							{ this.showDrawingCanvas() ?
 								<BrushPalette 
-									brush={this.state.brush} 
-									onBrushChange={brush => this.onBrushChange(brush)} 
 									onUndo={() => this.onUndo()}
 									onTrash={() => this.onTrash()} />
 								:
 								null
 							}
 						</ReactCSSTransitionGroup>
-						{this.state.game ? 
-							<GamePanel game={this.state.game} />
+						{this.props.game.id ? 
+							<GamePanel />
 							:
 							null
 						}
@@ -261,12 +351,12 @@ export default class GamePage extends React.Component {
 							transitionName="game-text-field"
 							transitionEnterTimeout={gameTextFieldTransitionTime}
 							transitionLeaveTimeout={gameTextFieldTransitionTime}>
-							{ this.state.game.activeRound && !this.drawerIsMe() ? 
+							{ this.props.game.activeRound && !this.drawerIsMe() ? 
 								<GameTextField 
-									game={this.state.game}
+									game={this.props.game}
 									messageService={this.messageService}
 									onChange={e => this.onTextFieldChange(e.value)}
-									userGuessedCorrectWord={this.state.userGuessedCorrectWord} /> 
+									userGuessedCorrectWord={this.props.userGuessedCorrectWord} /> 
 								: 
 								null 
 							}
@@ -279,3 +369,5 @@ export default class GamePage extends React.Component {
 		);
 	}
 }
+
+export default connect(GamePage.mapStateToProps, GamePage.mapDispatchToProps)(GamePage);

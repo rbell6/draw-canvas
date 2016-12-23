@@ -43,24 +43,24 @@ export default class CursorCanvas extends React.Component {
 		this._setBrushType(this.props.brush);
 		this.ctx.beginPath();
 		this.ctx.arc(point.x, point.y, this._brushSize(this.props.brush)/2, 0, 2*Math.PI);
-		this.ctx.fillStyle = this.props.brush.get('color');
+		this.ctx.fillStyle = this.props.brush.color;
 		this.ctx.fill();
 		this.ctx.globalCompositeOperation = 'source-over';
 		this.ctx.lineWidth = 0.5;
 		this.ctx.strokeStyle = '#555';
-		if (this.props.brush.get('name') == 'eraser') {
+		if (this.props.brush.name == 'eraser') {
 			this.ctx.strokeStyle = '#222';
 		}
 		this.ctx.stroke();
 	}
 
 	_brushSize(brush) {
-		let sizePercent = brush.get('size').value;
+		let sizePercent = brush.size.value;
 		return window.innerWidth*sizePercent;
 	}
 
 	_setBrushType(brush) {
-		if (brush.get('name') == 'eraser') {
+		if (brush.name == 'eraser') {
 			this.ctx.globalCompositeOperation = 'destination-out';
 		} else {
 			this.ctx.globalCompositeOperation = 'source-over';

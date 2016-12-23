@@ -28,7 +28,8 @@ import {
 	unstreamGame,
 	startGame,
 	leaveGame,
-	saveGameName
+	saveGameName,
+	resetGame
 } from '../actions/GameActions';
 import _ from 'lodash';
 
@@ -50,24 +51,33 @@ class GameStagePage extends React.Component {
 			cancelGame: id => dispatch(cancelGame(id)),
 			startGame: id => dispatch(startGame(id)),
 			leaveGame: id => dispatch(leaveGame(id)),
-			saveGameName: (id, name) => dispatch(saveGameName(id, name))
+			saveGameName: (id, name) => dispatch(saveGameName(id, name)),
+			resetGame: () => dispatch(resetGame())
 		};
 	}
 
 	constructor(props, context) {
 		super(props, context);
-		this.state = {};
+		this.state = {
+			gameReady: false
+		};
 		this.leaveGame = this.leaveGame.bind(this);
 		this.startGame = this.startGame.bind(this);
-		// this.onGameChange = this.onGameChange.bind(this);
+		this._unstreamGame = null;
 		// this.onRoundsChange = this.onRoundsChange.bind(this);
 	}
 
+	shouldComponentUpdate() {
+		return this.isGameStagePage();
+	}
+
 	componentDidMount() {
-		this.getMobileLinkId()
-			.then(() => this.props.streamGame(this.props.socket, this.props.params.id))
+		this.props.resetGame();
+		this.props.streamGame(this.props.socket, this.props.params.id)
+			.then(unstreamGame => this._unstreamGame = unstreamGame)
 			.then(() => this.setState({tempGameName: this.props.game.name}))
 			.then(() => this.props.joinGame(this.props.params.id))
+			.then(() => this.setState({gameReady: true}))
 			.catch(err => {
 				console.error(err);
 				this.leaveGame();
@@ -75,7 +85,11 @@ class GameStagePage extends React.Component {
 	}
 
 	componentWillUnmount() {
-		this.props.unstreamGame(this.props.socket, this.props.game.id);
+		if (this._unstreamGame) {
+			this._unstreamGame();
+		}
+		return;
+		// this.props.unstreamGame(this.props.socket, this.props.game.id);
 
 		if (this.state.game) {
 			this.state.game.off('change:rounds', this.onRoundsChange);
@@ -139,11 +153,17 @@ class GameStagePage extends React.Component {
 	// 	}
 	// }
 
+	isGameStagePage() {
+		return window.location.pathname.indexOf('/game-stage/') === 0;
+	}
+
 	leaveGame() {
+		if (!this.isGameStagePage()) { return; }
 		browserHistory.push('/game-list');
 	}
 
 	startGame() {
+		if (!this.isGameStagePage()) { return; }
 		if (this.props.game) {
 			browserHistory.push(`/game/${this.props.game.id}`);
 		}
@@ -187,7 +207,7 @@ class GameStagePage extends React.Component {
 	render() {
 		return (
 			<div className="game-stage-page">
-				{this.props.game.id ?
+				{this.state.gameReady ?
 					<div className="game-stage-container">
 						{ this.userIsHost() ?
 							<TextField 

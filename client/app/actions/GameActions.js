@@ -7,6 +7,26 @@ export function setGameName(name) {
 	};
 }
 
+export function setBrushColor(color) {
+	return {
+		type: 'SET_BRUSH_COLOR',
+		color
+	};
+}
+
+export function setBrushSize(size) {
+	return {
+		type: 'SET_BRUSH_SIZE',
+		size
+	};
+}
+
+export function setBrushEraser() {
+	return {
+		type: 'SET_BRUSH_ERASER'
+	};
+}
+
 function _receiveGame(game) {
 	return {
 		type: 'RECEIVE_GAME',
@@ -14,9 +34,16 @@ function _receiveGame(game) {
 	};
 }
 
-function _leaveGame() {
+function _receiveRounds(rounds) {
 	return {
-		type: 'LEAVE_GAME'
+		type: 'RECEIVE_ROUNDS',
+		rounds
+	};
+}
+
+export function resetGame() {
+	return {
+		type: 'RESET_GAME'
 	};
 }
 
@@ -34,19 +61,27 @@ export function startGame(id) {
 	};
 }
 
-export function streamGame(socket, id) {
+export function streamGame(socket, gameId) {
 	return dispatch => {
-		socket.on(`change:game:${id}`, game => dispatch(_receiveGame(game)));
-		return axios.get(`/api/game/${id}`)
+		let dispatchReceiveGame = game => dispatch(_receiveGame(game));
+		socket.on(`change:game:${gameId}`, dispatchReceiveGame);
+		let unstreamGame = () => socket.off(`change:game:${gameId}`, dispatchReceiveGame);
+		return axios.get(`/api/game/${gameId}`)
 			.then(res => res.data)
-			.then(game => dispatch(_receiveGame(game)));
+			.then(game => dispatch(_receiveGame(game)))
+			.then(() => unstreamGame);
 	};
 }
 
-export function unstreamGame(socket, id) {
+export function streamRounds(socket, gameId) {
 	return dispatch => {
-		dispatch(_leaveGame());
-		socket.off(`change:game:${id}`);
+		let dispatchReceiveRounds = rounds => dispatch(_receiveRounds(rounds));
+		socket.on(`change:rounds:${gameId}`, dispatchReceiveRounds);
+		let unstreamRounds = () => socket.off(`change:rounds:${gameId}`, dispatchReceiveRounds);
+		return axios.get(`/api/rounds/${gameId}`)
+			.then(res => res.data)
+			.then(rounds => dispatch(_receiveRounds(rounds)))
+			.then(() => unstreamRounds);
 	};
 }
 

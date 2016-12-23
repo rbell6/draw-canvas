@@ -2,29 +2,27 @@ import styles from '../less/brush-palette.less';
 import React from 'react';
 import Brush from '../../../models/Brush';
 import classNames from 'classnames';
+import {
+	connect
+} from 'react-redux';
+import {
+	setBrushSize,
+	setBrushColor
+} from '../actions/GameActions';
 
-export default class BrushPalette extends React.Component {
-	setBrushColor(color) {
-		this.props.onBrushChange(new Brush({
-			size: this.props.brush.get('size'),
-			color: color.value,
-			name: color.label
-		}));
+class BrushPalette extends React.Component {
+	static mapStateToProps(state) {
+		return {
+			brush: state.game.brush,
+		};
 	}
 
-	setBrushSize(size) {
-		this.props.onBrushChange(new Brush({
-			size: size,
-			color: this.props.brush.get('color'),
-			name: this.props.brush.get('name')
-		}));
-	}
-
-	setEraser() {
-		this.props.onBrushChange(new Brush({
-			size: this.props.brush.get('size'),
-			name: 'eraser'
-		}));
+	static mapDispatchToProps(dispatch) {
+		return {
+			setBrushSize: size => dispatch(setBrushSize(size)),
+			setBrushColor: color => dispatch(setBrushColor(color)),
+			setBrushEraser: () => dispatch(setBrushEraser())
+		};
 	}
 
 	trash() {
@@ -43,9 +41,9 @@ export default class BrushPalette extends React.Component {
 						<div 
 							key={color.label} 
 							className={classNames('brush', 'brush-' + color.label, {
-								'active': this.props.brush.get('color') == color.value
+								'active': this.props.brush.color == color.value
 							})} 
-							onClick={e => this.setBrushColor(color)}>
+							onClick={e => this.props.setBrushColor(color)}>
 						</div>
 					))}
 				</div>
@@ -55,22 +53,24 @@ export default class BrushPalette extends React.Component {
 							key={size.label}
 							className={classNames(
 								'brush', 
-								`brush-${this.props.brush.get('name')}`, 
+								`brush-${this.props.brush.name}`, 
 								'brush-size', 
 								`brush-size-${size.label}`, {
-									'active': this.props.brush.get('size').label === size.label						
+									'active': this.props.brush.size.label === size.label						
 								}
 							)}
-							onClick={e => this.setBrushSize(size)}>
+							onClick={e => this.props.setBrushSize(size)}>
 						</div>
 					))}
 				</div>
 				<div className="brush-utilities">
 					<i className="fa fa-undo undo" onClick={e => this.undo()} />
-					<i className={classNames('fa fa-eraser brush-eraser', {'active': this.props.brush.get('name') == 'eraser'})} onClick={e => this.setEraser()} />
+					<i className={classNames('fa fa-eraser brush-eraser', {'active': this.props.brush.name == 'eraser'})} onClick={e => this.props.setBrushEraser()} />
 					<i className="fa fa-trash trash" onClick={e => this.trash()} />
 				</div>
 			</div>
 		);
 	}
 }
+
+export default connect(BrushPalette.mapStateToProps, BrushPalette.mapDispatchToProps)(BrushPalette);

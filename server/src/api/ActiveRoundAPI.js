@@ -6,6 +6,7 @@ let RoundStartTimes = require('../RoundStartTimes');
 let WordService = require('../WordService');
 let Games = require('../Games');
 let words = WordService.get();
+let userMiddleware = require('../middleware/userMiddleware');
 let Round = require('../../../models/Round');
 let _ = require('lodash');
 let express = require('express');
@@ -19,11 +20,11 @@ class ActiveRoundAPI {
 		this._roundTimeoutIds = new Map(); // {Round: timeoutId}
 	
 		// Get all rounds
-		router.get('/:gameId/:userId', (req, res) => {
+		router.get('/:gameId', userMiddleware, (req, res) => {
 			let gameId = req.params.gameId;
-			let userId = req.params.userId;
+			let user = req.user;
 			let game = Games.find(game => game.id === gameId);
-			res.send(this._roundsJSON(game, userId));
+			res.send(this._roundsJSON(game, user.id));
 		});
 	}
 
@@ -130,7 +131,8 @@ class ActiveRoundAPI {
 			drawerId: drawerId,
 			word: _.sample(words).toLowerCase(),
 			percentOfTimeInitiallySpent: 0,
-			name: `Round ${newRoundIndex+1}`
+			name: `Round ${newRoundIndex+1}`,
+			index: newRoundIndex
 		};
 	}
 

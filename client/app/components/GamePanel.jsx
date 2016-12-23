@@ -3,52 +3,87 @@ import React from 'react';
 import Timer from './Timer';
 import UserIcon from './UserIcon';
 import FlipMove from 'react-flip-move';
+import GameUtil from '../util/GameUtil';
+import {
+	connect
+} from 'react-redux';
+import _ from 'lodash';
 
-export default class GamePanel extends React.Component {
-	componentDidMount() {
-		this.onActiveRoundChange = this.onActiveRoundChange.bind(this);
-		this.onUserStatusChange = this.onUserStatusChange.bind(this);
-		this.props.game.on('change:rounds', this.onActiveRoundChange);
-		this.props.game.on('change:usersWithPoints', this.onUserStatusChange);
+class GamePanel extends React.Component {
+	static mapStateToProps(state) {
+		return {
+			game: state.game,
+			user: state.user,
+			userList: state.userList,
+			socket: state.socket
+		};
 	}
 
-	componentWillUnmount() {
-		this.props.game.off('change:rounds', this.onActiveRoundChange);
-		this.props.game.off('change:usersWithPoints', this.onUserStatusChange);
+	static mapDispatchToProps(dispatch) {
+		return {};
+	}
+
+	componentDidMount() {
+		this.currentRoundIndex = -1;
+	}
+
+	componentDidUpdate() {
+		if (!this.isGamePage()) { return; }
+		let newCurrentRoundIndex = _.get(this.activeRound, 'index', -1);
+		if (newCurrentRoundIndex > this.currentRoundIndex) {
+			this.currentRoundIndex = newCurrentRoundIndex;
+			this.onActiveRoundChange();
+		}
+	}
+
+	get activeRound() {
+		return GameUtil.activeRound(this.props.game);
+	}
+
+	get usersWithPoints() {
+		return GameUtil.usersWithPoints(this.props.game);
+	}
+
+	isGamePage() {
+		return window.location.pathname.indexOf('/game/') === 0;
+	}
+
+	userForId(id) {
+		return this.props.userList.find(u => u.id === id);
 	}
 
 	onActiveRoundChange() {
-		this.refs.timer.start(this.props.game.activeRound.get('percentOfTimeInitiallySpent'));
+		this.refs.timer.start(this.activeRound.percentOfTimeInitiallySpent);
 	}
 
 	onUserStatusChange() {
 		this.forceUpdate();
 	}
 
-	getStatusForUser(user) {
-		if (this.props.game.activeRound && this.props.game.activeRound.get('userPoints')[user.id]) {
+	getStatusForUser(userId) {
+		if (this.activeRound && this.activeRound.userPoints[userId]) {
 			return 'correct';
 		}
 		return 'normal';
 	}
 
-	activeRoundPointsForUser(user) {
-		if (!this.props.game.activeRound) { return 0; }
-		return this.props.game.activeRound.get('userPoints')[user.id];
+	activeRoundPointsForUser(userId) {
+		if (!this.activeRound) { return 0; }
+		return this.activeRound.userPoints[userId];
 	}
 
 	render() {
-		let roundNumber = this.props.game.get('rounds').length;
+		let roundNumber = this.props.game.rounds.length;
 		return (
 			<div className="game-panel">
 				<div className="game-panel-header">
-					<div className="game-name">{this.props.game.get('name')}</div>
+					<div className="game-name">{this.props.game.name}</div>
 				</div>
 				<div className="round-timer">
-					<Timer className="round-timer" time={this.props.game.get('gameTime')} ref="timer" />
+					<Timer className="round-timer" time={this.props.game.gameTime} ref="timer" />
 					<div className="round-timer-children">
 						{roundNumber > 0 ? 
-							<div className="round-label"><span className="number">{roundNumber}</span>/<span className="number">{this.props.game.get('numRounds')}</span></div>
+							<div className="round-label"><span className="number">{roundNumber}</span>/<span className="number">{this.props.game.numRounds}</span></div>
 							:
 							null
 						} 
@@ -56,14 +91,14 @@ export default class GamePanel extends React.Component {
 				</div>
 				<div className="game-users">
 					<FlipMove>
-						{this.props.game.usersWithPoints.map(userWithPoints => (
-							<div key={userWithPoints.user.id} className="game-user">
+						{this.usersWithPoints.map(userWithPoints => (
+							<div key={userWithPoints.userId} className="game-user">
 								<UserIcon 
-									user={userWithPoints.user} 
-									status={this.getStatusForUser(userWithPoints.user)} 
+									user={this.userForId(userWithPoints.userId)} 
+									status={this.getStatusForUser(userWithPoints.userId)} 
 									totalPoints={userWithPoints.points}
 									showPoints={true}
-									points={this.activeRoundPointsForUser(userWithPoints.user)} />
+									points={this.activeRoundPointsForUser(userWithPoints.userId)} />
 							</div>
 						))}
 					</FlipMove>
@@ -72,3 +107,5 @@ export default class GamePanel extends React.Component {
 		);
 	}
 }
+
+export default connect(GamePanel.mapStateToProps, GamePanel.mapDispatchToProps)(GamePanel);

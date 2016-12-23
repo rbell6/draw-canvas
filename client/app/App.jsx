@@ -44,9 +44,12 @@ import {
 	createSocket
 } from './actions/SocketActions';
 
+let loggerMiddleware = createLogger({
+	collapsed: true
+});
 let store = createStore(reducers, applyMiddleware(
 	thunkMiddleware,
-	createLogger()
+	loggerMiddleware
 ));
 window.store = store;
 
@@ -111,11 +114,12 @@ class App extends React.Component {
 	};
 
 	componentDidMount() {
-		this.props.fetchUser().then(user => {
-			this.props.createSocket();
-			this.props.streamUserList(this.props.socket);
-			this.props.streamGameList(this.props.socket);
-		});
+		this.props.fetchUser()
+			.then(() => this.props.createSocket())
+			.then(() => {
+				this.props.streamUserList(this.props.socket);
+				this.props.streamGameList(this.props.socket);
+			});
 	}
 
 	isDoneLoading() {

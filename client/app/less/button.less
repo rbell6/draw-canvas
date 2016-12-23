@@ -5,10 +5,6 @@
 	&:not(:disabled):hover {
 		background: lighten(@color, 5%);
 	}
-	&:disabled {
-		background: lighten(@color, 10%);
-		color: lighten(@color, 30%);
-	}
 }
 
 .button {
@@ -29,25 +25,24 @@
 	-ms-backface-visibility: hidden;
 	outline: none;
 	&:disabled {
-		color: #999;
-		background: #ccc;
+		color: #ccc;
+		background: #aaa;
 		cursor: default;
 	}
 	&:not(:disabled):hover {
 		background: #eee;
 		transform: scale(1.03);
 	}
-	&.button-success {
-		.button-background-color(@green);
-		// background: @green;
-		color: #fff;
-	}
-	&.button-quiet {
-		background: transparent;
-		border-color: #fff;
-		color: #fff;
-		&:hover {
-			background: rgba(255, 255, 255, 0.1)
-		}
-	}
+}
+.button-success {
+	.button-background-color(@green);
+	color: #fff;
+}
+.button-quiet {
+	background: transparent;
+	border-color: #fff;
+	color: #fff;
+}
+.button.button-quiet:hover {
+	background: rgba(255, 255, 255, 0.1)
 }
