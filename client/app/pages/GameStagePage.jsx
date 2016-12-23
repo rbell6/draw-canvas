@@ -165,7 +165,7 @@ class GameStagePage extends React.Component {
 	startGame() {
 		if (!this.isGameStagePage()) { return; }
 		if (this.props.game) {
-			browserHistory.push(`/game/${this.props.game.id}`);
+			browserHistory.push(`/game/${this.props.params.id}`);
 		}
 	}
 
@@ -192,7 +192,7 @@ class GameStagePage extends React.Component {
 	}
 
 	start() {
-		this.props.startGame(this.props.game.id);
+		this.props.startGame();
 		// GameService.startGame(this.state.game);
 	}
 

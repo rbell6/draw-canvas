@@ -7,21 +7,21 @@ let router = express.Router();
 let UserSockets = require('../UserSockets');
 
 class CanvasAPI {
-	constructor(router, io) {
+	constructor(router, io, userAPI) {
 		this.router = router;
 		this.io = io;
-
-		this.onCanvasChange = this.onCanvasChange.bind(this);
+		this.userAPI = userAPI;
 
 		this.io.on('connection', socket => {
-			socket.on('change:canvas', this.onCanvasChange);
+			socket.on('change:canvas', this.onCanvasChange.bind(this, socket));
 		});
 	}
 
-	onCanvasChange(opts) {
+	onCanvasChange(socket, opts) {
 		let game = Games.find(game => game.id === opts.gameId);
+		let user = this.userAPI.getUserForSocket(socket);
 		let activeRound = _.get(game, 'activeRound');
-		if (opts.userId && activeRound && opts.userId === activeRound.get('drawerId')) {
+		if (user && activeRound && user.id === activeRound.get('drawerId')) {
 			game.get('users').forEach(user => {
 				let socket = UserSockets.get(user);
 				if (socket) {
@@ -32,6 +32,6 @@ class CanvasAPI {
 	}
 }
 
-module.exports = io => {
-	return new CanvasAPI(router, io);
+module.exports = (io, userAPI) => {
+	return new CanvasAPI(router, io, userAPI);
 }

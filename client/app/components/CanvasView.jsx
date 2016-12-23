@@ -81,7 +81,7 @@ export default class CanvasView extends React.Component {
 		this._setBrushType(brush);
 		this.ctx.beginPath();
 		this.ctx.lineWidth = this._brushSize(brush, aspectRatio);
-		this.ctx.strokeStyle = brush.get('color');
+		this.ctx.strokeStyle = brush.color;
 		this.ctx.lineCap = 'round';
 		this.ctx.lineJoin = 'round';
 		this.ctx.moveTo(point.x, point.y);
@@ -89,7 +89,7 @@ export default class CanvasView extends React.Component {
 
 	_brushSize(brush, aspectRatio) {
 		let xSquashFactor = aspectRatio/this.currentAspectRatio();
-		let sizePercent = brush.get('size').value;
+		let sizePercent = brush.size.value;
 		let size = window.innerWidth*sizePercent;
 		if (xSquashFactor<1) {
 			size = size*xSquashFactor;
@@ -107,7 +107,7 @@ export default class CanvasView extends React.Component {
 	}
 
 	_setBrushType(brush) {
-		if (brush.get('name') == 'eraser') {
+		if (brush.name == 'eraser') {
 			this.ctx.globalCompositeOperation = 'destination-out';
 		} else {
 			this.ctx.globalCompositeOperation = 'source-over';

@@ -28,6 +28,10 @@ class GameListPage extends React.Component {
 		};
 	}
 
+	shouldComponentUpdate() {
+		return this.isGameListPage();
+	}
+
 	createGame() {
 		this.props.createGame()
 			.then(game => browserHistory.push(`/game-stage/${game.id}`));
@@ -36,6 +40,10 @@ class GameListPage extends React.Component {
 	joinGame(game) {
 		let page = game.isStarted ? 'game' : 'game-stage';
 		browserHistory.push(`/${page}/${game.id}`);
+	}
+
+	isGameListPage() {
+		return window.location.pathname.indexOf('/game-list') === 0;
 	}
 
 	hostName(game) {
