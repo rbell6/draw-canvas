@@ -6,8 +6,22 @@ import HotkeyService from '../services/HotkeyService';
 import UserService from '../services/UserService';
 import UserIcon from './UserIcon';
 import classNames from 'classnames';
+import {
+	connect
+} from 'react-redux';
 
-export default class GameTextField extends React.Component {
+class GameTextField extends React.Component {
+	static mapStateToProps(state) {
+		return {
+			game: state.game,
+			user: state.user
+		};
+	}
+
+	static mapDispatchToProps(dispatch) {
+		return {};
+	}
+
 	constructor(props, context) {
 		super(props, context);
 
@@ -40,10 +54,15 @@ export default class GameTextField extends React.Component {
 		this.setState({value: ''});
 	}
 
+	userGuessedCorrectWord() {
+		let activeRound = this.props.game.rounds[this.props.game.rounds.length-1];
+		return Object.keys(activeRound.userPoints).indexOf(this.props.user.id) > -1;
+	}
+
 	render() {
 		return (
 			<div className={classNames('game-text-field', {
-				'game-text-field-correct-word': this.props.userGuessedCorrectWord
+				'game-text-field-correct-word': this.userGuessedCorrectWord()
 			})}>
 				<div className="game-text-field-container">
 					<TextField 
@@ -58,3 +77,5 @@ export default class GameTextField extends React.Component {
 		);
 	}
 }
+
+export default connect(GameTextField.mapStateToProps, GameTextField.mapDispatchToProps)(GameTextField);

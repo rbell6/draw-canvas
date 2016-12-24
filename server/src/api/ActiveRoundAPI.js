@@ -35,7 +35,11 @@ class ActiveRoundAPI {
 
 		let points = this.getGuesserPoints(game);
 		game.activeRound.addUserPoints(user, points);
-		UserSockets.notifyUsers(game.get('users'), `change:activeRoundPoints:${game.activeRound.id}`, game.activeRound.get('userPoints'));
+		game.get('users').forEach(user => {
+			let socket = UserSockets.get(user);
+			socket.emit(`change:rounds:${game.id}`, this._roundsJSON(game, user.id));
+		});
+		// UserSockets.notifyUsers(game.get('users'), `change:activeRoundPoints:${game.activeRound.id}`, game.activeRound.get('userPoints'));
 		if (game.activeRound.numUsersWithPoints() === game.get('users').length-1 && this.timeLeftInActiveRound(game) > 0) {
 			clearTimeout(this._roundTimeoutIds.get(game.activeRound));
 			this.createNextRound(game);
@@ -103,7 +107,11 @@ class ActiveRoundAPI {
 		if (drawer) {
 			let points = this.getDrawerPoints(game);
 			game.activeRound.addUserPoints(drawer, points);
-			UserSockets.notifyUsers(game.get('users'), `change:activeRoundPoints:${game.activeRound.id}`, game.activeRound.get('userPoints'));
+			game.get('users').forEach(user => {
+				let socket = UserSockets.get(user);
+				socket.emit(`change:rounds:${game.id}`, this._roundsJSON(game, user.id));
+			});
+			// UserSockets.notifyUsers(game.get('users'), `change:activeRoundPoints:${game.activeRound.id}`, game.activeRound.get('userPoints'));
 		}
 	}
 

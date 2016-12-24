@@ -87,7 +87,6 @@ class GamePage extends React.Component {
 		// 		name: Brush.colors[3].label
 		// 	}),
 		// 	showPreRoundModal: false,
-		// 	userGuessedCorrectWord: false
 		// };
 		// this.user = UserService.get();
 
@@ -96,7 +95,6 @@ class GamePage extends React.Component {
 		this.endGame = this.endGame.bind(this);
 		this.onGameChange = this.onGameChange.bind(this);
 		this.onUndo = this.onUndo.bind(this);
-		this.userGuessedCorrectWord = this.userGuessedCorrectWord.bind(this);
 		this._unstreamGame = null;
 		this._unstreamRounds = null;
 	}
@@ -117,7 +115,6 @@ class GamePage extends React.Component {
 				this.canvasService = new CanvasService(this.props.game, this.props.socket);
 				this.canvasService.on(`change:canvas:${this.props.game.id}`, this.onExternalCanvasChange);
 				this.messageService = new MessageService(this.props.game, this.props.socket, this.props.addMessage);
-				this.messageService.on('userGuessedCorrectWord', this.userGuessedCorrectWord);
 			})
 			.catch(err => {
 				console.error(err);
@@ -174,7 +171,6 @@ class GamePage extends React.Component {
 			this.canvasService.destroy();
 		}
 		if (this.messageService) {
-			this.messageService.off('userGuessedCorrectWord', this.userGuessedCorrectWord);
 			this.messageService.destroy();
 		}
 		GameService.off('change:game', this.onGameChange);
@@ -207,7 +203,6 @@ class GamePage extends React.Component {
 		if (!this._mounted) { return; }
 		this.setState({
 			showPreRoundModal: true,
-			userGuessedCorrectWord: false
 		});
 		if (this.refs.canvas) {
 			this.refs.canvas.clear();
@@ -264,12 +259,6 @@ class GamePage extends React.Component {
 	drawerIsMe() {
 		if (!this.activeRound) { return false; }
 		return this.props.user.id === this.activeRound.drawerId;
-	}
-
-	userGuessedCorrectWord() {
-		this.setState({
-			userGuessedCorrectWord: true
-		});
 	}
 
 	render() {
@@ -355,10 +344,8 @@ class GamePage extends React.Component {
 							transitionLeaveTimeout={gameTextFieldTransitionTime}>
 							{ this.activeRound && !this.drawerIsMe() ? 
 								<GameTextField 
-									game={this.props.game}
 									messageService={this.messageService}
-									onChange={e => this.onTextFieldChange(e.value)}
-									userGuessedCorrectWord={this.props.userGuessedCorrectWord} /> 
+									onChange={e => this.onTextFieldChange(e.value)} /> 
 								: 
 								null 
 							}
