@@ -110,7 +110,7 @@ export default class Canvas extends React.Component {
 	updateLinesOnAspectRatioChange() {
 		let currentAspectRatio = this.refs.canvas.currentAspectRatio();
 		this.lines.forEach(line => {
-			line.get('points').forEach(point => this.convertPointToNewAspectRatio(point, currentAspectRatio, this._mostRecentAspectRatio));
+			line.points.forEach(point => this.convertPointToNewAspectRatio(point, currentAspectRatio, this._mostRecentAspectRatio));
 		});
 		this._mostRecentAspectRatio = this.refs.canvas.currentAspectRatio();
 		this.onChange();
