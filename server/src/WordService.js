@@ -143,7 +143,6 @@ module.exports = {
 			'Captain',
 			'Crab',
 			'Smell',
-			'Bathrub',
 			'Alarm',
 			'Chest',
 			'High',
