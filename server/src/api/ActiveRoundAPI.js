@@ -11,7 +11,7 @@ let Round = require('../../../models/Round');
 let _ = require('lodash');
 let express = require('express');
 let router = express.Router();
-const interRoundDelayTime = 2000;
+const roundStartDelayTime = 4000;
 
 class ActiveRoundAPI {
 
@@ -35,10 +35,7 @@ class ActiveRoundAPI {
 
 		let points = this.getGuesserPoints(game);
 		game.activeRound.addUserPoints(user, points);
-		game.get('users').forEach(user => {
-			let socket = UserSockets.get(user);
-			socket.emit(`change:rounds:${game.id}`, this._roundsJSON(game, user.id));
-		});
+		this.notifyUsersOfRoundsChange(game);
 		// UserSockets.notifyUsers(game.get('users'), `change:activeRoundPoints:${game.activeRound.id}`, game.activeRound.get('userPoints'));
 		if (game.activeRound.numUsersWithPoints() === game.get('users').length-1 && this.timeLeftInActiveRound(game) > 0) {
 			clearTimeout(this._roundTimeoutIds.get(game.activeRound));
@@ -57,45 +54,50 @@ class ActiveRoundAPI {
 		if (currentRoundJSON.drawerId !== userId) {
 			currentRoundJSON.word = null;
 		}
-		currentRoundJSON.percentOfTimeInitiallySpent = (Date.now()-RoundStartTimes.get(game))/game.get('gameTime');
+		if (RoundStartTimes.get(game)) {
+			currentRoundJSON.percentOfTimeInitiallySpent = (Date.now()-RoundStartTimes.get(game))/game.get('gameTime');
+		}
 		return roundsJSON;
 	}
 
 	startGame(game) {
-		this.createNextRound(game);
+		this.createNextRound(game, {roundStartDelayTime: 1000});
 	}
 
-	createNextRound(game) {
+	// createNextRound(game) {
+		// this._createNextRound(game);
+
+		// Give it a couple seconds before sending everyone to the next round
+		// setTimeout(() => {
+		// 	this._createNextRound(game);
+		// }, interRoundDelayTime);
+	// }
+
+	createNextRound(game, opts) {
+		opts = opts || {};
+		
 		// First we want to give the drawer points for the round that is about to end
 		this.awardDrawerPoints(game);
 		if (game.get('rounds').length === game.get('numRounds')) {
 			this.endGame(game);
 			return;
 		}
-		// Give it a couple seconds before sending everyone to the next round
-		setTimeout(() => {
-			this._createNextRound(game);
-		}, interRoundDelayTime);
-	}
-
-	_createNextRound(game) {
-		RoundStartTimes.set(game, Date.now());
 		let params = this.createNextRoundParams(game);
 		if (game.activeRound) {
 			this._roundTimeoutIds.delete(game.activeRound);
 		}
 		game.get('rounds').add(new Round(params));
-		game.get('users').forEach(user => {
-			let socket = UserSockets.get(user);
-			if (socket) {
-				socket.emit(`change:rounds:${game.id}`, this._roundsJSON(game, user.id));
-			}
-			let mobileSocket = MobileUserSockets.get(user);
-			if (mobileSocket) {
-				mobileSocket.emit(`change:rounds:${game.id}`, this._roundsJSON(game, user.id));
-				mobileSocket.emit(`this is mobile`);
-			}
-		});
+		this.notifyUsersOfRoundsChange(game);
+
+		setTimeout(() => {
+			this.startRound(game);
+		}, opts.roundStartDelayTime || roundStartDelayTime);
+	}
+
+	startRound(game) {
+		RoundStartTimes.set(game, Date.now());
+		game.activeRound.set('started', true);
+		this.notifyUsersOfRoundsChange(game);
 		let timeoutId = setTimeout(() => {
 			this.createNextRound(game);
 		}, game.get('gameTime'));
@@ -107,27 +109,36 @@ class ActiveRoundAPI {
 		if (drawer) {
 			let points = this.getDrawerPoints(game);
 			game.activeRound.addUserPoints(drawer, points);
-			game.get('users').forEach(user => {
-				let socket = UserSockets.get(user);
-				socket.emit(`change:rounds:${game.id}`, this._roundsJSON(game, user.id));
-			});
+			this.notifyUsersOfRoundsChange(game);
 			// UserSockets.notifyUsers(game.get('users'), `change:activeRoundPoints:${game.activeRound.id}`, game.activeRound.get('userPoints'));
 		}
 	}
 
 	endGame(game) {
+		game.set('isEnded', true);
+		UserSockets.notifyUsers(game.get('users'), `change:game:${game.id}`, game.toJSON());
+
+		// game.get('users').forEach(user => {
+		// 	let socket = UserSockets.get(user);
+		// 	if (socket) {
+		// 		socket.emit(`endGame:${game.id}`);
+		// 	}
+			// let mobileSocket = MobileUserSockets.get(user);
+			// if (mobileSocket) {
+			// 	mobileSocket.emit(`endGame:${game.id}`);
+			// }
+		// });	
+		// Games.remove(game);
+		// UserSockets.notifyAll('change:gameList', Games.toJSON());
+	}
+
+	notifyUsersOfRoundsChange(game) {
 		game.get('users').forEach(user => {
 			let socket = UserSockets.get(user);
 			if (socket) {
-				socket.emit(`endGame:${game.id}`);
+				socket.emit(`change:rounds:${game.id}`, this._roundsJSON(game, user.id));
 			}
-			let mobileSocket = MobileUserSockets.get(user);
-			if (mobileSocket) {
-				mobileSocket.emit(`endGame:${game.id}`);
-			}
-		});	
-		Games.remove(game);
-		UserSockets.notifyAll('change:gameList', Games.toJSON());
+		});
 	}
 
 	createNextRoundParams(game) {

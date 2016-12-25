@@ -42,7 +42,8 @@ module.exports = class Game extends Model {
 			messages: new Collection(),
 			gameTime: 60000,
 			isStarted: false,
-			isCanceled: false
+			isCanceled: false,
+			isEnded: false
 		};
 	}
 

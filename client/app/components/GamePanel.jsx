@@ -28,7 +28,7 @@ class GamePanel extends React.Component {
 	}
 
 	componentDidUpdate() {
-		if (!this.isGamePage()) { return; }
+		if (!this.isGamePage() || !this.activeRound.started) { return; }
 		let newCurrentRoundIndex = _.get(this.activeRound, 'index', -1);
 		if (newCurrentRoundIndex > this.currentRoundIndex) {
 			this.currentRoundIndex = newCurrentRoundIndex;

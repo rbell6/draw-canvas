@@ -1,0 +1,41 @@
+@import 'variables.less';
+
+.game-modal {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	background: fade(@red, 95%);
+	padding-top: 100px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	h1 {
+		color: @white;
+		font-weight: 100;
+		font-size: 32px;
+		padding: 20px;
+	}
+	.modal-round-word {
+		font-weight: 800;
+	}
+}
+.start-game-modal {
+	background: fade(@blue, 95%);
+}
+.end-game-modal {
+	flex-direction: column;
+	background: fade(@orange, 95%);
+	.game-over-buttons {
+		width: 500px;
+		max-width: 100%;
+		padding: 0 20px;
+		box-sizing: border-box;
+		margin-bottom: 80px;
+		.button {
+			width: 100%;
+			margin: 0 0 20px 0;
+		}
+	}
+}

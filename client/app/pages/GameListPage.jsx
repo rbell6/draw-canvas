@@ -1,4 +1,5 @@
 import styles from '../less/game-list-page.less';
+import classNames from 'classnames';
 import React from 'react';
 import UserService from '../services/UserService';
 import GameService from '../services/GameService';
@@ -69,7 +70,7 @@ class GameListPage extends React.Component {
 						transitionLeaveTimeout={transitionTime}
 					>
 						{this.props.gameList.map(game => (
-							<div key={game.id} className="join-game-button" onClick={() => this.joinGame(game)}>
+							<div key={game.id} className={classNames('join-game-button', {'game-is-ended': game.isEnded})} onClick={() => this.joinGame(game)}>
 								<h2>{game.name}</h2>
 								<h3><i className="fa fa-user" /> {this.hostName(game)} &nbsp; <i className="fa fa-users" /> {game.userIds.length}</h3>
 							</div>

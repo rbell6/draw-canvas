@@ -5,7 +5,8 @@ export default function gameList(state=[], action) {
 				id: game.id,
 				name: game.name,
 				hostId: game.hostId,
-				userIds: game.userIds
+				userIds: game.userIds,
+				isEnded: game.isEnded
 			}));
 		default:
 			return state;

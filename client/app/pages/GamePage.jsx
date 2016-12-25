@@ -10,7 +10,11 @@ import PreRoundModal from '../components/PreRoundModal';
 import MouseObserver from '../components/MouseObserver';
 import FirstChild from '../components/FirstChild';
 import Modal from '../components/Modal';
-import EndGameModal from '../components/EndGameModal';
+import {
+	StartGameModal,
+	EndRoundModal,
+	EndGameModal
+} from '../components/GameModal';
 import Brush from '../../../models/Brush';
 import classNames from 'classnames';
 import io from 'socket.io-client';
@@ -103,6 +107,19 @@ class GamePage extends React.Component {
 		return this.isGamePage();
 	}
 
+	componentDidUpdate() {
+		if (!this.isGamePage() || !this.activeRound) { return; }
+		if (this.props.game.isEnded) {
+			Modal.show(<EndGameModal />);
+		} else if (this.activeRound.started) {
+			Modal.close();
+		} else if (this.props.game.rounds.length === 1) {
+			Modal.show(<StartGameModal />);
+		} else {
+			Modal.show(<EndRoundModal word={this.previousRound.word} />);
+		}
+	}
+
 	componentDidMount() {
 		this.props.resetGame();
 		this.props.streamGame(this.props.socket, this.props.params.id)
@@ -122,7 +139,6 @@ class GamePage extends React.Component {
 			});
 		return;
 
-		// Modal.show(<EndGameModal />);
 		GameService.getById(this.props.params.id).then(game => {
 			this.setState({
 				game: game
@@ -181,6 +197,14 @@ class GamePage extends React.Component {
 
 	get activeRound() {
 		return GameUtil.activeRound(this.props.game);
+	}
+
+	get previousRound() {
+		return GameUtil.previousRound(this.props.game);
+	}
+
+	get gameIsStarted() {
+		return _.get(this.props.game, 'rounds[0].started', false);
 	}
 
 	leaveGame() {

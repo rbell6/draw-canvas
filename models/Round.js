@@ -12,7 +12,8 @@ module.exports = class Round extends Model {
 			index: 0,
 			word: null,
 			percentOfTimeInitiallySpent: 0, // [0,1]
-			userPoints: {} // {userId: points}
+			userPoints: {}, // {userId: points}
+			started: false
 		};
 	}
 

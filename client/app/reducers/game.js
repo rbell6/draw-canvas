@@ -37,7 +37,9 @@ export default function game(state={}, action) {
 				// rounds,
 				numRounds,
 				isStarted,
-				isCanceled
+				isCanceled,
+				isEnded,
+				gameTime
 			} = action.game;
 			return Object.assign({}, state, {
 				id,
@@ -47,7 +49,9 @@ export default function game(state={}, action) {
 				// rounds,
 				numRounds,
 				isStarted,
-				isCanceled
+				isCanceled,
+				isEnded,
+				gameTime
 			});
 		case 'SET_GAME_NAME':
 			return Object.assign({}, state, {

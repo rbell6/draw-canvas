@@ -7,6 +7,12 @@ class GameUtil {
 		return rounds[rounds.length-1];
 	}
 
+	previousRound(game) {
+		let rounds = _.get(game, 'rounds', []);
+		if (rounds.length < 2) { return null; }
+		return rounds[rounds.length-2];
+	}
+
 	usersWithPoints(game) {
 		return game.userIds.map(userId => {
 			let totalPoints = 0;

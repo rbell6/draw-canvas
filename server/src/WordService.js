@@ -177,7 +177,7 @@ module.exports = {
 			'man',
 			'dog',
 			'deoderant',
-			'choclate',
+			'chocolate',
 			'cup',
 			'church',
 			'spray',

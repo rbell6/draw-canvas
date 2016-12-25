@@ -36,7 +36,9 @@ export default class Shell extends React.Component {
 	}
 
 	onLogoClick() {
-		Modal.show(<Menu />);
+		if (!this.state.modal) {
+			Modal.show(<Menu />);
+		}
 	}
 
 	render() {
