@@ -1,6 +1,7 @@
 'use strict';
 
 let _ = require('lodash');
+let moment = require('moment');
 let express = require('express');
 let router = express.Router();
 let Game = require('../../../models/Game');
@@ -51,7 +52,10 @@ class GameAPI {
 	}
 
 	getAllGames(req, res) {
-		res.send(Games.getAll());
+		// Send all games created in the past 24 hours
+		let twentyFourHoursAgo =  moment().subtract(1, 'days');
+		let games = Games.getAll().filter(game => moment(game.get('timeCreated')).isAfter(twentyFourHoursAgo));
+		res.send(games);
 	}
 
 	getGameById(req, res) {
@@ -79,7 +83,8 @@ class GameAPI {
 		let user = req.user;
 		let game = new Game({
 			name: req.body.name || 'Untitled Game',
-			host: user
+			host: user,
+			timeCreated: Date.now()
 		});
 		Games.add(game);
 		UserSockets.notifyAll('change:gameList', Games.toJSON());

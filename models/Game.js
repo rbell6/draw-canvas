@@ -43,7 +43,8 @@ module.exports = class Game extends Model {
 			gameTime: 60000,
 			isStarted: false,
 			isCanceled: false,
-			isEnded: false
+			isEnded: false,
+			timeCreated: null
 		};
 	}
 
