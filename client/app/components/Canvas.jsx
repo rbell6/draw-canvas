@@ -85,7 +85,7 @@ export default class Canvas extends React.Component {
 	}
 
 	undo() {
-		this.lines.remove(this.lines.last());
+		this.lines.splice(this.lines.length-1, 1);
 		this.onChange();
 	}
 
