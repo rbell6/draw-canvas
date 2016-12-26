@@ -11,7 +11,7 @@ let Round = require('../../../models/Round');
 let _ = require('lodash');
 let express = require('express');
 let router = express.Router();
-const roundStartDelayTime = 4000;
+const roundStartDelayTime = 3000;
 
 class ActiveRoundAPI {
 
@@ -61,7 +61,7 @@ class ActiveRoundAPI {
 	}
 
 	startGame(game) {
-		this.createNextRound(game, {roundStartDelayTime: 1000});
+		this.createNextRound(game, {roundStartDelayTime: 2000});
 	}
 
 	// createNextRound(game) {
