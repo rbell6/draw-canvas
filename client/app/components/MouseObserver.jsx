@@ -29,7 +29,7 @@ export default class MouseObserver extends React.Component {
 		this.el.addEventListener('touchstart', this.onMouseDown);
 		this.el.addEventListener('mousemove', this.onMouseMove);
 		this.el.addEventListener('touchmove', this.onMouseMove);
-		this.el.addEventListener('mouseup', this.onMouseUp);
+		window.addEventListener('mouseup', this.onMouseUp);
 		this.el.addEventListener('touchend', this.onMouseUp);
 		this.el.addEventListener('mouseleave', this.onMouseLeave);
 	}
@@ -39,7 +39,7 @@ export default class MouseObserver extends React.Component {
 		this.el.removeEventListener('touchstart', this.onMouseDown);
 		this.el.removeEventListener('mousemove', this.onMouseMove);
 		this.el.removeEventListener('touchmove', this.onMouseMove);
-		this.el.removeEventListener('mouseup', this.onMouseUp);
+		window.removeEventListener('mouseup', this.onMouseUp);
 		this.el.removeEventListener('touchend', this.onMouseUp);
 		this.el.removeEventListener('mouseleave', this.onMouseLeave);
 		this.moveBack();
