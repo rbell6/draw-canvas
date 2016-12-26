@@ -7,7 +7,8 @@ import {
 } from 'react-redux';
 import {
 	setBrushSize,
-	setBrushColor
+	setBrushColor,
+	setBrushEraser
 } from '../actions/GameActions';
 
 class BrushPalette extends React.Component {
