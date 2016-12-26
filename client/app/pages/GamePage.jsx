@@ -117,6 +117,7 @@ class GamePage extends React.Component {
 			Modal.show(<StartGameModal />);
 		} else {
 			Modal.show(<EndRoundModal word={this.previousRound.word} />);
+			this.clearCanvas();
 		}
 	}
 
@@ -240,6 +241,15 @@ class GamePage extends React.Component {
 			if (!this._mounted) { return; }
 			this.setState({showPreRoundModal: false});
 		}, modalViewableTime);
+	}
+
+	clearCanvas() {
+		if (this.refs.canvas) {
+			this.refs.canvas.clear();
+		}
+		if (this.refs.canvasView) {
+			this.refs.canvasView.paint();
+		}
 	}
 
 	endGame() {

@@ -80,7 +80,7 @@ export default class Canvas extends React.Component {
 	}
 
 	clear() {
-		this.lines.removeAll();
+		this.lines.length = 0;
 		this.onChange();
 	}
 
