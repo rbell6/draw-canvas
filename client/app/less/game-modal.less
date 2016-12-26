@@ -7,14 +7,12 @@
 	top: 0;
 	bottom: 0;
 	padding-top: 100px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
 	h1 {
 		color: @white;
 		font-weight: 100;
-		font-size: 32px;
+		font-size: 36px;
 		padding: 20px;
+		text-align: center;
 	}
 	.modal-round-word {
 		font-weight: 800;
@@ -24,15 +22,41 @@
 }
 .end-game-modal {
 	flex-direction: column;
+	overflow-y: scroll;
 	.game-over-buttons {
 		width: 500px;
 		max-width: 100%;
 		padding: 0 20px;
 		box-sizing: border-box;
-		margin-bottom: 80px;
+		margin: 0 auto 80px auto;
 		.button {
 			width: 100%;
 			margin: 0 0 20px 0;
 		}
+	}
+}
+.game-scoreboard {
+	width: 500px;
+	margin: 0 auto 80px auto;
+	padding: 0 20px;
+	box-sizing: border-box;
+	ol {
+		list-style-position: inside;
+		padding: 0;
+		li {
+			color: @white;
+			font-size: 30px;
+			margin-bottom: 12px;
+		}
+		.game-scoreboard-current-user {
+			color: @purple;
+			font-weight: 800;
+			.game-scoreboard-score {
+				font-weight: 300;
+			}
+		}
+	}
+	.game-scoreboard-score {
+		font-weight: 100;
 	}
 }

@@ -110,7 +110,7 @@ class GamePage extends React.Component {
 	componentDidUpdate() {
 		if (!this.isGamePage() || !this.activeRound) { return; }
 		if (this.props.game.isEnded) {
-			Modal.show(<EndGameModal />);
+			Modal.show(<EndGameModal game={this.props.game} userList={this.props.userList} user={this.props.user} />);
 		} else if (this.activeRound.started) {
 			Modal.close();
 		} else if (this.props.game.rounds.length === 1) {
