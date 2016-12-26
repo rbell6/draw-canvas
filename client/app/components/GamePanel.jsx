@@ -64,6 +64,9 @@ class GamePanel extends React.Component {
 		if (this.activeRound && this.activeRound.userPoints[userId]) {
 			return 'correct';
 		}
+		if (this.activeRound && this.activeRound.drawerId === userId) {
+			return 'drawer';
+		}
 		return 'normal';
 	}
 
