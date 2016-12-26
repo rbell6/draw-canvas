@@ -2,6 +2,8 @@ import styles from '../less/canvas.less';
 import React from 'react';
 import CursorCanvas from './CursorCanvas';
 import CanvasView from './CanvasView';
+import _ from 'lodash';
+const onChangeIntervalTime = 500;
 
 export default class Canvas extends React.Component {
 	constructor(props, context) {
@@ -15,6 +17,7 @@ export default class Canvas extends React.Component {
 
 		this.lines = [];
 		this._curLine = null;
+		this._debouncedFireOnChangeCallback = _.debounce(this._fireOnChangeCallback, onChangeIntervalTime, {maxWait: onChangeIntervalTime});
 	}
 
 	static get defaultProps() {
@@ -68,11 +71,16 @@ export default class Canvas extends React.Component {
 	}
 
 	onChange() {
+		this._debouncedFireOnChangeCallback();
+		this.paint(this.lines);
+	}
+
+	_fireOnChangeCallback() {
+		if (!this.refs.canvas) { return; }
 		this.props.onChange({
 			lines: this.lines,
 			aspectRatio: this.refs.canvas.currentAspectRatio()
 		});
-		this.paint(this.lines);
 	}
 
 	paint(lines) {
