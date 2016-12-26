@@ -1,9 +1,11 @@
 import styles from '../less/game-modal.less';
 import React from 'react';
+import ReactDOM from 'react-dom';
 import Modal from './Modal';
 import Button from './Button';
 import GameUtil from '../util/GameUtil';
 import classNames from 'classnames';
+import _ from 'lodash';
 import {
 	browserHistory
 } from 'react-router';
@@ -45,22 +47,52 @@ let Scoreboard = props => {
 }
 
 
-export function EndGameModal(props) {
-	function onButtonClick(redirect) {
+export class EndGameModal extends React.Component {
+	constructor(props, context) {
+		super(props, context);
+		this.debouncedOnScroll = _.debounce(this.onScroll.bind(this), 100, {maxWait: 100});
+	}
+
+	componentDidMount() {
+		this.el = ReactDOM.findDOMNode(this);
+		this.el.addEventListener('scroll', this.debouncedOnScroll);
+		this.gameLogo = document.querySelector('.game-logo-small');
+	}
+
+	componentWillUnmount() {
+		this.el.removeEventListener('scroll', this.debouncedOnScroll);
+	}
+
+	// Hide the logo when they scroll so it doesn't overlap with the modal contents
+	onScroll() {
+		if (!this.el) { return; }
+		if (this.el.scrollTop > 60) {
+			this.gameLogo.style.display = 'none';
+		} else {
+			this.gameLogo.style.display = '';
+		}
+	}
+
+	onButtonClick(redirect) {
 		Modal.close();
 		if (redirect) {
 			browserHistory.push(redirect);
 		}
 	}
 
-	return (
-		<div className="game-modal end-game-modal">
-			<h1>Game over!</h1>
-			<Scoreboard game={props.game} userList={props.userList} user={props.user} />
-			<div className="game-over-buttons">
-				<Button variant="success" onClick={() => onButtonClick('/game-list')}>New game</Button>
-				<Button onClick={() => onButtonClick('/create-user')}>Edit profile</Button>
+	render() {
+		return (
+			<div className="game-modal end-game-modal">
+				<h1>Game over!</h1>
+				<Scoreboard game={this.props.game} userList={this.props.userList} user={this.props.user} />
+				<div className="game-over-buttons">
+					<Button variant="success" onClick={() => this.onButtonClick('/game-list')}>New game</Button>
+				</div>
+				<div className="game-over-buttons">
+					<Button variant="success" onClick={() => this.onButtonClick('/game-list')}>New game</Button>
+					<Button onClick={() => this.onButtonClick('/create-user')}>Edit profile</Button>
+				</div>
 			</div>
-		</div>
-	);
+		);
+	}
 }
