@@ -51,7 +51,6 @@ module.exports = {
 			'Snake',
 			'Drugs',
 			'Wagon',
-			'Alcohol',
 			'tackle',
 			'Van',
 			'Princess',
