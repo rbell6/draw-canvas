@@ -22,6 +22,8 @@ class CanvasAPI {
 		let user = this.userAPI.getUserForSocket(socket);
 		let activeRound = _.get(game, 'activeRound');
 		if (user && activeRound && user.id === activeRound.get('drawerId')) {
+			game.activeRound.set('lines', opts.lines);
+			game.activeRound.set('aspectRatio', opts.aspectRatio);
 			game.get('users').forEach(user => {
 				let socket = UserSockets.get(user);
 				if (socket) {

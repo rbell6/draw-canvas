@@ -3,6 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Modal from './Modal';
 import Button from './Button';
+import CanvasView from './CanvasView';
 import GameUtil from '../util/GameUtil';
 import classNames from 'classnames';
 import _ from 'lodash';
@@ -27,7 +28,7 @@ export function EndRoundModal(props) {
 	}
 
 	return (
-		<div className="game-modal">
+		<div className="game-modal end-round-modal">
 			<h1>The word was <span className="modal-round-word">{props.word}</span>.</h1>
 		</div>
 	);
@@ -46,17 +47,21 @@ let Scoreboard = props => {
 	);
 }
 
-
 export class EndGameModal extends React.Component {
 	constructor(props, context) {
 		super(props, context);
 		this.debouncedOnScroll = _.debounce(this.onScroll.bind(this), 100, {maxWait: 100});
+		this.drawings = [];
 	}
 
 	componentDidMount() {
 		this.el = ReactDOM.findDOMNode(this);
 		this.el.addEventListener('scroll', this.debouncedOnScroll);
 		this.gameLogo = document.querySelector('.game-logo-small');
+
+		this.props.game.rounds.forEach((round, index) => {
+			this.drawings[index].paint(round.lines, {aspectRatio: round.aspectRatio});
+		});
 	}
 
 	componentWillUnmount() {
@@ -80,13 +85,27 @@ export class EndGameModal extends React.Component {
 		}
 	}
 
+	userForId(id) {
+		return this.props.userList.find(u => u.id === id);
+	}
+
 	render() {
 		return (
 			<div className="game-modal end-game-modal">
 				<h1>Game over!</h1>
 				<Scoreboard game={this.props.game} userList={this.props.userList} user={this.props.user} />
-				<div className="game-over-buttons">
-					<Button variant="success" onClick={() => this.onButtonClick('/game-list')}>New game</Button>
+				<div className="game-over-drawings">
+					{this.props.game.rounds.map((round, index) => (
+						<div className="game-over-drawing" key={round.id}>
+							<CanvasView 
+								ref={el => this.drawings[index] = el } 
+								width={300} 
+								height={300} 
+								immediate={true}
+								className="game-over-drawing" />
+							<div className="game-over-drawing-title"><span className="game-over-drawing-name">"{round.word}"</span> by {_.get(this.userForId(round.drawerId), 'name', 'Unknown')}</div>
+						</div>
+					))}
 				</div>
 				<div className="game-over-buttons">
 					<Button variant="success" onClick={() => this.onButtonClick('/game-list')}>New game</Button>

@@ -48,31 +48,38 @@ export default class CanvasView extends React.Component {
 			y = ((1-ySquashFactor)/2)+(point.y*ySquashFactor);
 		}
 		return {
-			x: x*window.innerWidth,
-			y: y*window.innerHeight
+			x: x*this.el.width,
+			y: y*this.el.height
 		};
 	}
 
 	currentAspectRatio() {
-		return window.innerWidth/window.innerHeight;
+		return this.el.width/this.el.height;
 	}
 
 	resizeCanvas() {
-		this.el.width = window.innerWidth;
-		this.el.height = window.innerHeight;
+		this.el.width = this.props.width || window.innerWidth;
+		this.el.height = this.props.height || window.innerHeight;
 		if (this._mostRecentLines) {
 			this.paint(this._mostRecentLines, {aspectRatio: this._mostRecentAspectRatio});
 		}
 	}
 
-	// Call this._animatePaint
+	// Call `this._animatePaint` (or `this._paint` if immediate)
 	paint(lines=[], opts={}) {
 		this._lines = lines;
 		this._aspectRatio = opts.aspectRatio || this._aspectRatio;
-		// Create a new animationId every time `paint` is called so that any in-progress paint animations
-		// will be overriden by this one
-		this._animationId = _.uniqueId('canvasAnimation');
-		this._animatePaint(this._animationId);
+		this._mostRecentLines = lines;
+		this._mostRecentAspectRatio = opts.aspectRatio;
+
+		if (this.props.immediate) {
+			this._paint(lines, {aspectRatio: this._aspectRatio});
+		} else {
+			// Create a new animationId every time `paint` is called so that any in-progress paint animations
+			// will be overriden by this one
+			this._animationId = _.uniqueId('canvasAnimation');
+			this._animatePaint(this._animationId);
+		}
 	}
 
 	get _totalNumPoints() {
@@ -135,8 +142,6 @@ export default class CanvasView extends React.Component {
 			});
 			this._endDrawing();
 		});
-		this._mostRecentLines = lines;
-		this._mostRecentAspectRatio = opts.aspectRatio;
 	}
 
 	_startDrawing(line, aspectRatio) {
@@ -154,7 +159,7 @@ export default class CanvasView extends React.Component {
 	_brushSize(brush, aspectRatio) {
 		let xSquashFactor = aspectRatio/this.currentAspectRatio();
 		let sizePercent = brush.size.value;
-		let size = window.innerWidth*sizePercent;
+		let size = this.el.width*sizePercent;
 		if (xSquashFactor<1) {
 			size = size*xSquashFactor;
 		}

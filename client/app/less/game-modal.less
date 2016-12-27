@@ -18,7 +18,10 @@
 		font-weight: 800;
 	}
 }
-.start-game-modal {
+.start-game-modal,
+.end-round-modal {
+	display: flex;
+	align-items: center;
 }
 .end-game-modal {
 	flex-direction: column;
@@ -31,7 +34,7 @@
 		margin: 0 auto 80px auto;
 		.button {
 			width: 100%;
-			margin: 0 0 20px 0;
+			margin: 0 0 30px 0;
 		}
 	}
 }
@@ -59,4 +62,30 @@
 	.game-scoreboard-score {
 		font-weight: 100;
 	}
+}
+.game-over-drawings {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 40px;
+	flex-wrap: wrap;
+}
+.game-over-drawing {
+	background: #555;
+	margin: 20px;
+	position: relative;
+	border-radius: 3px;
+}
+.game-over-drawing-title {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	color: @white;
+	padding: 40px 15px 15px 15px;
+	font-weight: 100;
+	font-size: 23px;
+  background-image: linear-gradient(0deg, rgba(0,0,0,0.2) 0%, transparent 100%);
+}
+.game-over-drawing-name {
+	font-weight: 800;
 }

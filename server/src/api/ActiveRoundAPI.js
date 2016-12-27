@@ -11,7 +11,7 @@ let Round = require('../../../models/Round');
 let _ = require('lodash');
 let express = require('express');
 let router = express.Router();
-const roundStartDelayTime = 3000;
+const roundStartDelayTime = 2000;
 
 class ActiveRoundAPI {
 
@@ -39,7 +39,7 @@ class ActiveRoundAPI {
 		// UserSockets.notifyUsers(game.get('users'), `change:activeRoundPoints:${game.activeRound.id}`, game.activeRound.get('userPoints'));
 		if (game.activeRound.numUsersWithPoints() === game.get('users').length-1 && this.timeLeftInActiveRound(game) > 0) {
 			clearTimeout(this._roundTimeoutIds.get(game.activeRound));
-			this.createNextRound(game);
+			this.endRound(game);
 		}
 		return points;
 	}
@@ -61,27 +61,21 @@ class ActiveRoundAPI {
 	}
 
 	startGame(game) {
-		this.createNextRound(game, {roundStartDelayTime: 2000});
+		this.createNextRound(game, {roundStartDelayTime: roundStartDelayTime});
 	}
 
-	// createNextRound(game) {
-		// this._createNextRound(game);
-
-		// Give it a couple seconds before sending everyone to the next round
-		// setTimeout(() => {
-		// 	this._createNextRound(game);
-		// }, interRoundDelayTime);
-	// }
+	endRound(game) {
+		this.awardDrawerPoints(game);
+		if (game.get('rounds').length === game.get('numRounds')) {
+			this.endGame(game);
+		} else {
+			this.createNextRound(game);
+		}
+	}
 
 	createNextRound(game, opts) {
 		opts = opts || {};
 		
-		// First we want to give the drawer points for the round that is about to end
-		this.awardDrawerPoints(game);
-		if (game.get('rounds').length === game.get('numRounds')) {
-			this.endGame(game);
-			return;
-		}
 		let params = this.createNextRoundParams(game);
 		if (game.activeRound) {
 			this._roundTimeoutIds.delete(game.activeRound);
@@ -99,7 +93,7 @@ class ActiveRoundAPI {
 		game.activeRound.set('started', true);
 		this.notifyUsersOfRoundsChange(game);
 		let timeoutId = setTimeout(() => {
-			this.createNextRound(game);
+			this.endRound(game);
 		}, game.get('gameTime'));
 		this._roundTimeoutIds.set(game.activeRound, timeoutId);
 	}
