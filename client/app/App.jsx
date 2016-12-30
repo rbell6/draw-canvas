@@ -11,6 +11,8 @@ import {
 import _ from 'lodash';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import Shell from './components/Shell';
+import Modal from './components/Modal';
+import LostConnectionModal from './components/LostConnectionModal';
 import GamePage from './pages/GamePage';
 import HomePage from './pages/HomePage';
 import CreateUserPage from './pages/CreateUserPage';
@@ -43,6 +45,7 @@ import {
 import {
 	createSocket
 } from './actions/SocketActions';
+require('offline-js'); // This puts `Offline` on the window
 
 let loggerMiddleware = createLogger({
 	collapsed: true
@@ -113,6 +116,12 @@ class App extends React.Component {
 		};
 	};
 
+	constructor(props, context) {
+		super(props, context);
+		this.showOfflineModal = this.showOfflineModal.bind(this);
+		this.closeOfflineModal = this.closeOfflineModal.bind(this);
+	}
+
 	componentDidMount() {
 		this.props.fetchUser()
 			.then(() => this.props.createSocket())
@@ -120,6 +129,19 @@ class App extends React.Component {
 				this.props.streamUserList(this.props.socket);
 				this.props.streamGameList(this.props.socket);
 			});
+
+		// For local testing
+		// window.Offline.options = {checks: {xhr: {url: 'https://code.jquery.com/jquery-3.1.1.min.js'}}};
+		window.Offline.on('down', this.showOfflineModal);
+		window.Offline.on('up', this.closeOfflineModal);
+	}
+
+	showOfflineModal() {
+		 Modal.show(<LostConnectionModal />);
+	}
+
+	closeOfflineModal() {
+		 Modal.close();
 	}
 
 	isDoneLoading() {
