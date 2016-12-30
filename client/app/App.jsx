@@ -136,6 +136,11 @@ class App extends React.Component {
 		window.Offline.on('up', this.closeOfflineModal);
 	}
 
+	componentWillUnmount() {
+		window.Offline.off('down', this.showOfflineModal);
+		window.Offline.off('up', this.closeOfflineModal);
+	}
+
 	showOfflineModal() {
 		 Modal.show(<LostConnectionModal />);
 	}
