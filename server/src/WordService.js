@@ -1,7 +1,25 @@
 'use strict';
 
-module.exports = {
-	get: () => {
+class WordService {
+
+	constructor() {
+		this.wordList = [];
+	}
+
+	getWord() {
+		if (!this.wordList.length) {
+			this.wordList = this.getWordList();
+		}
+		let index = this.randomNumber(this.wordList.length-1);
+		return this.wordList.splice(index, 1)[0].toLowerCase();
+	}
+
+	// Get a number from 0 to max
+	randomNumber(max) {
+		return Math.floor(Math.random()*(max+1));
+	}
+
+	getWordList() {
 		return [
 			'Orange Juice',
 			'Bike',
@@ -601,7 +619,9 @@ module.exports = {
 			'zombie'
 		];
 	}
-};
+}
+
+module.exports = WordService;
 
 
 
