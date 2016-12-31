@@ -347,6 +347,7 @@ class GamePage extends React.Component {
 								onMouseDown={point => this.refs.canvas.startLine(point)} 
 								onMouseDownMove={point => this.refs.canvas.extendLine(point)} 
 								onMouseMove={point => {
+									if (!this.refs.canvas) { return; }
 									this.refs.canvas.refs.cursorCanvas.paint(point)
 								}}
 								onMouseLeave={() => this.refs.canvas.refs.cursorCanvas.paint()} />

@@ -15,14 +15,11 @@ export default class CursorCanvas extends React.Component {
 		this.el = ReactDOM.findDOMNode(this);
 
 		window.addEventListener('resize', this.resizeCanvas, false);
-		this.canvas.addEventListener('mousemove', this.paint);
-		this.canvas.addEventListener('mouseleave', this.onMouseLeave);
 		this.resizeCanvas();
 	}
 
 	componentWillUnmount() {
-		this.canvas.removeEventListener('mousemove', this.paint);
-		this.canvas.removeEventListener('mouseleave', this.onMouseLeave);
+		window.removeEventListener('resize', this.resizeCanvas);
 	}
 
 	resizeCanvas() {
