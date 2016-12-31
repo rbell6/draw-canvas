@@ -66,6 +66,7 @@ export class EndGameModal extends React.Component {
 
 	componentWillUnmount() {
 		this.el.removeEventListener('scroll', this.debouncedOnScroll);
+		this.gameLogo.style.display = '';
 	}
 
 	// Hide the logo when they scroll so it doesn't overlap with the modal contents
