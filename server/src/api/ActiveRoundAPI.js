@@ -51,7 +51,7 @@ class ActiveRoundAPI {
 		}
 		// In the current round, we only want to send the word with the drawer
 		let currentRoundJSON = roundsJSON[roundsJSON.length-1];
-		if (currentRoundJSON.drawerId !== userId) {
+		if (!game.get('isEnded') && currentRoundJSON.drawerId !== userId) {
 			currentRoundJSON.word = null;
 		}
 		if (RoundStartTimes.get(game)) {
@@ -110,6 +110,7 @@ class ActiveRoundAPI {
 
 	endGame(game) {
 		game.set('isEnded', true);
+		this.notifyUsersOfRoundsChange(game);
 		UserSockets.notifyUsers(game.get('users'), `change:game:${game.id}`, game.toJSON());
 
 		// game.get('users').forEach(user => {
