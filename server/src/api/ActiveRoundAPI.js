@@ -123,8 +123,8 @@ class ActiveRoundAPI {
 			// 	mobileSocket.emit(`endGame:${game.id}`);
 			// }
 		// });	
-		// Games.remove(game);
-		// UserSockets.notifyAll('change:gameList', Games.toJSON());
+		Games.remove(game);
+		UserSockets.notifyAll('change:gameList', Games.toJSON());
 	}
 
 	notifyUsersOfRoundsChange(game) {
