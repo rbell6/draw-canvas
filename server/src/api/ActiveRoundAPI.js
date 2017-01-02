@@ -66,7 +66,7 @@ class ActiveRoundAPI {
 
 	endRound(game) {
 		this.awardDrawerPoints(game);
-		if (game.get('rounds').length === game.get('numRounds')) {
+		if (game.get('rounds').length >= game.get('numRounds')) {
 			this.endGame(game);
 		} else {
 			this.createNextRound(game);

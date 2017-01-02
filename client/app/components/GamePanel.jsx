@@ -28,7 +28,7 @@ class GamePanel extends React.Component {
 	}
 
 	componentDidUpdate() {
-		if (!this.isGamePage() || !this.activeRound.started) { return; }
+		if (!this.isGamePage() || !_.get(this.activeRound, 'started')) { return; }
 		let newCurrentRoundIndex = _.get(this.activeRound, 'index', -1);
 		if (newCurrentRoundIndex > this.currentRoundIndex) {
 			this.currentRoundIndex = newCurrentRoundIndex;
@@ -76,7 +76,8 @@ class GamePanel extends React.Component {
 	}
 
 	render() {
-		let roundNumber = this.props.game.rounds.length;
+		if (!this.props.game) { return null; }
+		let roundNumber = _.get(this.props.game.rounds, 'length', 0);
 		return (
 			<div className="game-panel">
 				<div className="game-panel-header">

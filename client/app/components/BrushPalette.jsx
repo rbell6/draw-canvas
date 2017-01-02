@@ -35,6 +35,7 @@ class BrushPalette extends React.Component {
 	}
 
 	render() {
+		if (!this.props.brush) { return null; }
 		return (
 			<div className="brush-palette">
 				<div className="brushes brush-colors">

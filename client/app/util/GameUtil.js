@@ -14,7 +14,8 @@ class GameUtil {
 	}
 
 	usersWithPoints(game) {
-		return game.userIds.map(userId => {
+		let userIds = game.userIds || [];
+		return userIds.map(userId => {
 			let totalPoints = 0;
 			game.rounds.forEach(round => {
 				totalPoints += round.userPoints[userId] || 0;
