@@ -52,7 +52,7 @@ export default class Shell extends React.Component {
 					transitionLeaveTimeout={modalTransitionTime}>
 					{ this.state.modal ? <Modal onClose={() => this.onModalClose()}>{this.state.modal}</Modal> : null }
 				</ReactCSSTransitionGroup>
-				<img src="/static/img/logo.png" className={classNames('game-logo-small', {'game-logo-clickable': !this.state.modal})} onClick={() => this.onLogoClick()} />
+				{/*<img src="/static/img/logo.png" className={classNames('game-logo-small', {'game-logo-clickable': !this.state.modal})} onClick={() => this.onLogoClick()} /> */}
 			</div>
 		);
 	}

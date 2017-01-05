@@ -1,0 +1,87 @@
+@import 'variables.less';
+@logo-width: 820px/8;
+@logo-height: 456px/8;
+@darkGray: #5c6062;
+
+.footer {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: @footer-height;
+	background: @darkGray;
+	display: flex;
+	align-items: center;
+	overflow: hidden;
+	transition: height @responsive-transition-time;
+	.footer-logo {
+		width: @logo-width;
+		height: @logo-height;
+		padding: 0 20px;
+		transition: transform 0.2s;
+		-webkit-backface-visibility: hidden; // Fixes a css transform issue in chrome http://stackoverflow.com/questions/17242922/css3-hover-effects-make-weird-impact-on-other-elements-in-chrome
+		cursor: pointer;
+		transition: padding @responsive-transition-time, width @responsive-transition-time, height @responsive-transition-time;
+		&:hover {
+			transform: scale(1.06);
+		}
+	}
+	.footer-contents {
+		padding-right: 15px;
+		display: flex;
+		flex: 1;
+		justify-content: flex-end;
+		transition: padding @responsive-transition-time;
+		min-width: 0;
+	}
+}
+.footer-offset {
+	padding-bottom: @footer-height;
+}
+
+@media screen and (max-width: @medium-max-width), screen and (max-height: @medium-max-height) {
+	.footer {
+		height: @footer-height-medium;
+		.footer-logo {
+			padding: 0 15px;
+			width: @logo-width*0.8;
+			height: @logo-height*0.8;
+		}
+		.footer-contents {
+			padding-right: 10px;
+		}
+		.button {
+			height: @button-height*0.7;
+			font-size: 18px;
+			margin: 0 @gutter/3;
+			max-width: 150px;
+			border-radius: 6px;
+		}
+	}
+	.footer-offset {
+		padding-bottom: @footer-height-medium;
+	}
+}
+@media screen and (max-width: @small-max-width), screen and (max-height: @small-max-height) {
+	.footer {
+		height: @footer-height-small;
+		.footer-logo {
+			padding: 0 10px;
+			width: @logo-width*0.7;
+			height: @logo-height*0.7;
+		}
+		.footer-contents {
+			padding-right: 5px;
+		}
+		.button {
+			height: @button-height*0.5;
+			font-size: 14px;
+			margin: 0 @gutter/5;
+			max-width: 120px;
+			border-radius: 4px;
+		}
+	}
+	.footer-offset {
+		padding-bottom: @footer-height-small;
+	}
+}

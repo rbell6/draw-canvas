@@ -7,6 +7,7 @@ import {
 } from 'react-router';
 import TextField from '../components/TextField';
 import Button from '../components/Button';
+import Footer from '../components/Footer';
 import User from '../../../models/User';
 import UserService from '../services/UserService';
 import _ from 'lodash';
@@ -54,17 +55,19 @@ class CreateUserPage extends React.Component {
 
 	render() {
 		return (
-			<div className="create-user-page">
+			<div className="create-user-page footer-offset">
+				<h1>Welcome to <strong>draw guru</strong>!</h1>
 				<div className="create-user-container">
+					<label>What should we call you?</label>
 					<TextField 
 						placeholder="Nickname"
 						value={this.state.tempName}
 						ref="textField" 
 						onChange={e => this.onTempNameChange(e.target.value)} />
-					<div className="launch-buttons">
-						<Button onClick={() => this.onContinue()} className="launch-button" disabled={this.state.tempName.length === 0} variant="success">Find a game <i className="fa fa-chevron-right" /></Button>
-					</div>
 				</div>
+				<Footer>
+					<Button onClick={() => this.onContinue()} disabled={this.state.tempName.length === 0} variant="success">Next</Button>
+				</Footer>
 			</div>
 		);
 	}

@@ -8,18 +8,22 @@
 }
 
 .button {
-	height: 80px;
+	height: @button-height;
 	background: #ddd;
 	color: #555;
 	font-size: 22px;
 	border: solid 2px transparent;
-	border-radius: 3px;
+	border-radius: 8px;
 	cursor: pointer;
 	margin: 0 @gutter/2;
-	flex-grow: 1;
-	min-width: 100px;
+	flex: 1;
+	min-width: 0;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	max-width: 250px;
 	font-weight: 300;
-	transition: background 0.2s, color 0.2s, transform 0.2s;
+	transition: background 0.2s, color 0.2s, transform 0.2s, height @responsive-transition-time, font-size @responsive-transition-time, margin @responsive-transition-time, max-width @responsive-transition-time, border-radius @responsive-transition-time;
 	-webkit-backface-visibility: hidden;
 	-moz-backface-visibility: hidden;
 	-ms-backface-visibility: hidden;

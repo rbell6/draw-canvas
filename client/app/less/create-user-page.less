@@ -12,8 +12,19 @@
 	flex-direction: column;
 	padding: 0 @gutter;
 	box-sizing: border-box;
+	h1 {
+		font-size: 50px;
+		font-weight: 300;
+		margin-bottom: 100px;
+		transition: font-size @responsive-transition-time, margin @responsive-transition-time;
+	}
+	label {
+		font-size: 24px;
+		margin-bottom: 6px;
+		transition: font-size @responsive-transition-time;
+	}
 	.create-user-container {
-		width: 600px;
+		width: 450px;
 		max-width: 100%;
 		display: flex;
 		flex-direction: column;
@@ -27,6 +38,29 @@
 		margin: 0;
 		.fa {
 			font-size: 18px;
+		}
+	}
+}
+
+@media screen and (max-width: @medium-max-width), screen and (max-height: @medium-max-height) {
+	.create-user-page {
+		padding: 0 @gutter/2;
+		h1 {
+			font-size: 40px;
+			margin-bottom: 60px;
+		}
+		label {
+			font-size: 22px;
+		}
+	}
+}
+@media screen and (max-width: @small-max-width), screen and (max-height: @small-max-height) {
+	.create-user-page {
+		h1 {
+			font-size: 30px;
+		}
+		label {
+			font-size: 20px;
 		}
 	}
 }
