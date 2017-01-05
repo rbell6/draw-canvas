@@ -32,13 +32,20 @@ class GameListPage extends React.Component {
 		};
 	}
 
+	constructor(props, context) {
+		super(props, context);
+		this._creatingGame = false;
+	}
+
 	shouldComponentUpdate() {
-		return this.isGameListPage();
+		return this.isGameListPage() && !this._creatingGame;
 	}
 
 	createGame() {
+		this._creatingGame = true;
 		this.props.createGame()
-			.then(game => browserHistory.push(`/game-stage/${game.id}`));
+			.then(game => browserHistory.push(`/game-stage/${game.id}`))
+			.then(() => this._creatingGame = false);
 	}
 
 	joinGame(game) {
