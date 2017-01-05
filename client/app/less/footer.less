@@ -3,6 +3,20 @@
 @logo-height: 456px/8;
 @darkGray: #5c6062;
 
+@keyframes footer-fade-in {
+	from {
+		opacity: 0;
+		transform: translateY(30%);
+	}
+	50% {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
 .footer {
 	position: absolute;
 	left: 0;
@@ -14,14 +28,14 @@
 	align-items: center;
 	overflow: hidden;
 	transition: height @responsive-transition-time;
+	animation: footer-fade-in 1s;
 	.footer-logo {
 		width: @logo-width;
 		height: @logo-height;
 		padding: 0 20px;
-		transition: transform 0.2s;
 		-webkit-backface-visibility: hidden; // Fixes a css transform issue in chrome http://stackoverflow.com/questions/17242922/css3-hover-effects-make-weird-impact-on-other-elements-in-chrome
 		cursor: pointer;
-		transition: padding @responsive-transition-time, width @responsive-transition-time, height @responsive-transition-time;
+		transition: padding @responsive-transition-time, width @responsive-transition-time, height @responsive-transition-time, transform 0.2s;
 		&:hover {
 			transform: scale(1.06);
 		}

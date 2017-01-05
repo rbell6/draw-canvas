@@ -1,0 +1,73 @@
+@import 'mixins.less';
+@import 'variables.less';
+
+.player-list {
+	padding-left: 30px;
+	padding-top: 15px;
+	width: 280px;
+	box-sizing: border-box;
+	transition: width @responsive-transition-time;
+	.player-list-title {
+		font-size: 24px;
+		font-weight: 800;
+	}
+	.player-list-player {
+		display: flex;
+		align-items: center;
+		margin-bottom: 15px;
+	}
+	.player-list-player-avatar {
+		width: 40px;
+		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #ccc;
+		border-radius: 50%;
+		font-size: 24px;
+	}
+	.player-list-player-name {
+		.truncate-text;
+		flex: 1;
+		padding-left: 15px;
+		font-size: 18px;
+		font-weight: 800;
+	}
+}
+
+@media screen and (max-width: @medium-max-width), screen and (max-height: @medium-max-height) {
+	.player-list {
+		width: 250px;
+		.player-list-title {
+			font-size: 22px;
+		}
+		.player-list-player-avatar {
+			width: 36px;
+			height: 36px;
+			font-size: 22px;
+		}
+		.player-list-player-name {
+			font-size: 16px;
+			padding-left: 10px;
+		}
+	}
+}
+
+@media screen and (max-width: @small-max-width), screen and (max-height: @small-max-height) {
+	.player-list {
+		width: 150px;
+		padding-left: 15px;
+		.player-list-title {
+			font-size: 18px;
+		}
+		.player-list-player-avatar {
+			width: 22px;
+			height: 22px;
+			font-size: 16px;
+		}
+		.player-list-player-name {
+			font-size: 12px;
+			padding-left: 5px;
+		}
+	}
+}

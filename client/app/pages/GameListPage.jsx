@@ -1,6 +1,9 @@
 import styles from '../less/game-list-page.less';
 import classNames from 'classnames';
 import React from 'react';
+import Button from '../components/Button';
+import Footer from '../components/Footer';
+import PlayerList from '../components/PlayerList';
 import UserService from '../services/UserService';
 import GameService from '../services/GameService';
 import Game from '../../../models/Game';
@@ -59,9 +62,8 @@ class GameListPage extends React.Component {
 	render() {
 		const transitionTime = 400;
 		return (
-			<div className="game-list-page">
+			<div className={classNames('game-list-page', {'no-games': !this.props.gameList.length})}>
 				<div className="game-list-container">
-					<button onClick={() => this.createGame()} className="join-game-button new-game-button"><i className="fa fa-plus-circle" /> &nbsp; New game</button>
 					<ReactCSSTransitionGroup
 						component="div"
 						transitionName="game"
@@ -76,7 +78,12 @@ class GameListPage extends React.Component {
 							</div>
 						))}
 					</ReactCSSTransitionGroup>
+					{!this.props.gameList.length ? <div className="no-games-message">There are no active games. <span onClick={() => this.createGame()} className="start-game-link">Start a new game</span></div> : null}
 				</div>
+				<PlayerList />
+				<Footer>
+					<Button onClick={() => this.createGame()} variant="success">New Game</Button>
+				</Footer>
 			</div>
 		);
 	}
