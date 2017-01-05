@@ -11,6 +11,7 @@ import MouseObserver from '../components/MouseObserver';
 import FirstChild from '../components/FirstChild';
 import Modal from '../components/Modal';
 import {
+	GameStageModal,
 	StartGameModal,
 	EndRoundModal,
 	EndGameModal
@@ -108,6 +109,10 @@ class GamePage extends React.Component {
 	}
 
 	componentDidUpdate() {
+		if (this.props.game.gameState === 'staged') {
+			Modal.show(<GameStageModal game={this.props.game} userList={this.props.userList} user={this.props.user} />);
+			return;
+		}
 		if (!this.isGamePage() || !this.activeRound) { return; }
 		if (this.props.game.isEnded) {
 			Modal.show(<EndGameModal game={this.props.game} userList={this.props.userList} user={this.props.user} />);

@@ -8,7 +8,7 @@ export default class TextField extends React.Component {
 			<input
 				type="text"
 				{...this.props}
-				className={classNames('text-field', this.props.className)} />
+				className={classNames('text-field', {'text-field-small': this.props.size === 'S'}, this.props.className)} />
 		);
 	}
 }

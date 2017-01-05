@@ -10,16 +10,16 @@
 	padding: 0 20px;
 	font-size: 26px;
 	color: #fff;
-	background: #444;
+	background: rgba(0, 0, 0, 0.4);
 	margin-bottom: @gutter;
 	outline: none;
 	font-weight: 100;
 	transition: background 0.2s, color 0.2s;
 	&:hover {
-		background: #393939;
+		background: rgba(0, 0, 0, 0.7);
 	}
 	&:focus {
-		background: #333;
+		background: rgba(0, 0, 0, 0.9);
 	}
 	&::-webkit-input-placeholder {
 		color: @input-placeholder-color;
@@ -28,6 +28,12 @@
 		color: @input-placeholder-color;
 	}
 }
+.text-field-small {
+		padding: 0 15px;
+		height: 50px;
+		font-size: 16px;
+		font-weight: 400;
+	}
 
 @media screen and (max-width: @small-max-width), screen and (max-height: @small-max-height) {
 	.text-field {

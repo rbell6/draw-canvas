@@ -44,13 +44,12 @@ class GameListPage extends React.Component {
 	createGame() {
 		this._creatingGame = true;
 		this.props.createGame()
-			.then(game => browserHistory.push(`/game-stage/${game.id}`))
+			.then(game => browserHistory.push(`/game/${game.id}`))
 			.then(() => this._creatingGame = false);
 	}
 
 	joinGame(game) {
-		let page = game.isStarted ? 'game' : 'game-stage';
-		browserHistory.push(`/${page}/${game.id}`);
+		browserHistory.push(`/game/${game.id}`);
 	}
 
 	isGameListPage() {

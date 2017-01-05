@@ -4,6 +4,8 @@ import ReactDOM from 'react-dom';
 import Modal from './Modal';
 import Button from './Button';
 import CanvasView from './CanvasView';
+import Footer from './Footer';
+import ChatBox from './ChatBox';
 import GameUtil from '../util/GameUtil';
 import classNames from 'classnames';
 import _ from 'lodash';
@@ -45,6 +47,32 @@ let Scoreboard = props => {
 			</ol>
 		</div>
 	);
+}
+
+export class GameStageModal extends React.Component {
+	startGame() {
+
+	}
+
+	cancelGame() {
+
+	}
+
+	render() {
+		return (
+			<div className="game-modal game-stage-modal footer-offset">
+				<div className="game-stage-modal-contents">
+					<ChatBox className="footer-offset" />
+					<div className="game-stage-modal-game-description">
+					</div>
+				</div>
+				<Footer>
+					<Button onClick={() => this.cancelGame()} variant="quiet">Cancel</Button>
+					<Button onClick={() => this.startGame()} variant="success">Start Game</Button>
+				</Footer>
+			</div>
+		);
+	}
 }
 
 export class EndGameModal extends React.Component {
