@@ -56,16 +56,17 @@ class CreateUserPage extends React.Component {
 	render() {
 		return (
 			<div className="create-user-page footer-offset">
-				<h1>Welcome to <strong>draw guru</strong>!</h1>
+				<img src="/static/img/logo.png" className="create-user-page-logo" />
+				{/*<h1>Welcome to <strong>draw guru</strong>!</h1>*/}
 				<div className="create-user-container">
-					<label>What should we call you?</label>
+					{/*<label>What should we call you?</label>*/}
 					<TextField 
 						placeholder="Nickname"
 						value={this.state.tempName}
 						ref="textField" 
 						onChange={e => this.onTempNameChange(e.target.value)} />
 				</div>
-				<Footer>
+				<Footer showLogo={false}>
 					<Button onClick={() => this.onContinue()} disabled={this.state.tempName.length === 0} variant="success">Next</Button>
 				</Footer>
 			</div>

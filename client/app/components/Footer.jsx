@@ -5,6 +5,12 @@ import Modal from './Modal';
 import Menu from './Menu';
 
 export default class Footer extends React.Component {
+	static get defaultProps() {
+		return {
+			showLogo: true
+		};
+	}
+
 	onLogoClick() {
 		Modal.show(<Menu />);
 	}
@@ -12,7 +18,11 @@ export default class Footer extends React.Component {
 	render() {
 		return (
 			<div className="footer">
-				<img src="/static/img/logo.png" className="footer-logo" onClick={() => this.onLogoClick()} />
+				{this.props.showLogo ? 
+					<img src="/static/img/logo.png" className="footer-logo" onClick={() => this.onLogoClick()} /> 
+					: 
+					null
+				}
 				<div className="footer-contents">
 					{this.props.children}
 				</div>
