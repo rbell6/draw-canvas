@@ -2,6 +2,7 @@
 @logo-width: 820px/8;
 @logo-height: 456px/8;
 @darkGray: #5c6062;
+@darkDarkGray: #393939;
 
 @keyframes footer-fade-in {
 	from {
@@ -29,6 +30,9 @@
 	overflow: hidden;
 	transition: height @responsive-transition-time;
 	animation: footer-fade-in 1s;
+	&.footer-dark {
+		background: @darkDarkGray;
+	}
 	.footer-logo {
 		width: @logo-width;
 		height: @logo-height;

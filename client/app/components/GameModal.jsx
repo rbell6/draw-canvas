@@ -66,7 +66,7 @@ export class GameStageModal extends React.Component {
 					<div className="game-stage-modal-game-description">
 					</div>
 				</div>
-				<Footer>
+				<Footer dark={true}>
 					<Button onClick={() => this.cancelGame()} variant="quiet">Cancel</Button>
 					<Button onClick={() => this.startGame()} variant="success">Start Game</Button>
 				</Footer>

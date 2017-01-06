@@ -17,7 +17,7 @@ export default class Footer extends React.Component {
 
 	render() {
 		return (
-			<div className="footer">
+			<div className={classNames('footer', {'footer-dark': this.props.dark})}>
 				{this.props.showLogo ? 
 					<img src="/static/img/logo.png" className="footer-logo" onClick={() => this.onLogoClick()} /> 
 					: 

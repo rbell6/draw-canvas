@@ -10,7 +10,7 @@ export default class ChatBox extends React.Component {
 				<div className="chat-box-messages">
 					messages
 				</div>
-				<TextField placeholder="Send a message . . ." size="S" />
+				<TextField placeholder="Send a message . . ." size="S" dark={true} />
 			</div>
 		);
 	}
