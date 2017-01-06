@@ -44,7 +44,8 @@ module.exports = class Game extends Model {
 			isStarted: false,
 			isCanceled: false,
 			isEnded: false,
-			timeCreated: null
+			timeCreated: null,
+			gameState: 'staged' // 'canceled' || staged' || 'active' || 'ended'
 		};
 	}
 
