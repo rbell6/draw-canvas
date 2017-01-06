@@ -6,6 +6,7 @@ import Button from './Button';
 import CanvasView from './CanvasView';
 import Footer from './Footer';
 import ChatBox from './ChatBox';
+import PlayerList from './PlayerList';
 import GameUtil from '../util/GameUtil';
 import classNames from 'classnames';
 import _ from 'lodash';
@@ -64,6 +65,7 @@ export class GameStageModal extends React.Component {
 				<div className="game-stage-modal-contents">
 					<ChatBox className="footer-offset" messageService={this.props.messageService} userList={this.props.userList} game={this.props.game} />
 					<div className="game-stage-modal-game-description">
+						<PlayerList userList={this.props.userList} game={this.props.game} dark={true} />
 					</div>
 				</div>
 				<Footer dark={true}>

@@ -1,7 +1,8 @@
+@import 'variables.less';
+
 .chat-box {
 	width: 300px;
 	padding-left: 20px;
-	padding-top: 20px;
 	padding-right: 20px;
 	box-sizing: border-box;
 	display: flex;
@@ -18,5 +19,12 @@
 		padding: 0;
 		justify-content: flex-end;
 		flex-direction: column;
+	}
+}
+
+@media screen and (max-width: @small-max-width), screen and (max-height: @small-max-height) {
+	.chat-box {
+		padding-left: 10px;
+		padding-right: 10px;
 	}
 }
