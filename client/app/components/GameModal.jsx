@@ -7,7 +7,9 @@ import CanvasView from './CanvasView';
 import Footer from './Footer';
 import ChatBox from './ChatBox';
 import PlayerList from './PlayerList';
+import TextField from './TextField';
 import GameUtil from '../util/GameUtil';
+import HotkeyService from '../services/HotkeyService';
 import classNames from 'classnames';
 import _ from 'lodash';
 import {
@@ -51,6 +53,12 @@ let Scoreboard = props => {
 }
 
 export class GameStageModal extends React.Component {
+	constructor(props, context) {
+		super(props, context);
+		this.gameNameField = null;
+		this.onSubmit = this.onSubmit.bind(this);
+	}
+
 	startGame() {
 
 	}
@@ -59,12 +67,37 @@ export class GameStageModal extends React.Component {
 
 	}
 
+	userIsHost() {
+		return this.props.user.id === this.props.game.hostId;
+	}
+
+	onFocus() {
+		HotkeyService.on('enter', this.onSubmit);
+	}
+
+	onBlur() {
+		HotkeyService.off('enter', this.onSubmit);
+	}
+
+	onSubmit() {
+		let name = this.gameNameField.value;
+		this.props.saveGameName(this.props.game.id, name);
+	}
+
 	render() {
 		return (
 			<div className="game-modal game-stage-modal footer-offset">
 				<div className="game-stage-modal-contents">
 					<ChatBox className="footer-offset" messageService={this.props.messageService} userList={this.props.userList} game={this.props.game} />
 					<div className="game-stage-modal-game-description">
+						<TextField 
+							className="game-stage-modal-header"
+							placeholder="Game Name"
+							defaultValue={this.props.game.name} 
+							ref={ref => this.gameNameField = ref}
+							onFocus={e => this.onFocus()}
+							onBlur={e => this.onBlur()}
+							disabled={!this.userIsHost()} />
 						<PlayerList players={this.props.game.users} dark={true} />
 					</div>
 				</div>

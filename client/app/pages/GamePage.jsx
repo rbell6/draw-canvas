@@ -110,7 +110,7 @@ class GamePage extends React.Component {
 
 	componentDidUpdate() {
 		if (this.props.game.gameState === 'staged') {			
-			Modal.show(<GameStageModal game={this.props.game} userList={this.props.userList} user={this.props.user} messageService={this.messageService} />);
+			Modal.show(<GameStageModal game={this.props.game} userList={this.props.userList} user={this.props.user} messageService={this.messageService} saveGameName={this.props.saveGameName} />);
 			return;
 		}
 		if (!this.isGamePage() || !this.activeRound) { return; }
