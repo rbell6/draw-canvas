@@ -86,7 +86,7 @@ class GameListPage extends React.Component {
 					</ReactCSSTransitionGroup>
 					{!this.props.gameList.length ? <div className="no-games-message">There are no active games. <span onClick={() => this.createGame()} className="start-game-link">Start a new game</span></div> : null}
 				</div>
-				<PlayerList />
+				<PlayerList players={this.props.userList} />
 				<Footer>
 					<Button onClick={() => this.createGame()} variant="success">New Game</Button>
 				</Footer>

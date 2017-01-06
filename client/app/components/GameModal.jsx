@@ -65,7 +65,7 @@ export class GameStageModal extends React.Component {
 				<div className="game-stage-modal-contents">
 					<ChatBox className="footer-offset" messageService={this.props.messageService} userList={this.props.userList} game={this.props.game} />
 					<div className="game-stage-modal-game-description">
-						<PlayerList userList={this.props.userList} game={this.props.game} dark={true} />
+						<PlayerList players={this.props.game.users} dark={true} />
 					</div>
 				</div>
 				<Footer dark={true}>
