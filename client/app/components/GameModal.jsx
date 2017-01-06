@@ -62,7 +62,7 @@ export class GameStageModal extends React.Component {
 		return (
 			<div className="game-modal game-stage-modal footer-offset">
 				<div className="game-stage-modal-contents">
-					<ChatBox className="footer-offset" />
+					<ChatBox className="footer-offset" messageService={this.props.messageService} userList={this.props.userList} game={this.props.game} />
 					<div className="game-stage-modal-game-description">
 					</div>
 				</div>

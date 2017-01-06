@@ -1,4 +1,5 @@
 import styles from '../less/game-messages.less';
+import classNames from 'classnames';
 import React from 'react';
 import UserIcon from './UserIcon';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
@@ -10,9 +11,9 @@ const transitionEnterTime = 300;
 const transitionLeaveTime = 3000;
 const transitionLeaveDelay = 3000;
 
-function GameMessage(props) {
+export function GameMessage(props) {
 	return (
-		<div className="game-text-message">
+		<div className={classNames('game-text-message', {'game-text-message-dark': props.dark})}>
 			<UserIcon user={props.user} size="tiny" showName={false} className="game-text-message-user-icon" />
 			<div className="game-text-message-username-and-text">
 				<div className="game-text-message-username">{props.user.name}</div>
@@ -49,6 +50,10 @@ class GameMessages extends React.Component {
 
 	userForId(id) {
 		return this.props.userList.find(u => u.id === id);
+	}
+
+	shouldComponentUpdate() {
+		return this.props.game.gameState === 'active';
 	}
 
 	componentDidUpdate() {
@@ -104,7 +109,7 @@ class GameMessages extends React.Component {
 					className="game-text-message-container"
 					transitionEnterTimeout={transitionEnterTime}
 					transitionLeaveTimeout={transitionLeaveTime}>
-					{this.state.messages.map(message => <GameMessage message={message} key={message.id} user={this.userForId(message.userId)} />)}
+					{this.state.messages.map(message => <GameMessage message={message} key={message.id} user={this.userForId(message.userId || message.user.id)} />)}
 				</ReactCSSTransitionGroup>
 			</div>
 		);

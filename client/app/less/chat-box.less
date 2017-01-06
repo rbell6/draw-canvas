@@ -6,10 +6,17 @@
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
+	justify-content: flex-end;
 	.chat-box-messages {
-		flex: 1;
+		overflow-y: scroll;
 	}
 	.text-field {
+		flex-shrink: 0;
 		margin-bottom: 20px;
+	}
+	.game-text-message-container {
+		padding: 0;
+		justify-content: flex-end;
+		flex-direction: column;
 	}
 }

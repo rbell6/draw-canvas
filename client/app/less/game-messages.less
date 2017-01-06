@@ -20,13 +20,13 @@
 		width: 400px;
 		max-width: 100%;
 	}
-	.game-text-message-container {
-		display: flex;
-		flex-direction: column-reverse;
-		align-items: flex-start;
-		padding: 0 20px;
-		box-sizing: border-box;
-	}
+}
+.game-text-message-container {
+	display: flex;
+	flex-direction: column-reverse;
+	align-items: flex-start;
+	padding: 0 20px;
+	box-sizing: border-box;
 	.message-enter {
 		height: 0;
 		&.message-enter-active {
@@ -50,6 +50,9 @@
 		display: inline-flex;
 		overflow: hidden;
 		align-items: center;
+		&.game-text-message-dark {
+			background: #282828;
+		}
 	}
 	.game-text-message-user-icon {
 		display: flex;

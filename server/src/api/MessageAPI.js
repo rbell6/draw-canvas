@@ -5,6 +5,7 @@ let _ = require('lodash');
 let express = require('express');
 let router = express.Router();
 let UserSockets = require('../UserSockets');
+let Message = require('../../../models/Message');
 
 class MessageAPI {
 	constructor(router, io, userAPI, activeRoundAPI) {
@@ -25,8 +26,8 @@ class MessageAPI {
 		let message = opts.message;
 		let messageId = user.id + Date.now();
 		let res;
-		if (user.id && activeRound) {
-			let wordIsCorrect = game.activeRound.wordIsCorrect(message);
+		if (user.id) {
+			let wordIsCorrect = game.activeRound && game.activeRound.wordIsCorrect(message);
 			if (wordIsCorrect) {
 				let points = this.activeRoundAPI.userGuessedCorrectWord(user, game);
 				res = {
@@ -44,6 +45,11 @@ class MessageAPI {
 					id: messageId
 				};
 			}
+			game.get('messages').add(new Message({
+				text: res.text,
+				user: user,
+				isChecked: res.wordIsCorrect
+			}));
 			UserSockets.notifyUsers(game.get('users'), `gameMessage:${game.id}`, res);
 		}
 	}

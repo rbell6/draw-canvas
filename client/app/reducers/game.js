@@ -40,7 +40,8 @@ export default function game(state={}, action) {
 				isCanceled,
 				isEnded,
 				gameTime,
-				gameState
+				gameState,
+				messages
 			} = action.game;
 			return Object.assign({}, state, {
 				id,
@@ -53,7 +54,8 @@ export default function game(state={}, action) {
 				isCanceled,
 				isEnded,
 				gameTime,
-				gameState
+				gameState,
+				messages
 			});
 		case 'SET_GAME_NAME':
 			return Object.assign({}, state, {
