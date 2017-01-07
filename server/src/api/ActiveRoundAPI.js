@@ -11,6 +11,7 @@ let _ = require('lodash');
 let express = require('express');
 let router = express.Router();
 const roundStartDelayTime = 2000;
+const removeGameAfterTime = 1000*60*10;
 
 class ActiveRoundAPI {
 
@@ -111,9 +112,13 @@ class ActiveRoundAPI {
 	endGame(game) {
 		game.set('gameState', 'ended');
 		this.notifyUsersOfRoundsChange(game);
-		UserSockets.notifyUsers(game.get('users'), `change:game:${game.id}`, game.toJSON());	
-		Games.remove(game);
+		UserSockets.notifyUsers(game.get('users'), `change:game:${game.id}`, game.toJSON());
 		UserSockets.notifyAll('change:gameList', Games.toJSON());
+		setTimeout(() => {
+			Games.remove(game);
+			UserSockets.notifyUsers(game.get('users'), `change:game:${game.id}`, game.toJSON());
+			UserSockets.notifyAll('change:gameList', Games.toJSON());
+		}, removeGameAfterTime);	
 	}
 
 	notifyUsersOfRoundsChange(game) {

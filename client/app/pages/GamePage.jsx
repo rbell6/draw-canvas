@@ -10,6 +10,7 @@ import PreRoundModal from '../components/PreRoundModal';
 import MouseObserver from '../components/MouseObserver';
 import FirstChild from '../components/FirstChild';
 import Modal from '../components/Modal';
+import Menu from '../components/Menu';
 import {
 	GameStageModal,
 	StartGameModal,
@@ -300,6 +301,10 @@ class GamePage extends React.Component {
 		return this.props.user.id === this.activeRound.drawerId;
 	}
 
+	onLogoClick() {
+		Modal.show(<Menu />);
+	}
+
 	render() {
 		return (
 			<div className="game-page">
@@ -390,6 +395,7 @@ class GamePage extends React.Component {
 								null 
 							}
 						</ReactCSSTransitionGroup>
+						<img src="/static/img/logo.png" className="game-page-logo" onClick={() => this.onLogoClick()} /> 
 					</div>
 					:
 					<div className="app-loading"><div className="spinner"><i className="fa fa-cog fa-spin" /></div></div>

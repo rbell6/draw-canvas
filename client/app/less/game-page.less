@@ -7,6 +7,8 @@
 @mobile-user-connected-transition-time: 500ms;
 @game-text-field-transition-time: 300ms;
 @game-text-field-delay-time: 700ms;
+@logo-width: 820px/11;
+@logo-height: 456px/11;
 @keyframes bounce {
 	0% {
 		opacity: 0.01;
@@ -29,6 +31,21 @@
 	font-weight: 800;
 	text-align: center;
 	color: #444;
+}
+.game-page-logo {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	background: @background-color;
+	padding: 12px;
+	width: @logo-width;
+	height: @logo-height;
+	-webkit-backface-visibility: hidden; // Fixes a css transform issue in chrome http://stackoverflow.com/questions/17242922/css3-hover-effects-make-weird-impact-on-other-elements-in-chrome
+	cursor: pointer;
+	transition: padding @responsive-transition-time, width @responsive-transition-time, height @responsive-transition-time, transform 0.2s;
+	&:hover {
+		transform: scale(1.06);
+	}
 }
 .mobile-user-connected-message-wrap {
 	position: absolute;
