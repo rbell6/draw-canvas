@@ -22,6 +22,7 @@ class MessageAPI {
 	onMessageReceived(socket, opts) {
 		let user = this.userAPI.getUserForSocket(socket);
 		let game = Games.find(game => game.id === opts.gameId);
+		if (!user || !game) { return; }
 		let activeRound = _.get(game, 'activeRound');
 		let message = opts.message;
 		let messageId = user.id + Date.now();
