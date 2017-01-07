@@ -51,7 +51,7 @@ class ActiveRoundAPI {
 		}
 		// In the current round, we only want to send the word with the drawer
 		let currentRoundJSON = roundsJSON[roundsJSON.length-1];
-		if (!game.get('isEnded') && currentRoundJSON.drawerId !== userId) {
+		if (game.gameState === 'active' && currentRoundJSON.drawerId !== userId) {
 			currentRoundJSON.word = null;
 		}
 		if (RoundStartTimes.get(game)) {
@@ -109,20 +109,9 @@ class ActiveRoundAPI {
 	}
 
 	endGame(game) {
-		game.set('isEnded', true);
+		game.set('gameState', 'ended');
 		this.notifyUsersOfRoundsChange(game);
-		UserSockets.notifyUsers(game.get('users'), `change:game:${game.id}`, game.toJSON());
-
-		// game.get('users').forEach(user => {
-		// 	let socket = UserSockets.get(user);
-		// 	if (socket) {
-		// 		socket.emit(`endGame:${game.id}`);
-		// 	}
-			// let mobileSocket = MobileUserSockets.get(user);
-			// if (mobileSocket) {
-			// 	mobileSocket.emit(`endGame:${game.id}`);
-			// }
-		// });	
+		UserSockets.notifyUsers(game.get('users'), `change:game:${game.id}`, game.toJSON());	
 		Games.remove(game);
 		UserSockets.notifyAll('change:gameList', Games.toJSON());
 	}

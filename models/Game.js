@@ -41,9 +41,6 @@ module.exports = class Game extends Model {
 			name: 'Untitled Game',
 			messages: new Collection(),
 			gameTime: 60000,
-			isStarted: false,
-			isCanceled: false,
-			isEnded: false,
 			timeCreated: null,
 			gameState: 'staged' // 'canceled' || staged' || 'active' || 'ended'
 		};

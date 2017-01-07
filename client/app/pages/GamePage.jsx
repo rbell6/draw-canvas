@@ -110,12 +110,12 @@ class GamePage extends React.Component {
 
 	componentDidUpdate() {
 		if (this.props.game.gameState === 'staged') {			
-			Modal.show(<GameStageModal game={this.props.game} userList={this.props.userList} user={this.props.user} messageService={this.messageService} saveGameName={this.props.saveGameName} />);
+			Modal.show(<GameStageModal messageService={this.messageService} />);
 			return;
 		}
 		if (!this.isGamePage() || !this.activeRound) { return; }
-		if (this.props.game.isEnded) {
-			Modal.show(<EndGameModal game={this.props.game} userList={this.props.userList} user={this.props.user} />);
+		if (this.props.game.gameState === 'ended') {
+			Modal.show(<EndGameModal game={this.props.game} userList={this.props.userList} user={this.props.user} messageService={this.messageService} />);
 		} else if (this.activeRound.started) {
 			Modal.close();
 		} else if (this.props.game.rounds.length === 1) {
@@ -141,7 +141,7 @@ class GamePage extends React.Component {
 			})
 			.catch(err => {
 				console.error(err);
-				// this.leaveGame();
+				this.leaveGame();
 			});
 		return;
 

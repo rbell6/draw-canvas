@@ -15,6 +15,15 @@ import _ from 'lodash';
 import {
 	browserHistory
 } from 'react-router';
+import {
+	connect
+} from 'react-redux';
+import {
+	cancelGame,
+	startGame,
+	leaveGame,
+	saveGameName,
+} from '../actions/GameActions';
 
 export function StartGameModal(props) {
 	return (
@@ -42,45 +51,84 @@ export function EndRoundModal(props) {
 let Scoreboard = props => {
 	let userForId = id => props.userList.find(u => u.id === id);
 	return (
-		<div className="game-scoreboard">
-			<ol>
-			{GameUtil.usersWithPoints(props.game).map(userWithPoints => (
-				<li key={userWithPoints.userId} className={classNames({'game-scoreboard-current-user': userWithPoints.userId === props.user.id})}>{_.get(userForId(userWithPoints.userId), 'name', '')} <span className="game-scoreboard-score">({userWithPoints.points})</span></li>
-			))}
-			</ol>
+		<div className="game-scoreboard-wrap">
+			<div className="game-scoreboard">
+				{GameUtil.usersWithPoints(props.game).map((userWithPoints, index) => (
+					<div key={userWithPoints.userId} className={classNames('scoreboard-row', {'game-scoreboard-current-user': userWithPoints.userId === props.user.id})}>
+						<div className="scoreboard-number">{index+1}.</div>
+						<div className="scoreboard-user">{_.get(userForId(userWithPoints.userId), 'name', '')}</div>
+						<div className="scoreboard-score">{userWithPoints.points}</div>
+					</div>
+				))}
+			</div>
 		</div>
 	);
 }
 
-export class GameStageModal extends React.Component {
+class GameStageModal extends React.Component {
+	static mapStateToProps(state) {
+		return {
+			game: state.game,
+			user: state.user,
+			userList: state.userList
+		};
+	}
+
+	static mapDispatchToProps(dispatch) {
+		return {
+			cancelGame: id => dispatch(cancelGame(id)),
+			startGame: id => dispatch(startGame(id)),
+			leaveGame: id => dispatch(leaveGame(id)),
+			saveGameName: (id, name) => dispatch(saveGameName(id, name))
+		};
+	}
+
 	constructor(props, context) {
 		super(props, context);
-		this.gameNameField = null;
-		this.onSubmit = this.onSubmit.bind(this);
+		this.onNameChange = _.debounce(this.onNameChange.bind(this), 1000);
+	}
+
+	componentWillReceiveProps(props) {
+		if (props.game.gameState === 'canceled') {
+			this.leaveGame();
+		}
+		if (props.game.gameState === 'active') {
+			this.startGame();
+		}
+	}
+
+	onStartButtonPress() {
+		this.props.startGame(this.props.game.id);
+	}
+
+	onCancelButtonPress() {
+		if (this.userIsHost()) {
+			this.props.cancelGame(this.props.game.id);
+		} else {
+			this.props.leaveGame(this.props.game.id);
+			this.leaveGame();
+		}
+	}
+
+	leaveGame() {
+		if (!this.isGamePage()) { return; }
+		browserHistory.push('/game-list');
+		Modal.close();
 	}
 
 	startGame() {
-
+		Modal.close();
 	}
 
-	cancelGame() {
-
+	isGamePage() {
+		return window.location.pathname.indexOf('/game/') === 0;
 	}
 
 	userIsHost() {
 		return this.props.user.id === this.props.game.hostId;
 	}
 
-	onFocus() {
-		HotkeyService.on('enter', this.onSubmit);
-	}
-
-	onBlur() {
-		HotkeyService.off('enter', this.onSubmit);
-	}
-
-	onSubmit() {
-		let name = this.gameNameField.value;
+	onNameChange(name) {
 		this.props.saveGameName(this.props.game.id, name);
 	}
 
@@ -94,52 +142,38 @@ export class GameStageModal extends React.Component {
 							className="game-stage-modal-header"
 							placeholder="Game Name"
 							defaultValue={this.props.game.name} 
-							ref={ref => this.gameNameField = ref}
-							onFocus={e => this.onFocus()}
-							onBlur={e => this.onBlur()}
+							onChange={e => this.onNameChange(e.target.value)}
 							disabled={!this.userIsHost()} />
 						<PlayerList players={this.props.game.users} dark={true} />
 					</div>
 				</div>
 				<Footer dark={true}>
-					<Button onClick={() => this.cancelGame()} variant="quiet">Cancel</Button>
-					<Button onClick={() => this.startGame()} variant="success">Start Game</Button>
+					<Button onClick={() => this.onCancelButtonPress()} variant="quiet">Cancel</Button>
+					{this.userIsHost() ? 
+						<Button onClick={() => this.onStartButtonPress()} variant="success">Start Game</Button> 
+						: 
+						<div className="waiting-for-host-text">Waiting for the host to start the game . . .</div>
+					}
 				</Footer>
 			</div>
 		);
 	}
 }
+let ConnectedGameStageModal = connect(GameStageModal.mapStateToProps, GameStageModal.mapDispatchToProps)(GameStageModal);
+export {
+	ConnectedGameStageModal as GameStageModal
+};
 
 export class EndGameModal extends React.Component {
 	constructor(props, context) {
 		super(props, context);
-		this.debouncedOnScroll = _.debounce(this.onScroll.bind(this), 100, {maxWait: 100});
 		this.drawings = [];
 	}
 
 	componentDidMount() {
-		this.el = ReactDOM.findDOMNode(this);
-		this.el.addEventListener('scroll', this.debouncedOnScroll);
-		this.gameLogo = document.querySelector('.game-logo-small');
-
 		this.props.game.rounds.forEach((round, index) => {
 			this.drawings[index].paint(round.lines, {aspectRatio: round.aspectRatio});
 		});
-	}
-
-	componentWillUnmount() {
-		this.el.removeEventListener('scroll', this.debouncedOnScroll);
-		this.gameLogo.style.display = '';
-	}
-
-	// Hide the logo when they scroll so it doesn't overlap with the modal contents
-	onScroll() {
-		if (!this.el) { return; }
-		if (this.el.scrollTop > 60) {
-			this.gameLogo.style.display = 'none';
-		} else {
-			this.gameLogo.style.display = '';
-		}
 	}
 
 	onButtonClick(redirect) {
@@ -156,25 +190,30 @@ export class EndGameModal extends React.Component {
 	render() {
 		return (
 			<div className="game-modal end-game-modal">
-				<h1>Game over!</h1>
-				<Scoreboard game={this.props.game} userList={this.props.userList} user={this.props.user} />
-				<div className="game-over-drawings">
-					{this.props.game.rounds.map((round, index) => (
-						<div className="game-over-drawing" key={round.id}>
-							<CanvasView 
-								ref={el => this.drawings[index] = el } 
-								width={300} 
-								height={300} 
-								immediate={true}
-								className="game-over-drawing" />
-							<div className="game-over-drawing-title"><span className="game-over-drawing-name">"{round.word}"</span> by {_.get(this.userForId(round.drawerId), 'name', 'Unknown')}</div>
+				<div className="end-game-modal-contents">
+					<ChatBox className="footer-offset" messageService={this.props.messageService} userList={this.props.userList} game={this.props.game} />
+					<div className="end-game-modal-game-description footer-offset">
+						<h1 className="game-over-header">Game over!</h1>
+						<h2 className="results-header">Results</h2>
+						<Scoreboard game={this.props.game} userList={this.props.userList} user={this.props.user} />
+						<div className="game-over-drawings">
+							{this.props.game.rounds.map((round, index) => (
+								<div className="game-over-drawing" key={round.id}>
+									<CanvasView 
+										ref={el => this.drawings[index] = el } 
+										width={300} 
+										height={300} 
+										immediate={true}
+										className="game-over-drawing" />
+									<div className="game-over-drawing-title"><span className="game-over-drawing-name">"{round.word}"</span> by {_.get(this.userForId(round.drawerId), 'name', 'Unknown')}</div>
+								</div>
+							))}
 						</div>
-					))}
+					</div>
 				</div>
-				<div className="game-over-buttons">
+				<Footer dark={true}>
 					<Button variant="success" onClick={() => this.onButtonClick('/game-list')}>New game</Button>
-					<Button onClick={() => this.onButtonClick('/create-user')}>Edit profile</Button>
-				</div>
+				</Footer>
 			</div>
 		);
 	}

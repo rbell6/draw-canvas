@@ -131,7 +131,7 @@ class GameAPI {
 			res.status(403).send('You are not authorized to perform this action');
 			return;
 		}
-		game.set('isStarted', true);
+		game.set('gameState', 'active');
 		this.activeRoundAPI.startGame(game);
 		UserSockets.notifyUsers(game.get('users'), `change:game:${game.id}`, game);
 		res.send(game.toJSON());
@@ -145,7 +145,7 @@ class GameAPI {
 			res.status(403).send('You are not authorized to perform this action');
 			return;
 		}
-		game.set('isCanceled', true);
+		game.set('gameState', 'canceled');
 		Games.remove({id: game.id});
 		UserSockets.notifyAll('change:gameList', Games.toJSON());
 		UserSockets.notifyUsers(game.get('users'), `change:game:${game.id}`, game);

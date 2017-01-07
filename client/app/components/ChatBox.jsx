@@ -33,13 +33,13 @@ export default class ChatBox extends React.Component {
 	}
 
 	componentDidUpdate() {
-		if (this.chatBoxMessages) {
-			this.scrollToBottom();
-		}
+		this.scrollToBottom();
 	}
 
 	scrollToBottom() {
-		this.chatBoxMessages.scrollTop = this.chatBoxMessages.scrollHeight;
+		if (this.chatBoxMessages) {
+			this.chatBoxMessages.scrollTop = this.chatBoxMessages.scrollHeight;
+		}
 	}
 
 	onFocus() {

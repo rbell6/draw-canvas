@@ -69,7 +69,7 @@ class GameListPage extends React.Component {
 		const transitionTime = 400;
 		return (
 			<div className={classNames('game-list-page', {'no-games': !this.props.gameList.length})}>
-				<div className="game-list-container">
+				<div className="game-list-container footer-offset">
 					<ReactCSSTransitionGroup
 						component="div"
 						transitionName="game"
@@ -78,7 +78,7 @@ class GameListPage extends React.Component {
 						transitionLeaveTimeout={transitionTime}
 					>
 						{this.props.gameList.map(game => (
-							<div key={game.id} className={classNames('join-game-button', {'game-is-ended': game.isEnded})} onClick={() => this.joinGame(game)}>
+							<div key={game.id} className={classNames('join-game-button', {'game-is-ended': game.gameState === 'ended'})} onClick={() => this.joinGame(game)}>
 								<h2>{game.name}</h2>
 								<h3><i className="fa fa-user" /> {this.hostName(game)} &nbsp; <i className="fa fa-users" /> {game.userIds.length}</h3>
 							</div>
