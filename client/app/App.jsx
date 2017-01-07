@@ -45,7 +45,17 @@ import {
 import {
 	createSocket
 } from './actions/SocketActions';
+import ReactGA from 'react-ga';
 require('offline-js'); // This puts `Offline` on the window
+
+// Google Analytics
+const prodTrackingId = 'UA-89986238-1';
+const devTrackingId = 'UA-89986238-2';
+let trackingId = prodTrackingId;
+if (isDevelopmentEnvironment()) {
+	trackingId = devTrackingId;
+}
+ReactGA.initialize(trackingId);
 
 let loggerMiddleware = createLogger({
 	collapsed: true
@@ -57,6 +67,10 @@ let store = createStore(reducers, applyMiddleware(
 window.store = store;
 
 window._ = _;
+
+function isDevelopmentEnvironment() {
+	return window.location.hostname === 'localhost';
+}
 
 function AppPages({children, location}) {
 	const transitionTime = 400;
@@ -159,11 +173,16 @@ class App extends React.Component {
 		this.props.userList.length; // Should have at least yourself in userList
 	}
 
+	logPageView() {
+		ReactGA.set({page: window.location.pathname});
+		ReactGA.pageview(window.location.pathname);
+	}
+
 	render() {
 		return (
 			<Shell>
 				{this.isDoneLoading() ?
-					<Router history={browserHistory}>
+					<Router history={browserHistory} onUpdate={() => this.logPageView()}>
 						{routes}
 					</Router>
 					:
