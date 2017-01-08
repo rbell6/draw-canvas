@@ -10,6 +10,7 @@ export default function Button(props) {
 			{..._.omit(props, ['variant'])} 
 			className={classNames(
 				'button', {
+					'button-info': variant === 'info',
 					'button-success': variant === 'success',
 					'button-quiet': variant === 'quiet'
 				},

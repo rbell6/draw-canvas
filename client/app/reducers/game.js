@@ -22,7 +22,6 @@ function rounds(state=[], action) {
 export default function game(state={}, action) {
 	// Nested reducers
 	state = Object.assign({}, state, {
-		brush: brush(state.brush, action),
 		messages: messages(state.messages, action),
 		rounds: rounds(state.rounds, action)
 	});

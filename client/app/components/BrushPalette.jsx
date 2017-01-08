@@ -14,7 +14,7 @@ import {
 class BrushPalette extends React.Component {
 	static mapStateToProps(state) {
 		return {
-			brush: state.game.brush,
+			brush: state.brush,
 		};
 	}
 

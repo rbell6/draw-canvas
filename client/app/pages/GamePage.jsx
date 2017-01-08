@@ -59,6 +59,7 @@ class GamePage extends React.Component {
 	static mapStateToProps(state) {
 		return {
 			game: state.game,
+			brush: state.brush,
 			user: state.user,
 			userList: state.userList,
 			socket: state.socket
@@ -144,6 +145,7 @@ class GamePage extends React.Component {
 				console.error(err);
 				this.leaveGame();
 			});
+		HotkeyService.on('undo', this.onUndo);
 		return;
 
 		GameService.getById(this.props.params.id).then(game => {
@@ -163,7 +165,6 @@ class GamePage extends React.Component {
 			this.endGame();
 		});
 		GameService.on('change:game', this.onGameChange);
-		HotkeyService.on('undo', this.onUndo);
 		this.user.on('change:mobileUserConnected', e => {
 			if (this._mounted) {
 				this.forceUpdate();
@@ -180,6 +181,7 @@ class GamePage extends React.Component {
 		if (this._unstreamRounds) {
 			this._unstreamRounds();
 		}
+		HotkeyService.off('undo', this.onUndo);
 		return;
 
 
@@ -197,7 +199,6 @@ class GamePage extends React.Component {
 			this.messageService.destroy();
 		}
 		GameService.off('change:game', this.onGameChange);
-		HotkeyService.off('undo', this.onUndo);
 		// document.body.classList.remove('game-page');
 		this._mounted = false;
 	}
@@ -312,7 +313,7 @@ class GamePage extends React.Component {
 					<div className={classNames('app', {'drawer-is-me': this.showDrawingCanvas()})}>
 						{ this.canvasService ?
 							this.showDrawingCanvas() ? 
-								<Canvas brush={this.props.game.brush} onChange={e => this.onCanvasChange(e)} ref="canvas" />
+								<Canvas brush={this.props.brush} onChange={e => this.onCanvasChange(e)} ref="canvas" />
 								:
 								<CanvasView ref="canvasView" />
 							:

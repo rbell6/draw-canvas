@@ -25,6 +25,7 @@ export default function Menu(props) {
 			<CloseIcon onClose={() => onButtonClick()} />
 			<div className="menu-buttons">
 				<Button variant="success" onClick={() => onButtonClick('/game-list')}>Find a game</Button>
+				<Button onClick={() => onButtonClick('/draw')} variant="info">Free Draw</Button>
 				<Button onClick={() => onButtonClick('/create-user')}>Edit profile</Button>
 				<Button onClick={() => onButtonClick()} variant="quiet">Back</Button>
 			</div>

@@ -11,16 +11,21 @@ const transitionEnterTime = 300;
 const transitionLeaveTime = 3000;
 const transitionLeaveDelay = 3000;
 
-export function GameMessage(props) {
-	return (
-		<div className={classNames('game-text-message', {'game-text-message-dark': props.dark})}>
-			<UserIcon user={props.user} size="tiny" showName={false} className="game-text-message-user-icon" />
-			<div className="game-text-message-username-and-text">
-				<div className="game-text-message-username">{props.user.name}</div>
-				<div className="game-text-message-text">{props.message.isChecked ? <i className="fa fa-check" /> : props.message.text}</div>
+export class GameMessage extends React.Component {
+	render() {
+		if (!this.props.user) {
+			return null;
+		}
+		return (
+			<div className={classNames('game-text-message', {'game-text-message-dark': this.props.dark})}>
+				<UserIcon user={this.props.user} size="tiny" showName={false} className="game-text-message-user-icon" />
+				<div className="game-text-message-username-and-text">
+					<div className="game-text-message-username">{this.props.user.name}</div>
+					<div className="game-text-message-text">{this.props.message.isChecked ? <i className="fa fa-check" /> : this.props.message.text}</div>
+				</div>
 			</div>
-		</div>
-	);
+		);
+	}
 }
 
 class GameMessages extends React.Component {

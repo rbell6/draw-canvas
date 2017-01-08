@@ -88,6 +88,7 @@ class GameListPage extends React.Component {
 				</div>
 				<PlayerList players={this.props.userList} />
 				<Footer>
+					<Button onClick={() => browserHistory.push('/draw')} variant="info">Free draw</Button>
 					<Button onClick={() => this.createGame()} variant="success">New Game</Button>
 				</Footer>
 			</div>

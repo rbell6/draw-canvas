@@ -18,7 +18,7 @@ import HomePage from './pages/HomePage';
 import CreateUserPage from './pages/CreateUserPage';
 import GameListPage from './pages/GameListPage';
 import GameStagePage from './pages/GameStagePage';
-import MobileCanvasPage from './pages/MobileCanvasPage';
+import DrawPage from './pages/DrawPage';
 import UserService from './services/UserService';
 import axios from 'axios';
 import LocationService from './services/LocationService';
@@ -107,7 +107,7 @@ const routes = (
 		<Route path="/game-list" component={GameListPage} onEnter={redirectIfUserDoesNotExist} />
 		<Route path="/game/:id" component={GamePage} onEnter={redirectIfUserDoesNotExist} />
 		<Route path="/game-stage/:id" component={GameStagePage} onEnter={redirectIfUserDoesNotExist} />
-		<Route path="/m/:mobileLinkId" component={MobileCanvasPage} />
+		<Route path="/draw" component={DrawPage} />
 	</Route>
 );
 

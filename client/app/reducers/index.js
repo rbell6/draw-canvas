@@ -6,13 +6,15 @@ import userList from './userList';
 import gameList from './gameList';
 import game from './game';
 import socket from './socket';
+import brush from './brush';
 
 const reducers = combineReducers({
 	user,
 	userList,
 	gameList,
 	game,
-	socket
+	socket,
+	brush
 });
 
 export default reducers;
